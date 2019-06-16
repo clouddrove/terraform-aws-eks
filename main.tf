@@ -50,9 +50,9 @@ module "subnets" {
 
 module "eks_cluster" {
   source                  = "./modules/eks"
-  name        = "${var.name}"
-  application = "${var.application}"
-  environment = "${var.environment}"
+  name                    = "${var.name}"
+  application             = "${var.application}"
+  environment             = "${var.environment}"
   attributes              = "${var.attributes}"
   tags                    = "${var.tags}"
   vpc_id                  = "${module.vpc.vpc_id}"
@@ -69,9 +69,9 @@ module "eks_cluster" {
 
 module "eks_workers" {
   source                             = "./modules/worker"
-  name        = "${var.name}"
-  application = "${var.application}"
-  environment = "${var.environment}"
+  name                               = "${var.name}"
+  application                        = "${var.application}"
+  environment                        = "${var.environment}"
   attributes                         = "${var.attributes}"
   tags                               = "${var.tags}"
   image_id                           = "sdfsdfsdfsds"

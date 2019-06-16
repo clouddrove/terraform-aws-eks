@@ -4,12 +4,12 @@ locals {
 }
 
 module "label" {
-  source     = "../../../terraform-lables"
+  source      = "../../../terraform-lables"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
-  delimiter  = "${var.delimiter}"
-  attributes = ["${compact(concat(var.attributes, list("workers")))}"]
+  delimiter   = "${var.delimiter}"
+  attributes  = ["${compact(concat(var.attributes, list("workers")))}"]
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -141,8 +141,8 @@ module "autoscale_group" {
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
-  delimiter  = "${var.delimiter}"
-  attributes = "${var.attributes}"
+  delimiter   = "${var.delimiter}"
+  attributes  = "${var.attributes}"
 
   image_id                  = "${var.use_custom_image_id == "true" ? var.image_id : join("", data.aws_ami.eks_worker.*.id)}"
   iam_instance_profile_name = "${local.use_existing_instance_profile == "false" ? join("", aws_iam_instance_profile.default.*.name) : var.aws_iam_instance_profile_name}"

@@ -1,10 +1,11 @@
 module "label" {
-  source     = "../../../terraform-lables"
+  source      = "../../../terraform-lables"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
-  delimiter  = "${var.delimiter}"
-  attributes = ["${compact(concat(var.attributes, list("cluster")))}"]
+  delimiter   = "${var.delimiter}"
+  attributes  = ["${compact(concat(var.attributes, list("cluster")))}"]
+
   //enabled    = "${var.enabled}"
 }
 
