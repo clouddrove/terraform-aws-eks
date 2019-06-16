@@ -12,7 +12,7 @@ locals {
 
 resource "aws_subnet" "public" {
   count                   = "${length(var.availability_zones)}"
-  vpc_id                  = "${data.aws_vpc.default.id}"
+  vpc_id                  = "${var.vpc_id}"
   availability_zone       = "${element(var.availability_zones, count.index)}"
   cidr_block              = "${cidrsubnet(signum(length(var.cidr_block)) == 1 ? var.cidr_block : data.aws_vpc.default.cidr_block, ceil(log(local.public_subnet_count * 2, 2)), local.public_subnet_count + count.index)}"
   map_public_ip_on_launch = "${local.map_public_ip_on_launch}"
@@ -26,7 +26,7 @@ resource "aws_subnet" "public" {
 
 resource "aws_route_table" "public" {
   count  = "${signum(length(var.vpc_default_route_table_id)) == 1 ? 0 : 1}"
-  vpc_id = "${data.aws_vpc.default.id}"
+  vpc_id = "${var.vpc_id}"
 
   tags = "${module.public_label.tags}"
 }

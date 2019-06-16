@@ -3,6 +3,8 @@ module "label" {
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
+  tags        = "${var.tags}"
+  enabled     = "${var.enabled}"
 }
 
 resource "aws_launch_template" "default" {
@@ -57,11 +59,11 @@ resource "aws_launch_template" "default" {
 }
 
 data "null_data_source" "tags_as_list_of_maps" {
-  count = "${var.enabled == "true" ? length(keys(module.label.tags)) : 0}"
+  count = "${var.enabled == "true" ? length(keys(var.tags)) : 0}"
 
   inputs = "${map(
-    "key", "${element(keys(module.label.tags), count.index)}",
-    "value", "${element(values(module.label.tags), count.index)}",
+    "key", "${element(keys(var.tags), count.index)}",
+    "value", "${element(values(var.tags), count.index)}",
     "propagate_at_launch", true
   )}"
 }

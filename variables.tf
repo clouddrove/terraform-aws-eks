@@ -1,17 +1,18 @@
 variable "application" {
   type        = "string"
+  default     = "uplift"
   description = "Application, which could be your Application name, e.g. 'eg' or 'cp'"
 }
 
 variable "environment" {
   type        = "string"
-  default     = ""
+  default     = "qa"
   description = "Environment, e.g. 'testing', 'UAT'"
 }
 
 variable "name" {
   type        = "string"
-  default     = "app"
+  default     = "uplift"
   description = "Solution name, e.g. 'app' or 'cluster'"
 }
 
@@ -65,7 +66,7 @@ variable "allowed_cidr_blocks_workers" {
 
 variable "region" {
   type        = "string"
-  default     = "eu-west-1"
+  default     = "us-east-1"
   description = "AWS Region"
 }
 
@@ -77,7 +78,7 @@ variable "vpc_cidr_block" {
 
 variable "image_id" {
   type        = "string"
-  default     = ""
+  default     = "ami-0abcb9f9190e867ab"
   description = "EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images"
 }
 
@@ -100,12 +101,12 @@ variable "health_check_type" {
 }
 
 variable "max_size" {
-  default     = 3
+  default     = 1
   description = "The maximum size of the AutoScaling Group"
 }
 
 variable "min_size" {
-  default     = 2
+  default     = 1
   description = "The minimum size of the AutoScaling Group"
 }
 

@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = "us-east-1"
 }
 
 # This `label` is needed to prevent `count can't be computed` errors
@@ -8,6 +8,7 @@ module "label" {
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
+  enabled     = "${var.enabled}"
 }
 
 # This `label` is needed to prevent `count can't be computed` errors
@@ -74,7 +75,7 @@ module "eks_workers" {
   environment                        = "${var.environment}"
   attributes                         = "${var.attributes}"
   tags                               = "${var.tags}"
-  image_id                           = "sdfsdfsdfsds"
+  image_id                           = "${var.image_id}"
   instance_type                      = "${var.instance_type}"
   vpc_id                             = "${module.vpc.vpc_id}"
   subnet_ids                         = ["${module.subnets.public_subnet_ids}"]

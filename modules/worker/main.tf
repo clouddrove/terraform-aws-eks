@@ -1,5 +1,5 @@
 locals {
-  tags                          = "${merge(var.tags, map("kubernetes.io/cluster/${var.cluster_name}", "owned"))}"
+  tags                          = "${merge(map("kubernetes.io/cluster/${var.cluster_name}", "shared"))}"
   use_existing_instance_profile = "${var.aws_iam_instance_profile_name != "" ? "true" : "false"}"
 }
 
@@ -9,7 +9,9 @@ module "label" {
   application = "${var.application}"
   environment = "${var.environment}"
   delimiter   = "${var.delimiter}"
+  tags        = "${local.tags}"
   attributes  = ["${compact(concat(var.attributes, list("workers")))}"]
+  enabled     = "${var.enabled}"
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -119,21 +121,6 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   type              = "ingress"
 }
 
-data "aws_ami" "eks_worker" {
-  count = "${var.enabled == "true" && var.use_custom_image_id == "false" ? 1 : 0}"
-
-  most_recent = true
-  name_regex  = "${var.eks_worker_ami_name_regex}"
-
-  filter {
-    name   = "name"
-    values = ["${var.eks_worker_ami_name_filter}"]
-  }
-
-  most_recent = true
-  owners      = ["602401143452"] # Amazon
-}
-
 module "autoscale_group" {
   source = "../autoscale"
 
@@ -144,7 +131,7 @@ module "autoscale_group" {
   delimiter   = "${var.delimiter}"
   attributes  = "${var.attributes}"
 
-  image_id                  = "${var.use_custom_image_id == "true" ? var.image_id : join("", data.aws_ami.eks_worker.*.id)}"
+  image_id                  = "${var.image_id}"
   iam_instance_profile_name = "${local.use_existing_instance_profile == "false" ? join("", aws_iam_instance_profile.default.*.name) : var.aws_iam_instance_profile_name}"
   security_group_ids        = ["${join("", aws_security_group.default.*.id)}"]
   user_data_base64          = "${base64encode(join("", data.template_file.userdata.*.rendered))}"
