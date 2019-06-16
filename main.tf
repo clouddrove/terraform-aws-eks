@@ -90,6 +90,7 @@ module "eks_workers" {
   allowed_security_groups            = ["${var.allowed_security_groups_workers}"]
   allowed_cidr_blocks                = ["${var.allowed_cidr_blocks_workers}"]
   enabled                            = "${var.enabled}"
+  key_name                           = "${var.key_name}"
 
   # Auto-scaling policies and CloudWatch metric alarms
   autoscaling_policies_enabled           = "${var.autoscaling_policies_enabled}"

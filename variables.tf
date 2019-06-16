@@ -89,7 +89,7 @@ variable "eks_worker_ami_name_filter" {
 
 variable "instance_type" {
   type        = "string"
-  default     = "t2.medium"
+  default     = "t2.nano"
   description = "Instance type to launch"
 }
 
@@ -148,4 +148,9 @@ variable "apply_config_map_aws_auth" {
   type        = "string"
   default     = "true"
   description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster"
+}
+
+variable "key_name" {
+  type    = "string"
+  default = ""
 }
