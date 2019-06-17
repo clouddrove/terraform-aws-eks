@@ -113,7 +113,7 @@ variable "min_size" {
 variable "wait_for_capacity_timeout" {
   type        = "string"
   description = "A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. Setting this to '0' causes Terraform to skip all Capacity Waiting behavior"
-  default     = "10m"
+  default     = "15m"
 }
 
 variable "associate_public_ip_address" {
