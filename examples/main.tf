@@ -48,7 +48,7 @@ module "eks_cluster" {
   max_size                    = "1"
   min_size                    = "1"
   associate_public_ip_address = "true"
-  availability_zones          = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  availability_zones          = ["eu-west-1a", "eu-west-1b",]
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = "true"
