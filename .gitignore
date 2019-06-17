@@ -1,8 +1,9 @@
 # Compiled files
 *.tfstate
 *.tfstate.backup
-
+*.test
 # Module directory
 .terraform
 .idea
 *.iml
+examples/test/
