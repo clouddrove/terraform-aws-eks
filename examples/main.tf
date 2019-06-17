@@ -4,17 +4,21 @@ provider "aws" {
 
 module "vpc" {
   source      = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.11.0"
-  name        = "${var.name}"
-  application = "${var.application}"
-  environment = "${var.environment}"
-  cidr_block  = "${var.vpc_cidr_block}"
+
+  name        = "vpc"
+  application = "clouddrove"
+  environment = "test"
+
+  cidr_block  = "10.0.0.0/16"
 }
 
 module "subnets"  {
   source              = "../../aws/terraform-aws-pub-pri-subnet"
+
   application        = "clouddrove"
-  environment         = "dev"
+  environment         = "test"
   name                = "subnet"
+
   availability_zones  = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id              = "${module.vpc.vpc_id}"
   type                = "public-private"
@@ -25,7 +29,6 @@ module "subnets"  {
 
 module "eks_cluster" {
   source = "../../terraform-aws-eks-cluster"
-
   //source = "https://github.com/clouddrove/terraform-aws-eks-cluster"
 
   ## Tags
@@ -39,7 +42,7 @@ module "eks_cluster" {
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   ## Ec2
-  key_name                    = "test"
+  key_name                    = ""
   image_id                    = "ami-08d658f84a6d84a80"
   instance_type               = "t2.nano"
   max_size                    = "1"
