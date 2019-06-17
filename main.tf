@@ -1,4 +1,3 @@
-
 # This `label` is needed to prevent `count can't be computed` errors
 module "label" {
   source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
@@ -24,7 +23,6 @@ locals {
   # https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html#base-vpc-networking
   tags = "${merge(var.tags, map("kubernetes.io/cluster/${module.label.id}", "shared"))}"
 }
-
 
 module "eks_cluster" {
   source                  = "./modules/eks"
@@ -54,8 +52,8 @@ module "eks_workers" {
   tags                               = "${var.tags}"
   image_id                           = "${var.image_id}"
   instance_type                      = "${var.instance_type}"
-  vpc_id                  = "${var.vpc_id}"
-  subnet_ids              = "${var.subnet_ids}"
+  vpc_id                             = "${var.vpc_id}"
+  subnet_ids                         = "${var.subnet_ids}"
   health_check_type                  = "${var.health_check_type}"
   min_size                           = "${var.min_size}"
   max_size                           = "${var.max_size}"
