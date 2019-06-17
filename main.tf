@@ -1,10 +1,7 @@
-provider "aws" {
-  region = "us-east-1"
-}
 
 # This `label` is needed to prevent `count can't be computed` errors
 module "label" {
-  source      = "../terraform-lables"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
@@ -13,7 +10,7 @@ module "label" {
 
 # This `label` is needed to prevent `count can't be computed` errors
 module "cluster_label" {
-  source      = "../terraform-lables"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
@@ -28,26 +25,6 @@ locals {
   tags = "${merge(var.tags, map("kubernetes.io/cluster/${module.label.id}", "shared"))}"
 }
 
-module "vpc" {
-  source      = "../terraform-aws-vpc"
-  name        = "${var.name}"
-  application = "${var.application}"
-  environment = "${var.environment}"
-  cidr_block  = "${var.vpc_cidr_block}"
-}
-
-module "subnets" {
-  source              = "./modules/subnets"
-  availability_zones  = ["${var.availability_zones}"]
-  name                = "${var.name}"
-  attributes          = "${var.attributes}"
-  tags                = "${local.tags}"
-  region              = "${var.region}"
-  vpc_id              = "${module.vpc.vpc_id}"
-  igw_id              = "${module.vpc.igw_id}"
-  cidr_block          = "${module.vpc.vpc_cidr_block}"
-  nat_gateway_enabled = "true"
-}
 
 module "eks_cluster" {
   source                  = "./modules/eks"
@@ -56,8 +33,8 @@ module "eks_cluster" {
   environment             = "${var.environment}"
   attributes              = "${var.attributes}"
   tags                    = "${var.tags}"
-  vpc_id                  = "${module.vpc.vpc_id}"
-  subnet_ids              = ["${module.subnets.public_subnet_ids}"]
+  vpc_id                  = "${var.vpc_id}"
+  subnet_ids              = "${var.subnet_ids}"
   allowed_security_groups = ["${var.allowed_security_groups_cluster}"]
 
   # `workers_security_group_count` is needed to prevent `count can't be computed` errors
@@ -77,8 +54,8 @@ module "eks_workers" {
   tags                               = "${var.tags}"
   image_id                           = "${var.image_id}"
   instance_type                      = "${var.instance_type}"
-  vpc_id                             = "${module.vpc.vpc_id}"
-  subnet_ids                         = ["${module.subnets.public_subnet_ids}"]
+  vpc_id                  = "${var.vpc_id}"
+  subnet_ids              = "${var.subnet_ids}"
   health_check_type                  = "${var.health_check_type}"
   min_size                           = "${var.min_size}"
   max_size                           = "${var.max_size}"

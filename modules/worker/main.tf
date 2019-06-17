@@ -4,7 +4,7 @@ locals {
 }
 
 module "label" {
-  source      = "../../../terraform-lables"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
@@ -124,7 +124,6 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 module "autoscale_group" {
   source = "../autoscale"
 
-  //enabled    = "${var.enabled}"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"

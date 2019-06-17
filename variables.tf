@@ -39,6 +39,17 @@ variable "enabled" {
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources"
   default     = "true"
 }
+variable "vpc_id" {
+  type        = "string"
+  description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources"
+  default     = ""
+}
+variable "subnet_ids" {
+  type        = "list"
+  description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources"
+  default     = []
+}
+
 
 variable "allowed_security_groups_cluster" {
   type        = "list"

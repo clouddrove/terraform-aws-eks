@@ -1,12 +1,10 @@
 module "label" {
-  source      = "../../../terraform-lables"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
   delimiter   = "${var.delimiter}"
   attributes  = ["${compact(concat(var.attributes, list("cluster")))}"]
-
-  //enabled    = "${var.enabled}"
 }
 
 data "aws_iam_policy_document" "assume_role" {
