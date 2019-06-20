@@ -9,10 +9,10 @@ variable "subnet_type_tag_value_format" {
   type        = "string"
 }
 
-variable "region" {
-  type        = "string"
-  description = "AWS Region (e.g. `us-east-1`)"
-}
+//variable "region" {
+//  type        = "string"
+//  description = "AWS Region (e.g. `us-east-1`)"
+//}
 
 variable "max_subnet_count" {
   default     = 0
