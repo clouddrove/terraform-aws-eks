@@ -1,9 +1,9 @@
-# https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ec2-metricscollected.html
 
 locals {
   autoscaling_enabled = "${var.enabled == "true" && var.autoscaling_policies_enabled == "true" ? true : false}"
 }
-
+#Module      : AUTOSCALING POLICY UP
+#Description : Provides an AutoScaling Scaling Policy resource. 
 resource "aws_autoscaling_policy" "scale_up" {
   count                  = "${local.autoscaling_enabled ? 1 : 0}"
   name                   = "${module.label.id}${var.delimiter}scale${var.delimiter}up"
@@ -13,7 +13,8 @@ resource "aws_autoscaling_policy" "scale_up" {
   cooldown               = "${var.scale_up_cooldown_seconds}"
   autoscaling_group_name = "${join("", aws_autoscaling_group.default.*.name)}"
 }
-
+#Module      : AUTOSCALING POLICY DOWN
+#Description : Provides an AutoScaling Scaling Policy resource. 
 resource "aws_autoscaling_policy" "scale_down" {
   count                  = "${local.autoscaling_enabled ? 1 : 0}"
   name                   = "${module.label.id}${var.delimiter}scale${var.delimiter}down"
@@ -23,7 +24,8 @@ resource "aws_autoscaling_policy" "scale_down" {
   cooldown               = "${var.scale_down_cooldown_seconds}"
   autoscaling_group_name = "${join("", aws_autoscaling_group.default.*.name)}"
 }
-
+#Module      : CLOUDWATCH METRIC ALARM CPU HIGH
+#Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   count               = "${local.autoscaling_enabled ? 1 : 0}"
   alarm_name          = "${module.label.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}high"
@@ -42,7 +44,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   alarm_description = "Scale up if CPU utilization is above ${var.cpu_utilization_high_threshold_percent} for ${var.cpu_utilization_high_period_seconds} seconds"
   alarm_actions     = ["${join("", aws_autoscaling_policy.scale_up.*.arn)}"]
 }
-
+#Module      : CLOUDWATCH METRIC ALARM CPU LOW
+#Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   count               = "${local.autoscaling_enabled ? 1 : 0}"
   alarm_name          = "${module.label.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}low"

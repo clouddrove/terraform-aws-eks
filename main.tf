@@ -1,8 +1,8 @@
-provider "aws" {
-  region = "us-east-1"
-}
+## Managed By : CloudDrove
+## Copyright @ CloudDrove. All Right Reserved.
 
-# This `label` is needed to prevent `count can't be computed` errors
+#Module      : label
+#Description : Terraform module to create consistent naming for multiple names.
 module "label" {
   source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
@@ -11,7 +11,6 @@ module "label" {
   enabled     = "${var.enabled}"
 }
 
-# This `label` is needed to prevent `count can't be computed` errors
 module "cluster_label" {
   source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
@@ -22,13 +21,11 @@ module "cluster_label" {
 }
 
 locals {
-  # The usage of the specific kubernetes.io/cluster/* resource tags below are required
-  # for EKS and Kubernetes to discover and manage networking resources
-  # https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html#base-vpc-networking
   tags = "${merge(var.tags, map("kubernetes.io/cluster/${module.label.id}", "shared"))}"
 }
 
-
+#Module      : EKS CLUSTER
+#Description : Manages an EKS Cluster.
 module "eks_cluster" {
   source                  = "./modules/eks"
   name                    = "${var.name}"
@@ -39,15 +36,14 @@ module "eks_cluster" {
   vpc_id                  = "${var.vpc_id}"
   subnet_ids              = ["${var.subnet_ids}"]
   allowed_security_groups = ["${var.allowed_security_groups_cluster}"]
-
-  # `workers_security_group_count` is needed to prevent `count can't be computed` errors
   workers_security_group_ids   = ["${module.eks_workers.security_group_id}"]
   workers_security_group_count = 1
-
   allowed_cidr_blocks = ["${var.allowed_cidr_blocks_cluster}"]
   enabled             = "${var.enabled}"
 }
 
+#Module      : EKS CLUSTER
+#Description : Manages an EKS Autoscaling.
 module "eks_workers" {
   source                             = "./modules/worker"
   name                               = "${var.name}"
@@ -72,8 +68,6 @@ module "eks_workers" {
   allowed_cidr_blocks                = ["${var.allowed_cidr_blocks_workers}"]
   enabled                            = "${var.enabled}"
   key_name                           = "${var.key_name}"
-
-  # Auto-scaling policies and CloudWatch metric alarms
   autoscaling_policies_enabled           = "${var.autoscaling_policies_enabled}"
   cpu_utilization_high_threshold_percent = "${var.cpu_utilization_high_threshold_percent}"
   cpu_utilization_low_threshold_percent  = "${var.cpu_utilization_low_threshold_percent}"

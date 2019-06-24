@@ -11,7 +11,7 @@ module "vpc" {
 }
 
 module "subnet" {
-  source = "../../aws/terraform-aws-pub-pri-subnet"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.11.0"
 
   name        = "${var.name}"
   application = "clouddrove"
