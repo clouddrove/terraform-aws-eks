@@ -13,15 +13,15 @@ module "vpc" {
 module "subnet" {
   source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.11.0"
 
-  name        = "${var.name}"
-  application = "clouddrove"
-  environment = "test"
-  availability_zones = ["${var.availability_zones}",]
+  name               = "${var.name}"
+  application        = "clouddrove"
+  environment        = "test"
+  availability_zones = ["${var.availability_zones}", ]
 
-  vpc_id      = "${module.vpc.vpc_id}"
-  igw_id      = "${module.vpc.igw_id}"
-  cidr_block  = "${module.vpc.vpc_cidr_block}"
-  type        = "public-private"
+  vpc_id     = "${module.vpc.vpc_id}"
+  igw_id     = "${module.vpc.igw_id}"
+  cidr_block = "${module.vpc.vpc_cidr_block}"
+  type       = "public-private"
 }
 
 module "eks-cluster" {

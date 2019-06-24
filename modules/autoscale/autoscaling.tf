@@ -3,7 +3,7 @@ locals {
   autoscaling_enabled = "${var.enabled == "true" && var.autoscaling_policies_enabled == "true" ? true : false}"
 }
 #Module      : AUTOSCALING POLICY UP
-#Description : Provides an AutoScaling Scaling Policy resource. 
+#Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_up" {
   count                  = "${local.autoscaling_enabled ? 1 : 0}"
   name                   = "${module.label.id}${var.delimiter}scale${var.delimiter}up"
@@ -14,7 +14,7 @@ resource "aws_autoscaling_policy" "scale_up" {
   autoscaling_group_name = "${join("", aws_autoscaling_group.default.*.name)}"
 }
 #Module      : AUTOSCALING POLICY DOWN
-#Description : Provides an AutoScaling Scaling Policy resource. 
+#Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_down" {
   count                  = "${local.autoscaling_enabled ? 1 : 0}"
   name                   = "${module.label.id}${var.delimiter}scale${var.delimiter}down"

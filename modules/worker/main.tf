@@ -128,7 +128,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   security_group_id        = "${join("", aws_security_group.default.*.id)}"
   type                     = "ingress"
 }
-#Module      : SECURITY GROUP RULE CIDR BLOCK 
+#Module      : SECURITY GROUP RULE CIDR BLOCK
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
@@ -169,7 +169,7 @@ module "autoscale_group" {
   ebs_optimized                           = "${var.ebs_optimized}"
   elastic_gpu_specifications              = ["${var.elastic_gpu_specifications}"]
   instance_initiated_shutdown_behavior    = "${var.instance_initiated_shutdown_behavior}"
-  instance_market_options                 = ["${var.instance_market_options }"]
+  instance_market_options                 = ["${var.instance_market_options}"]
   key_name                                = "${var.key_name}"
   placement                               = ["${var.placement}"]
   enable_monitoring                       = "${var.enable_monitoring}"
@@ -230,6 +230,6 @@ data "template_file" "config_map_aws_auth" {
   template = "${file("${path.module}/config_map_aws_auth.tpl")}"
 
   vars {
-    aws_iam_role_arn = "${local.use_existing_instance_profile == "true" ?  join("", data.aws_iam_instance_profile.default.*.role_arn) : join("", aws_iam_role.default.*.arn)}"
+    aws_iam_role_arn = "${local.use_existing_instance_profile == "true" ? join("", data.aws_iam_instance_profile.default.*.role_arn) : join("", aws_iam_role.default.*.arn)}"
   }
 }

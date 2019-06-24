@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 #Module      : IAM ROLE
-#Description : Provides an IAM role. 
+#Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = "${var.enabled == "true" ? 1 : 0}"
   name               = "${module.label.id}"
@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "ingress_workers" {
   security_group_id        = "${join("", aws_security_group.default.*.id)}"
   type                     = "ingress"
 }
-#Module      : SECURITY GROUP RULE INGRESS 
+#Module      : SECURITY GROUP RULE INGRESS
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_security_groups" {
@@ -95,7 +95,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   type                     = "ingress"
 }
 
-#Module      : SECURITY GROUP RULE CIDR BLOCK 
+#Module      : SECURITY GROUP RULE CIDR BLOCK
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
