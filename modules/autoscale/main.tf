@@ -1,5 +1,10 @@
+## Managed By : CloudDrove
+## Copyright @ CloudDrove. All Right Reserved.
+
+#Module      : label
+#Description : Terraform module to create consistent naming for multiple names.
 module "label" {
-  source      = "../../../terraform-lables"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
@@ -7,6 +12,9 @@ module "label" {
   enabled     = "${var.enabled}"
 }
 
+#Module      : LAUNCH TEMPLATE
+#Description : Provides an EC2 launch template resource. Can be used to create instances or
+#              auto scaling groups.
 resource "aws_launch_template" "default" {
   count = "${var.enabled == "true" ? 1 : 0}"
 
@@ -18,7 +26,7 @@ resource "aws_launch_template" "default" {
   elastic_gpu_specifications           = ["${var.elastic_gpu_specifications}"]
   image_id                             = "${var.image_id}"
   instance_initiated_shutdown_behavior = "${var.instance_initiated_shutdown_behavior}"
-  instance_market_options              = ["${var.instance_market_options }"]
+  instance_market_options              = ["${var.instance_market_options}"]
   instance_type                        = "${var.instance_type}"
   key_name                             = "${var.key_name}"
   placement                            = ["${var.placement}"]
@@ -32,7 +40,6 @@ resource "aws_launch_template" "default" {
     enabled = "${var.enable_monitoring}"
   }
 
-  # https://github.com/terraform-providers/terraform-provider-aws/issues/4570
   network_interfaces {
     description                 = "${module.label.id}"
     device_index                = 0
@@ -68,6 +75,8 @@ data "null_data_source" "tags_as_list_of_maps" {
   )}"
 }
 
+#Module      : AUTOSCALING GROUP
+#Description : Provides an AutoScaling Group resource.
 resource "aws_autoscaling_group" "default" {
   count = "${var.enabled == "true" ? 1 : 0}"
 

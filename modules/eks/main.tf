@@ -1,12 +1,15 @@
+## Managed By : CloudDrove
+## Copyright @ CloudDrove. All Right Reserved.
+
+#Module      : label
+#Description : Terraform module to create consistent naming for multiple names.
 module "label" {
-  source      = "../../../terraform-lables"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
   delimiter   = "${var.delimiter}"
   attributes  = ["${compact(concat(var.attributes, list("cluster")))}"]
-
-  //enabled    = "${var.enabled}"
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -23,24 +26,32 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+#Module      : IAM ROLE
+#Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = "${var.enabled == "true" ? 1 : 0}"
   name               = "${module.label.id}"
   assume_role_policy = "${join("", data.aws_iam_policy_document.assume_role.*.json)}"
 }
 
+#Module      : IAM ROLE POLICY ATTACHMENT CLUSTER
+#Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
   count      = "${var.enabled == "true" ? 1 : 0}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = "${aws_iam_role.default.name}"
 }
 
+#Module      : IAM ROLE POLICY ATTACHMENT SERVICE
+#Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
   count      = "${var.enabled == "true" ? 1 : 0}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
 
+#Module      : SECURITY GROUP
+#Description : Provides a security group resource.
 resource "aws_security_group" "default" {
   count       = "${var.enabled == "true" ? 1 : 0}"
   name        = "${module.label.id}"
@@ -49,6 +60,9 @@ resource "aws_security_group" "default" {
   tags        = "${module.label.tags}"
 }
 
+#Module      : SECURITY GROUP RULE EGRESS
+#Description : Provides a security group rule resource. Represents a single egress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "egress" {
   count             = "${var.enabled == "true" ? 1 : 0}"
   description       = "Allow all egress traffic"
@@ -60,6 +74,9 @@ resource "aws_security_group_rule" "egress" {
   type              = "egress"
 }
 
+#Module      : SECURITY GROUP RULE INGRESS WORKER
+#Description : Provides a security group rule resource. Represents a single ingress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_workers" {
   count                    = "${var.enabled == "true" ? var.workers_security_group_count : 0}"
   description              = "Allow the cluster to receive communication from the worker nodes"
@@ -71,6 +88,9 @@ resource "aws_security_group_rule" "ingress_workers" {
   type                     = "ingress"
 }
 
+#Module      : SECURITY GROUP RULE INGRESS
+#Description : Provides a security group rule resource. Represents a single ingress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_security_groups" {
   count                    = "${var.enabled == "true" ? length(var.allowed_security_groups) : 0}"
   description              = "Allow inbound traffic from existing Security Groups"
@@ -82,6 +102,9 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   type                     = "ingress"
 }
 
+#Module      : SECURITY GROUP RULE CIDR BLOCK
+#Description : Provides a security group rule resource. Represents a single ingress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
   count             = "${var.enabled == "true" && length(var.allowed_cidr_blocks) > 0 ? 1 : 0}"
   description       = "Allow inbound traffic from CIDR blocks"
@@ -93,6 +116,8 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   type              = "ingress"
 }
 
+#Module      : EKS CLUSTER
+#Description : Manages an EKS Cluster.
 resource "aws_eks_cluster" "default" {
   count                     = "${var.enabled == "true" ? 1 : 0}"
   name                      = "${module.label.id}"

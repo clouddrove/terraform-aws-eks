@@ -1,10 +1,15 @@
+## Managed By : CloudDrove
+## Copyright @ CloudDrove. All Right Reserved.
+
+#Module      : label
+#Description : Terraform module to create consistent naming for multiple names.
 locals {
   tags                          = "${merge(map("kubernetes.io/cluster/${var.cluster_name}", "shared"))}"
   use_existing_instance_profile = "${var.aws_iam_instance_profile_name != "" ? "true" : "false"}"
 }
 
 module "label" {
-  source      = "../../../terraform-lables"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
   name        = "${var.name}"
   application = "${var.application}"
   environment = "${var.environment}"
@@ -28,36 +33,48 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+#Module      : IAM ROLE
+#Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = "${var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0}"
   name               = "${module.label.id}"
   assume_role_policy = "${join("", data.aws_iam_policy_document.assume_role.*.json)}"
 }
 
+#Module      : IAM ROLE POLICY ATTACHMENT NODE
+#Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
   count      = "${var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
 
+#Module      : IAM ROLE POLICY ATTACHMENT CNI
+#Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
   count      = "${var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
 
+#Module      : IAM ROLE POLICY ATTACHMENT EC2 CONTAINER REGISTRY READ ONLY
+#Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
   count      = "${var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
 
+#Module      : IAM INSTANCE PROFILE
+#Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
   count = "${var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0}"
   name  = "${module.label.id}"
   role  = "${join("", aws_iam_role.default.*.name)}"
 }
 
+#Module      : SECURITY GROUP
+#Description : Provides a security group resource.
 resource "aws_security_group" "default" {
   count       = "${var.enabled == "true" ? 1 : 0}"
   name        = "${module.label.id}"
@@ -66,6 +83,9 @@ resource "aws_security_group" "default" {
   tags        = "${module.label.tags}"
 }
 
+#Module      : SECURITY GROUP RULE EGRESS
+#Description : Provides a security group rule resource. Represents a single egress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "egress" {
   count             = "${var.enabled == "true" ? 1 : 0}"
   description       = "Allow all egress traffic"
@@ -77,6 +97,9 @@ resource "aws_security_group_rule" "egress" {
   type              = "egress"
 }
 
+#Module      : SECURITY GROUP RULE INGRESS SELF
+#Description : Provides a security group rule resource. Represents a single ingress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_self" {
   count                    = "${var.enabled == "true" ? 1 : 0}"
   description              = "Allow nodes to communicate with each other"
@@ -88,6 +111,9 @@ resource "aws_security_group_rule" "ingress_self" {
   type                     = "ingress"
 }
 
+#Module      : SECURITY GROUP RULE INGRESS CLUSTER
+#Description : Provides a security group rule resource. Represents a single ingress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cluster" {
   count                    = "${var.enabled == "true" ? 1 : 0}"
   description              = "Allow worker kubelets and pods to receive communication from the cluster control plane"
@@ -99,6 +125,9 @@ resource "aws_security_group_rule" "ingress_cluster" {
   type                     = "ingress"
 }
 
+#Module      : SECURITY GROUP
+#Description : Provides a security group rule resource. Represents a single ingress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_security_groups" {
   count                    = "${var.enabled == "true" ? length(var.allowed_security_groups) : 0}"
   description              = "Allow inbound traffic from existing Security Groups"
@@ -110,6 +139,9 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   type                     = "ingress"
 }
 
+#Module      : SECURITY GROUP RULE CIDR BLOCK
+#Description : Provides a security group rule resource. Represents a single ingress group rule,
+#              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
   count             = "${var.enabled == "true" && length(var.allowed_cidr_blocks) > 0 ? 1 : 0}"
   description       = "Allow inbound traffic from CIDR blocks"
@@ -148,7 +180,7 @@ module "autoscale_group" {
   ebs_optimized                           = "${var.ebs_optimized}"
   elastic_gpu_specifications              = ["${var.elastic_gpu_specifications}"]
   instance_initiated_shutdown_behavior    = "${var.instance_initiated_shutdown_behavior}"
-  instance_market_options                 = ["${var.instance_market_options }"]
+  instance_market_options                 = ["${var.instance_market_options}"]
   key_name                                = "${var.key_name}"
   placement                               = ["${var.placement}"]
   enable_monitoring                       = "${var.enable_monitoring}"
@@ -209,6 +241,6 @@ data "template_file" "config_map_aws_auth" {
   template = "${file("${path.module}/config_map_aws_auth.tpl")}"
 
   vars {
-    aws_iam_role_arn = "${local.use_existing_instance_profile == "true" ?  join("", data.aws_iam_instance_profile.default.*.role_arn) : join("", aws_iam_role.default.*.arn)}"
+    aws_iam_role_arn = "${local.use_existing_instance_profile == "true" ? join("", data.aws_iam_instance_profile.default.*.role_arn) : join("", aws_iam_role.default.*.arn)}"
   }
 }
