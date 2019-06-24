@@ -25,6 +25,7 @@ data "aws_iam_policy_document" "assume_role" {
     }
   }
 }
+
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
@@ -32,6 +33,7 @@ resource "aws_iam_role" "default" {
   name               = "${module.label.id}"
   assume_role_policy = "${join("", data.aws_iam_policy_document.assume_role.*.json)}"
 }
+
 #Module      : IAM ROLE POLICY ATTACHMENT CLUSTER
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
@@ -39,6 +41,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = "${aws_iam_role.default.name}"
 }
+
 #Module      : IAM ROLE POLICY ATTACHMENT SERVICE
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
@@ -46,6 +49,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
+
 #Module      : SECURITY GROUP
 #Description : Provides a security group resource.
 resource "aws_security_group" "default" {
@@ -55,6 +59,7 @@ resource "aws_security_group" "default" {
   vpc_id      = "${var.vpc_id}"
   tags        = "${module.label.tags}"
 }
+
 #Module      : SECURITY GROUP RULE EGRESS
 #Description : Provides a security group rule resource. Represents a single egress group rule,
 #              which can be added to external Security Groups.
@@ -68,6 +73,7 @@ resource "aws_security_group_rule" "egress" {
   security_group_id = "${join("", aws_security_group.default.*.id)}"
   type              = "egress"
 }
+
 #Module      : SECURITY GROUP RULE INGRESS WORKER
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
@@ -81,6 +87,7 @@ resource "aws_security_group_rule" "ingress_workers" {
   security_group_id        = "${join("", aws_security_group.default.*.id)}"
   type                     = "ingress"
 }
+
 #Module      : SECURITY GROUP RULE INGRESS
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.

@@ -12,7 +12,6 @@ module "label" {
   enabled     = "${var.enabled}"
 }
 
-
 #Module      : LAUNCH TEMPLATE
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
@@ -40,7 +39,6 @@ resource "aws_launch_template" "default" {
   monitoring {
     enabled = "${var.enable_monitoring}"
   }
-
 
   network_interfaces {
     description                 = "${module.label.id}"

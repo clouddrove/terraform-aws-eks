@@ -155,6 +155,7 @@ variable "key_name" {
   type    = "string"
   default = ""
 }
+
 variable "vpc_id" {
   type        = "string"
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources"

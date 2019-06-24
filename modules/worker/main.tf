@@ -32,6 +32,7 @@ data "aws_iam_policy_document" "assume_role" {
     }
   }
 }
+
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
@@ -39,6 +40,7 @@ resource "aws_iam_role" "default" {
   name               = "${module.label.id}"
   assume_role_policy = "${join("", data.aws_iam_policy_document.assume_role.*.json)}"
 }
+
 #Module      : IAM ROLE POLICY ATTACHMENT NODE
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
@@ -46,6 +48,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
+
 #Module      : IAM ROLE POLICY ATTACHMENT CNI
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
@@ -53,6 +56,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
+
 #Module      : IAM ROLE POLICY ATTACHMENT EC2 CONTAINER REGISTRY READ ONLY
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
@@ -60,6 +64,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${join("", aws_iam_role.default.*.name)}"
 }
+
 #Module      : IAM INSTANCE PROFILE
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
@@ -67,6 +72,7 @@ resource "aws_iam_instance_profile" "default" {
   name  = "${module.label.id}"
   role  = "${join("", aws_iam_role.default.*.name)}"
 }
+
 #Module      : SECURITY GROUP
 #Description : Provides a security group resource.
 resource "aws_security_group" "default" {
@@ -76,6 +82,7 @@ resource "aws_security_group" "default" {
   vpc_id      = "${var.vpc_id}"
   tags        = "${module.label.tags}"
 }
+
 #Module      : SECURITY GROUP RULE EGRESS
 #Description : Provides a security group rule resource. Represents a single egress group rule,
 #              which can be added to external Security Groups.
@@ -89,6 +96,7 @@ resource "aws_security_group_rule" "egress" {
   security_group_id = "${join("", aws_security_group.default.*.id)}"
   type              = "egress"
 }
+
 #Module      : SECURITY GROUP RULE INGRESS SELF
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
@@ -102,6 +110,7 @@ resource "aws_security_group_rule" "ingress_self" {
   source_security_group_id = "${join("", aws_security_group.default.*.id)}"
   type                     = "ingress"
 }
+
 #Module      : SECURITY GROUP RULE INGRESS CLUSTER
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
@@ -115,6 +124,7 @@ resource "aws_security_group_rule" "ingress_cluster" {
   source_security_group_id = "${var.cluster_security_group_id}"
   type                     = "ingress"
 }
+
 #Module      : SECURITY GROUP
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
@@ -128,6 +138,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   security_group_id        = "${join("", aws_security_group.default.*.id)}"
   type                     = "ingress"
 }
+
 #Module      : SECURITY GROUP RULE CIDR BLOCK
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.

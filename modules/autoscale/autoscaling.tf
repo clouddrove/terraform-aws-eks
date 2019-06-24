@@ -1,7 +1,7 @@
-
 locals {
   autoscaling_enabled = "${var.enabled == "true" && var.autoscaling_policies_enabled == "true" ? true : false}"
 }
+
 #Module      : AUTOSCALING POLICY UP
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_up" {
@@ -13,6 +13,7 @@ resource "aws_autoscaling_policy" "scale_up" {
   cooldown               = "${var.scale_up_cooldown_seconds}"
   autoscaling_group_name = "${join("", aws_autoscaling_group.default.*.name)}"
 }
+
 #Module      : AUTOSCALING POLICY DOWN
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_down" {
@@ -24,6 +25,7 @@ resource "aws_autoscaling_policy" "scale_down" {
   cooldown               = "${var.scale_down_cooldown_seconds}"
   autoscaling_group_name = "${join("", aws_autoscaling_group.default.*.name)}"
 }
+
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
@@ -44,6 +46,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   alarm_description = "Scale up if CPU utilization is above ${var.cpu_utilization_high_threshold_percent} for ${var.cpu_utilization_high_period_seconds} seconds"
   alarm_actions     = ["${join("", aws_autoscaling_policy.scale_up.*.arn)}"]
 }
+
 #Module      : CLOUDWATCH METRIC ALARM CPU LOW
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
