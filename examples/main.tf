@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.11.0"
+  source      = "git::https://github.com/clouddrove/terraform-aws-vpc.git"
   name        = var.name
   application = var.application
   environment = var.environment
@@ -11,17 +11,17 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "../../aws/terraform-aws-subnet"  #using ops3 branch
+  source = "git::https://github.com/clouddrove/terraform-aws-subnets.git"
 
-  name = var.name
+  name        = var.name
   application = var.application
   environment = var.environment
 
-  availability_zones = ["us-east-1b", "us-east-1c"]
-  vpc_id = module.vpc.vpc_id
-  cidr_block = module.vpc.vpc_cidr_block
-  type = "public"
-  igw_id = module.vpc.igw_id
+  availability_zones  = ["us-east-1b", "us-east-1c"]
+  vpc_id              = module.vpc.vpc_id
+  cidr_block          = module.vpc.vpc_cidr_block
+  type                = "public"
+  igw_id              = module.vpc.igw_id
   nat_gateway_enabled = "false"
 }
 
