@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-vpc.git"
+  source      = "../../terraform-aws-vpc"
   name        = var.name
   application = var.application
   environment = var.environment
@@ -11,7 +11,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnets.git"
+  source = "../../terraform-aws-subnet"
 
   name        = var.name
   application = var.application

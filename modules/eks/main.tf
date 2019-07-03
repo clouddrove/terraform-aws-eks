@@ -4,7 +4,7 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "label" {
-  source      = "./../../../aws/terraform-lables"
+  source      = "../../../terraform-lables"
   name        = var.name
   application = var.application
   environment = var.environment

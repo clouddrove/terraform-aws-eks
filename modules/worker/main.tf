@@ -13,22 +13,19 @@ locals {
 }
 
 module "label" {
-  source = "./../../../aws/terraform-lables"
-  name = var.name
+  source      = "../../../terraform-lables"
+  name        = var.name
   application = var.application
   environment = var.environment
-  delimiter = var.delimiter
-  tags = local.tags
-  attributes = compact(concat(var.attributes, [
-    "workers"]))
-  enabled = var.enabled
-  label_order = [
-    "name",
-    "environment"]
+  delimiter   = var.delimiter
+  tags        = local.tags
+  attributes  = compact(concat(var.attributes, ["workers"]))
+  enabled     = var.enabled
+  label_order = ["name", "environment"]
 }
 
 
-  data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "assume_role" {
   count = var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0
 
   statement {
@@ -188,7 +185,6 @@ module "autoscale_group" {
   instance_initiated_shutdown_behavior    = var.instance_initiated_shutdown_behavior
   instance_market_options                 = var.instance_market_options
   key_name                                = var.key_name
-//  placement                               = [var.placement]
   enable_monitoring                       = var.enable_monitoring
   load_balancers                          = var.load_balancers
   health_check_grace_period               = var.health_check_grace_period
@@ -200,7 +196,6 @@ module "autoscale_group" {
   force_delete                            = var.force_delete
   termination_policies                    = var.termination_policies
   suspended_processes                     = var.suspended_processes
-  placement_group                         = var.placement_group
   enabled_metrics                         = var.enabled_metrics
   metrics_granularity                     = var.metrics_granularity
   wait_for_capacity_timeout               = var.wait_for_capacity_timeout

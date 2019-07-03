@@ -113,11 +113,6 @@ variable "instance_market_options" {
   default     = []
 }
 
-variable "placement" {
-  description = "The placement specifications of the instances"
-  type        = list(string)
-  default     = []
-}
 
 variable "credit_specification" {
   description = "Customize the credit specification of the instances"
@@ -194,11 +189,6 @@ variable "suspended_processes" {
   default     = []
 }
 
-variable "placement_group" {
-  type        = string
-  description = "The name of the placement group into which you'll launch your instances, if any"
-  default     = ""
-}
 
 variable "metrics_granularity" {
   type        = string
@@ -235,7 +225,7 @@ variable "min_elb_capacity" {
 
 variable "wait_for_elb_capacity" {
   description = "Setting this will cause Terraform to wait for exactly this number of healthy instances in all attached load balancers on both create and update operations. Takes precedence over `min_elb_capacity` behavior"
-  default     = false
+  default     = 0
 }
 
 variable "protect_from_scale_in" {
