@@ -4,7 +4,7 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "label" {
-  source      = "../terraform-lables"
+  source = "git::https://github.com/clouddrove/terraform-labels.git"
   name        = var.name
   application = var.application
   environment = var.environment
@@ -16,7 +16,7 @@ module "label" {
 
 # This `label` is needed to prevent `count can't be computed` errors
 module "cluster_label" {
-  source      = "../terraform-lables"
+  source = "git::https://github.com/clouddrove/terraform-labels.git"
   name        = var.name
   application = var.application
   environment = var.environment

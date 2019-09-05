@@ -6,7 +6,7 @@ locals {
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_up" {
   count                  = local.autoscaling_enabled ? 1 : 0
-  name                   = "${module.label.id}${var.delimiter}scale${var.delimiter}up"
+  name                   = "${module.labels.id}${var.delimiter}scale${var.delimiter}up"
   scaling_adjustment     = var.scale_up_scaling_adjustment
   adjustment_type        = var.scale_up_adjustment_type
   policy_type            = var.scale_up_policy_type
@@ -18,7 +18,7 @@ resource "aws_autoscaling_policy" "scale_up" {
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_down" {
   count                  = local.autoscaling_enabled ? 1 : 0
-  name                   = "${module.label.id}${var.delimiter}scale${var.delimiter}down"
+  name                   = "${module.labels.id}${var.delimiter}scale${var.delimiter}down"
   scaling_adjustment     = var.scale_down_scaling_adjustment
   adjustment_type        = var.scale_down_adjustment_type
   policy_type            = var.scale_down_policy_type
@@ -30,7 +30,7 @@ resource "aws_autoscaling_policy" "scale_down" {
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   count               = local.autoscaling_enabled ? 1 : 0
-  alarm_name          = "${module.label.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}high"
+  alarm_name          = "${module.labels.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_high_evaluation_periods
   metric_name         = "CPUUtilization"
@@ -51,7 +51,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   count               = local.autoscaling_enabled ? 1 : 0
-  alarm_name          = "${module.label.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}low"
+  alarm_name          = "${module.labels.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_low_evaluation_periods
   metric_name         = "CPUUtilization"

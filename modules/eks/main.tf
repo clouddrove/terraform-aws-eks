@@ -3,8 +3,9 @@
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
-module "label" {
-  source      = "../../../terraform-lables"
+module "labels" {
+  source = "git::https://github.com/clouddrove/terraform-labels.git"
+
   name        = var.name
   application = var.application
   environment = var.environment
@@ -12,6 +13,7 @@ module "label" {
   attributes  = compact(concat(var.attributes, ["cluster"]))
   label_order = ["name", "environment"]
 }
+
 data "aws_iam_policy_document" "assume_role" {
   count = var.enabled == "true" ? 1 : 0
 
@@ -30,7 +32,7 @@ data "aws_iam_policy_document" "assume_role" {
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = var.enabled == "true" ? 1 : 0
-  name               = module.label.id
+  name               = module.labels.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
 }
 
@@ -54,10 +56,10 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
 #Description : Provides a security group resource.
 resource "aws_security_group" "default" {
   count       = var.enabled == "true" ? 1 : 0
-  name        = module.label.id
+  name        = module.labels.id
   description = "Security Group for EKS cluster"
   vpc_id      = var.vpc_id
-  tags        = module.label.tags
+  tags        = module.labels.tags
 }
 
 #Module      : SECURITY GROUP RULE EGRESS
@@ -120,7 +122,7 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 #Description : Manages an EKS Cluster.
 resource "aws_eks_cluster" "default" {
   count                     = var.enabled == "true" ? 1 : 0
-  name                      = module.label.id
+  name                      = module.labels.id
   role_arn                  = join("", aws_iam_role.default.*.arn)
   version                   = var.kubernetes_version
   enabled_cluster_log_types = var.enabled_cluster_log_types
@@ -161,7 +163,7 @@ data "template_file" "kubeconfig" {
   vars = {
     server                     = join("", aws_eks_cluster.default.*.endpoint)
     certificate_authority_data = local.certificate_authority_data
-    cluster_name               = module.label.id
+    cluster_name               = module.labels.id
   }
 }
 

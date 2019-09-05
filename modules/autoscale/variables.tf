@@ -33,6 +33,12 @@ variable "tags" {
   description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)"
 }
 
+variable "label_order" {
+  type        = list
+  default     = []
+  description = "Label order, e.g. `name`,`application`."
+}
+
 variable "enabled" {
   type        = string
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources"

@@ -3,8 +3,9 @@
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
-module "label" {
-  source      = "../../../terraform-lables"
+module "labels" {
+  source = "git::https://github.com/clouddrove/terraform-labels.git"
+
   name        = var.name
   application = var.application
   environment = var.environment
@@ -20,7 +21,7 @@ module "label" {
 resource "aws_launch_template" "default" {
   count = var.enabled == "true" ? 1 : 0
 
-  name_prefix = format("%s%s", module.label.id, var.delimiter)
+  name_prefix = format("%s%s", module.labels.id, var.delimiter)
   block_device_mappings {
     device_name = "/dev/sda1"
     ebs {
@@ -42,7 +43,7 @@ resource "aws_launch_template" "default" {
   }
 
   network_interfaces {
-    description                 = module.label.id
+    description                 = module.labels.id
     device_index                = 0
     associate_public_ip_address = var.associate_public_ip_address
     delete_on_termination       = true
@@ -51,15 +52,15 @@ resource "aws_launch_template" "default" {
 
   tag_specifications {
     resource_type = "volume"
-    tags          = module.label.tags
+    tags          = module.labels.tags
   }
 
   tag_specifications {
     resource_type = "instance"
-    tags          = module.label.tags
+    tags          = module.labels.tags
   }
 
-  tags = module.label.tags
+  tags = module.labels.tags
 
   lifecycle {
     create_before_destroy = true
@@ -81,7 +82,7 @@ data "null_data_source" "tags_as_list_of_maps" {
 resource "aws_autoscaling_group" "default" {
   count = var.enabled == "true" ? 1 : 0
 
-  name_prefix               = format("%s%s", module.label.id, var.delimiter)
+  name_prefix               = format("%s%s", module.labels.id, var.delimiter)
   vpc_zone_identifier       = var.subnet_ids
   max_size                  = var.max_size
   min_size                  = var.min_size

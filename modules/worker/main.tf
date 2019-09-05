@@ -12,8 +12,10 @@ locals {
   use_existing_instance_profile = var.aws_iam_instance_profile_name != "" ? "true" : "false"
 }
 
-module "label" {
-  source      = "../../../terraform-lables"
+#Module      : label
+#Description : Terraform module to create consistent naming for multiple names.
+module "labels" {
+  source = "git::https://github.com/clouddrove/terraform-labels.git"
   name        = var.name
   application = var.application
   environment = var.environment
@@ -23,7 +25,6 @@ module "label" {
   enabled     = var.enabled
   label_order = ["name", "environment"]
 }
-
 
 data "aws_iam_policy_document" "assume_role" {
   count = var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0
@@ -43,7 +44,7 @@ data "aws_iam_policy_document" "assume_role" {
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0
-  name               = module.label.id
+  name               = module.labels.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
 }
 
@@ -75,7 +76,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
   count = var.enabled == "true" && local.use_existing_instance_profile == "false" ? 1 : 0
-  name  = module.label.id
+  name  = module.labels.id
   role  = join("", aws_iam_role.default.*.name)
 }
 
@@ -83,10 +84,10 @@ resource "aws_iam_instance_profile" "default" {
 #Description : Provides a security group resource.
 resource "aws_security_group" "default" {
   count       = var.enabled == "true" ? 1 : 0
-  name        = module.label.id
+  name        = module.labels.id
   description = "Security Group for EKS worker nodes"
   vpc_id      = var.vpc_id
-  tags        = module.label.tags
+  tags        = module.labels.tags
 }
 
 #Module      : SECURITY GROUP RULE EGRESS
@@ -173,7 +174,7 @@ module "autoscale_group" {
   iam_instance_profile_name = local.use_existing_instance_profile == "false" ? join("", aws_iam_instance_profile.default.*.name) : var.aws_iam_instance_profile_name
   security_group_ids        = [join("", aws_security_group.default.*.id)]
   user_data_base64          = base64encode(join("", data.template_file.userdata.*.rendered))
-  tags                      = module.label.tags
+  tags                      = module.labels.tags
 
   instance_type                           = var.instance_type
   subnet_ids                              = var.subnet_ids
