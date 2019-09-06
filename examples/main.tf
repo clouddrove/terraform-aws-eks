@@ -47,7 +47,7 @@ module "eks-cluster" {
   ## Ec2
   key_name                    = "test"
   image_id                    = "ami-0200e65a38edfb7e1"
-  instance_type               = "t2.small"
+  instance_type               = "m5.large"
   max_size                    = "3"
   min_size                    = "1"
   associate_public_ip_address = "true"
