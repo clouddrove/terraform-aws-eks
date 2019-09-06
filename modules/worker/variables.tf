@@ -36,7 +36,7 @@ variable "tags" {
 variable "enabled" {
   type        = string
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources"
-  default     = "true"
+  default     = true
 }
 
 variable "cluster_name" {
@@ -91,7 +91,7 @@ variable "image_id" {
 variable "use_custom_image_id" {
   type        = string
   description = "If set to `true`, will use variable `image_id` to run EKS workers inside autoscaling group"
-  default     = "false"
+  default     = false
 }
 
 variable "eks_worker_ami_name_filter" {
@@ -277,7 +277,7 @@ variable "service_linked_role_arn" {
 
 variable "autoscaling_policies_enabled" {
   type        = string
-  default     = "true"
+  default     = true
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling"
 }
 

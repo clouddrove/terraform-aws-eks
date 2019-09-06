@@ -3,8 +3,8 @@
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
-module "label" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git"
+module "labels" {
+  source      = "git::https://github.com/clouddrove/terraform-labels.git"
   name        = var.name
   application = var.application
   environment = var.environment
@@ -15,7 +15,7 @@ module "label" {
 }
 
 # This `label` is needed to prevent `count can't be computed` errors
-module "cluster_label" {
+module "cluster_labels" {
   source = "git::https://github.com/clouddrove/terraform-labels.git"
   name        = var.name
   application = var.application
@@ -29,7 +29,7 @@ locals {
   tags = merge(
     var.tags,
     {
-      "kubernetes.io/cluster/${module.label.id}" = "shared"
+      "kubernetes.io/cluster/${module.labels.id}" = "shared"
     }
   )
 }
@@ -52,7 +52,7 @@ module "eks_cluster" {
   enabled                      = var.enabled
 }
 
-#Module      : EKS CLUSTER
+#Module      : EKS Worker
 #Description : Manages an EKS Autoscaling.
 module "eks_workers" {
   source                                 = "./modules/worker"
@@ -70,7 +70,7 @@ module "eks_workers" {
   max_size                               = var.max_size
   wait_for_capacity_timeout              = var.wait_for_capacity_timeout
   associate_public_ip_address            = var.associate_public_ip_address
-  cluster_name                           = module.cluster_label.id
+  cluster_name                           = module.cluster_labels.id
   cluster_endpoint                       = module.eks_cluster.eks_cluster_endpoint
   cluster_certificate_authority_data     = module.eks_cluster.eks_cluster_certificate_authority_data
   cluster_security_group_id              = module.eks_cluster.security_group_id

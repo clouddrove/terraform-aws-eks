@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "eu-west-1"
 }
 
 module "vpc" {
@@ -21,7 +21,7 @@ module "subnets" {
   environment = "test"
   label_order = ["environment", "name", "application"]
 
-  availability_zones = ["us-east-1b", "us-east-1c"]
+  availability_zones = ["eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "public"
@@ -37,7 +37,7 @@ module "eks-cluster" {
   name        = "eks"
   application = "clouddrove"
   environment = "test"
-  enabled     = "true"
+  enabled     = true
 
   ## Network
   vpc_cidr_block                  = "10.0.0.0/16"
@@ -50,12 +50,12 @@ module "eks-cluster" {
   instance_type               = "m5.large"
   max_size                    = "3"
   min_size                    = "1"
-  associate_public_ip_address = "true"
-  availability_zones          = ["us-east-1a", "us-east-1b"]
+  associate_public_ip_address = true
+  availability_zones          = ["eu-west-1a", "eu-west-1b"]
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
-  apply_config_map_aws_auth = "true"
+  apply_config_map_aws_auth = true
 
   ## Health Checks
   cpu_utilization_high_threshold_percent = "80"

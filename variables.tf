@@ -37,7 +37,7 @@ variable "tags" {
 variable "enabled" {
   type        = string
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources"
-  default     = "true"
+  default     = true
 }
 
 variable "allowed_security_groups_cluster" {
@@ -123,7 +123,7 @@ variable "associate_public_ip_address" {
 
 variable "autoscaling_policies_enabled" {
   type        = string
-  default     = "true"
+  default     = true
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling"
 }
 
@@ -147,7 +147,7 @@ variable "availability_zones" {
 
 variable "apply_config_map_aws_auth" {
   type        = string
-  default     = "true"
+  default     = true
   description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster"
 }
 

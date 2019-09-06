@@ -118,3 +118,8 @@ output "workers_security_group_name" {
   value       = module.eks_workers.security_group_name
 }
 
+
+output "tags" {
+  value       = module.labels.tags
+  description = "A mapping of tags to assign to the resource."
+}
