@@ -3,62 +3,64 @@
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
-module "label" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.11.0"
-  name        = "${var.name}"
-  application = "${var.application}"
-  environment = "${var.environment}"
-  tags        = "${var.tags}"
-  enabled     = "${var.enabled}"
+module "labels" {
+  source = "git::https://github.com/clouddrove/terraform-labels.git"
+
+  name        = var.name
+  application = var.application
+  environment = var.environment
+  tags        = var.tags
+  enabled     = var.enabled
+  label_order = ["name", "environment"]
 }
+
 
 #Module      : LAUNCH TEMPLATE
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
 resource "aws_launch_template" "default" {
-  count = "${var.enabled == "true" ? 1 : 0}"
+  count = var.enabled == "true" ? 1 : 0
 
-  name_prefix                          = "${format("%s%s", module.label.id, var.delimiter)}"
-  block_device_mappings                = ["${var.block_device_mappings}"]
-  credit_specification                 = ["${var.credit_specification}"]
-  disable_api_termination              = "${var.disable_api_termination}"
-  ebs_optimized                        = "${var.ebs_optimized}"
-  elastic_gpu_specifications           = ["${var.elastic_gpu_specifications}"]
-  image_id                             = "${var.image_id}"
-  instance_initiated_shutdown_behavior = "${var.instance_initiated_shutdown_behavior}"
-  instance_market_options              = ["${var.instance_market_options}"]
-  instance_type                        = "${var.instance_type}"
-  key_name                             = "${var.key_name}"
-  placement                            = ["${var.placement}"]
-  user_data                            = "${var.user_data_base64}"
+  name_prefix = format("%s%s", module.labels.id, var.delimiter)
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_size = 20
+    }
+  }
+  image_id                             = var.image_id
+  instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
+  instance_type = var.instance_type
+  key_name      = var.key_name
+  user_data = var.user_data_base64
 
   iam_instance_profile {
-    name = "${var.iam_instance_profile_name}"
+    name = var.iam_instance_profile_name
   }
 
   monitoring {
-    enabled = "${var.enable_monitoring}"
+    enabled = var.enable_monitoring
   }
 
   network_interfaces {
-    description                 = "${module.label.id}"
+    description                 = module.labels.id
     device_index                = 0
-    associate_public_ip_address = "${var.associate_public_ip_address}"
+    associate_public_ip_address = var.associate_public_ip_address
     delete_on_termination       = true
-    security_groups             = ["${var.security_group_ids}"]
+    security_groups             = var.security_group_ids
   }
 
   tag_specifications {
     resource_type = "volume"
-    tags          = "${module.label.tags}"
+    tags          = module.labels.tags
   }
 
   tag_specifications {
     resource_type = "instance"
-    tags          = "${module.label.tags}"
+    tags          = module.labels.tags
   }
 
-  tags = "${module.label.tags}"
+  tags = module.labels.tags
 
   lifecycle {
     create_before_destroy = true
@@ -66,49 +68,48 @@ resource "aws_launch_template" "default" {
 }
 
 data "null_data_source" "tags_as_list_of_maps" {
-  count = "${var.enabled == "true" ? length(keys(var.tags)) : 0}"
+  count = var.enabled == "true" ? length(keys(var.tags)) : 0
 
-  inputs = "${map(
-    "key", "${element(keys(var.tags), count.index)}",
-    "value", "${element(values(var.tags), count.index)}",
-    "propagate_at_launch", true
-  )}"
+  inputs = {
+    "key"                 = element(keys(var.tags), count.index)
+    "value"               = element(values(var.tags), count.index)
+    "propagate_at_launch" = true
+  }
 }
 
 #Module      : AUTOSCALING GROUP
 #Description : Provides an AutoScaling Group resource.
 resource "aws_autoscaling_group" "default" {
-  count = "${var.enabled == "true" ? 1 : 0}"
+  count = var.enabled == "true" ? 1 : 0
 
-  name_prefix               = "${format("%s%s", module.label.id, var.delimiter)}"
-  vpc_zone_identifier       = ["${var.subnet_ids}"]
-  max_size                  = "${var.max_size}"
-  min_size                  = "${var.min_size}"
-  load_balancers            = ["${var.load_balancers}"]
-  health_check_grace_period = "${var.health_check_grace_period}"
-  health_check_type         = "${var.health_check_type}"
-  min_elb_capacity          = "${var.min_elb_capacity}"
-  wait_for_elb_capacity     = "${var.wait_for_elb_capacity}"
-  target_group_arns         = ["${var.target_group_arns}"]
-  default_cooldown          = "${var.default_cooldown}"
-  force_delete              = "${var.force_delete}"
-  termination_policies      = "${var.termination_policies}"
-  suspended_processes       = "${var.suspended_processes}"
-  placement_group           = "${var.placement_group}"
-  enabled_metrics           = ["${var.enabled_metrics}"]
-  metrics_granularity       = "${var.metrics_granularity}"
-  wait_for_capacity_timeout = "${var.wait_for_capacity_timeout}"
-  protect_from_scale_in     = "${var.protect_from_scale_in}"
-  service_linked_role_arn   = "${var.service_linked_role_arn}"
+  name_prefix               = format("%s%s", module.labels.id, var.delimiter)
+  vpc_zone_identifier       = var.subnet_ids
+  max_size                  = var.max_size
+  min_size                  = var.min_size
+  load_balancers            = var.load_balancers
+  health_check_grace_period = var.health_check_grace_period
+  health_check_type         = var.health_check_type
+  min_elb_capacity          = var.min_elb_capacity
+  target_group_arns         = var.target_group_arns
+  default_cooldown          = var.default_cooldown
+  force_delete              = var.force_delete
+  termination_policies      = var.termination_policies
+  suspended_processes       = var.suspended_processes
+  enabled_metrics           = var.enabled_metrics
+  metrics_granularity       = var.metrics_granularity
+  wait_for_capacity_timeout = var.wait_for_capacity_timeout
+  protect_from_scale_in     = var.protect_from_scale_in
+  service_linked_role_arn   = var.service_linked_role_arn
 
-  launch_template = {
-    id      = "${join("", aws_launch_template.default.*.id)}"
-    version = "${aws_launch_template.default.latest_version}"
+  launch_template {
+    id      = join("", aws_launch_template.default.*.id)
+    version = aws_launch_template.default[0].latest_version
   }
 
-  tags = ["${data.null_data_source.tags_as_list_of_maps.*.outputs}"]
+  tags = data.null_data_source.tags_as_list_of_maps.*.outputs
 
   lifecycle {
     create_before_destroy = true
   }
 }
+
