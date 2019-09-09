@@ -26,10 +26,10 @@ func Test(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 
 	// To get the value of an output variable, run 'terraform output'
-	s3BucketId := strings.Join(terraform.OutputList(t, terraformOptions, "id")," ")
+	Arn := strings.Join(terraform.OutputList(t, terraformOptions, "arn")," ")
 	Tags := terraform.OutputMap(t, terraformOptions, "tags")
 
 	// Verify we're getting back the outputs we expect
-	assert.Equal(t, "test-redis-cd", s3BucketId)
-	assert.Equal(t, "test-redis-cd", Tags["Name"])
+	assert.Contains(t, Arn, "arn:aws:eks")
+	assert.Equal(t, "test-eks-clouddrove", Tags["Name"])
 }

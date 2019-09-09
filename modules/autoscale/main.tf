@@ -19,7 +19,7 @@ module "labels" {
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
 resource "aws_launch_template" "default" {
-  count = var.enabled == "true" ? 1 : 0
+  count = var.enabled ? 1 : 0
 
   name_prefix = format("%s%s", module.labels.id, var.delimiter)
   block_device_mappings {
@@ -68,7 +68,7 @@ resource "aws_launch_template" "default" {
 }
 
 data "null_data_source" "tags_as_list_of_maps" {
-  count = var.enabled == "true" ? length(keys(var.tags)) : 0
+  count = var.enabled ? length(keys(var.tags)) : 0
 
   inputs = {
     "key"                 = element(keys(var.tags), count.index)
@@ -80,7 +80,7 @@ data "null_data_source" "tags_as_list_of_maps" {
 #Module      : AUTOSCALING GROUP
 #Description : Provides an AutoScaling Group resource.
 resource "aws_autoscaling_group" "default" {
-  count = var.enabled == "true" ? 1 : 0
+  count = var.enabled ? 1 : 0
 
   name_prefix               = format("%s%s", module.labels.id, var.delimiter)
   vpc_zone_identifier       = var.subnet_ids

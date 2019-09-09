@@ -15,7 +15,7 @@ module "labels" {
 }
 
 data "aws_iam_policy_document" "assume_role" {
-  count = var.enabled == "true" ? 1 : 0
+  count = var.enabled ? 1 : 0
 
   statement {
     effect  = "Allow"
@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "assume_role" {
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
-  count              = var.enabled == "true" ? 1 : 0
+  count              = var.enabled ? 1 : 0
   name               = module.labels.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
 }
@@ -39,7 +39,7 @@ resource "aws_iam_role" "default" {
 #Module      : IAM ROLE POLICY ATTACHMENT CLUSTER
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
-  count      = var.enabled == "true" ? 1 : 0
+  count      = var.enabled ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.default[0].name
 }
@@ -47,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
 #Module      : IAM ROLE POLICY ATTACHMENT SERVICE
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
-  count      = var.enabled == "true" ? 1 : 0
+  count      = var.enabled ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = join("", aws_iam_role.default.*.name)
 }
@@ -55,7 +55,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
 #Module      : SECURITY GROUP
 #Description : Provides a security group resource.
 resource "aws_security_group" "default" {
-  count       = var.enabled == "true" ? 1 : 0
+  count       = var.enabled ? 1 : 0
   name        = module.labels.id
   description = "Security Group for EKS cluster"
   vpc_id      = var.vpc_id
@@ -66,7 +66,7 @@ resource "aws_security_group" "default" {
 #Description : Provides a security group rule resource. Represents a single egress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "egress" {
-  count             = var.enabled == "true" ? 1 : 0
+  count             = var.enabled ? 1 : 0
   description       = "Allow all egress traffic"
   from_port         = 0
   to_port           = 0
@@ -80,7 +80,7 @@ resource "aws_security_group_rule" "egress" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_workers" {
-  count                    = var.enabled == "true" ? var.workers_security_group_count : 0
+  count                    = var.enabled ? var.workers_security_group_count : 0
   description              = "Allow the cluster to receive communication from the worker nodes"
   from_port                = 0
   to_port                  = 65535
@@ -94,7 +94,7 @@ resource "aws_security_group_rule" "ingress_workers" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_security_groups" {
-  count                    = var.enabled == "true" ? length(var.allowed_security_groups) : 0
+  count                    = var.enabled ? length(var.allowed_security_groups) : 0
   description              = "Allow inbound traffic from existing Security Groups"
   from_port                = 0
   to_port                  = 65535
@@ -108,7 +108,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
-  count             = var.enabled == "true" && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
+  count             = var.enabled && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
   description       = "Allow inbound traffic from CIDR blocks"
   from_port         = 0
   to_port           = 65535
@@ -121,7 +121,7 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
 resource "aws_eks_cluster" "default" {
-  count                     = var.enabled == "true" ? 1 : 0
+  count                     = var.enabled ? 1 : 0
   name                      = module.labels.id
   role_arn                  = join("", aws_iam_role.default.*.arn)
   version                   = var.kubernetes_version
@@ -157,7 +157,7 @@ locals {
 }
 
 data "template_file" "kubeconfig" {
-  count    = var.enabled == "true" ? 1 : 0
+  count    = var.enabled ? 1 : 0
   template = file("${path.module}/kubeconfig.tpl")
 
   vars = {

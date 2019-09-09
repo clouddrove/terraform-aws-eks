@@ -85,8 +85,8 @@ variable "allowed_cidr_blocks" {
 
 variable "instance_initiated_shutdown_behavior" {
   type        = string
-  description = "Shutdown behavior for the instances. Can be `stop` or `terminate`"
-  default     = "terminate."
+  default     = "terminate"
+  description = "Shutdown behavior for the instances. Can be `stop` or `terminate`."
 }
 
 variable "image_id" {

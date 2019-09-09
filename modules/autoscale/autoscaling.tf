@@ -1,5 +1,5 @@
 locals {
-  autoscaling_enabled = var.enabled == "true" && var.autoscaling_policies_enabled == "true" ? true : false
+  autoscaling_enabled = var.enabled && var.autoscaling_policies_enabled ? true : false
 }
 
 #Module      : AUTOSCALING POLICY UP
