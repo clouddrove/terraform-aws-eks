@@ -1,19 +1,21 @@
+#Module      : LABEL
+#Description : Terraform label module variables.
+variable "name" {
+  type        = string
+  default     = ""
+  description = "Name  (e.g. `app` or `cluster`)."
+}
+
 variable "application" {
   type        = string
-  default     = "uplift"
+  default     = ""
   description = "Application (e.g. `cd` or `clouddrove`)."
 }
 
 variable "environment" {
   type        = string
-  default     = "qa"
+  default     = ""
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
-}
-
-variable "name" {
-  type        = string
-  default     = "uplift"
-  description = "Name  (e.g. `app` or `cluster`)."
 }
 
 variable "label_order" {
@@ -22,22 +24,22 @@ variable "label_order" {
   description = "Label order, e.g. `name`,`application`."
 }
 
-variable "delimiter" {
-  type        = string
-  default     = "-"
-  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
-}
-
 variable "attributes" {
-  type        = list(string)
+  type        = list
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
-  type        = map(string)
+  type        = map
   default     = {}
-  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)."
+  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
+}
+
+variable "delimiter" {
+  type        = string
+  default     = "-"
+  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
 }
 
 variable "enabled" {
@@ -81,12 +83,6 @@ variable "security_group_ids" {
   description = "A list of associated security group IDs."
 }
 
-variable "launch_template_version" {
-  type        = string
-  default     = "$Latest"
-  description = "Launch template version. Can be version number, `$Latest` or `$Default`."
-}
-
 variable "associate_public_ip_address" {
   type        = bool
   default     = false
@@ -105,41 +101,10 @@ variable "enable_monitoring" {
   description = "Enable/disable detailed monitoring."
 }
 
-variable "ebs_optimized" {
-  type        = bool
-  default     = false
-  description = "If true, the launched EC2 instance will be EBS-optimized."
-}
-
 variable "block_device_mappings" {
   type        = list(string)
   default     = []
   description = "Specify volumes to attach to the instance besides the volumes specified by the AMI."
-}
-
-variable "instance_market_options" {
-  type        = list(string)
-  default     = []
-  description = "The market (purchasing) option for the instances."
-}
-
-
-variable "credit_specification" {
-  type        = list(string)
-  default     = []
-  description = "Customize the credit specification of the instances."
-}
-
-variable "elastic_gpu_specifications" {
-  type        = list(string)
-  default     = []
-  description = "Specifications of Elastic GPU to attach to the instances."
-}
-
-variable "disable_api_termination" {  
-  type        = bool
-  default     = false
-  description = "If `true`, enables EC2 Instance Termination Protection."
 }
 
 variable "max_size" {
@@ -213,7 +178,7 @@ variable "metrics_granularity" {
 }
 
 variable "enabled_metrics" {
-  type        = list(string)
+  type = list(string)
 
   default = [
     "GroupMinSize",
@@ -238,12 +203,6 @@ variable "min_elb_capacity" {
   type        = number
   default     = 0
   description = "Setting this causes Terraform to wait for this number of instances to show up healthy in the ELB only on creation. Updates will not wait on ELB instance number changes."
-}
-
-variable "wait_for_elb_capacity" {
-  type        = number
-  default     = 0
-  description = "Setting this will cause Terraform to wait for exactly this number of healthy instances in all attached load balancers on both create and update operations. Takes precedence over `min_elb_capacity` behavior."
 }
 
 variable "protect_from_scale_in" {

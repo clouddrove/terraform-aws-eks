@@ -1,5 +1,5 @@
 output "arn" {
-  value       = module.eks-cluster.eks_cluster_arn
+  value       = module.eks-cluster.*.eks_cluster_arn
   description = "The ARN of the certificate"
 }
 

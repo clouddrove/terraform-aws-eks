@@ -4,14 +4,14 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git"
+  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
 
   name        = var.name
   application = var.application
   environment = var.environment
   tags        = var.tags
   enabled     = var.enabled
-  label_order = ["name", "environment"]
+  label_order = ["environment", "name", "application"]
 }
 
 
@@ -30,9 +30,9 @@ resource "aws_launch_template" "default" {
   }
   image_id                             = var.image_id
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
-  instance_type = var.instance_type
-  key_name      = var.key_name
-  user_data = var.user_data_base64
+  instance_type                        = var.instance_type
+  key_name                             = var.key_name
+  user_data                            = var.user_data_base64
 
   iam_instance_profile {
     name = var.iam_instance_profile_name
@@ -112,4 +112,3 @@ resource "aws_autoscaling_group" "default" {
     create_before_destroy = true
   }
 }
-

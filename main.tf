@@ -4,27 +4,26 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
   name        = var.name
   application = var.application
   environment = var.environment
   enabled     = var.enabled
-  label_order = ["name", "environment"]
-
+  label_order = ["environment", "name", "application"]
 
 }
 
 # This `label` is needed to prevent `count can't be computed` errors
 module "cluster_labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
   name        = var.name
   application = var.application
   environment = var.environment
   attributes  = compact(concat(var.attributes, ["cluster"]))
   enabled     = var.enabled
-  label_order = ["name", "environment"]
-
+  label_order = ["environment", "name", "application"]
 }
+
 locals {
   tags = merge(
     var.tags,
@@ -33,7 +32,6 @@ locals {
     }
   )
 }
-
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
 module "eks_cluster" {

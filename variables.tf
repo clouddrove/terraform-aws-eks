@@ -1,19 +1,21 @@
+#Module      : LABEL
+#Description : Terraform label module variables.
+variable "name" {
+  type        = string
+  default     = ""
+  description = "Name  (e.g. `app` or `cluster`)."
+}
+
 variable "application" {
   type        = string
-  default     = "uplift"
+  default     = ""
   description = "Application (e.g. `cd` or `clouddrove`)."
 }
 
 variable "environment" {
   type        = string
-  default     = "qa"
+  default     = ""
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
-}
-
-variable "name" {
-  type        = string
-  default     = "uplift"
-  description = "Name  (e.g. `app` or `cluster`)."
 }
 
 variable "label_order" {
@@ -22,22 +24,22 @@ variable "label_order" {
   description = "Label order, e.g. `name`,`application`."
 }
 
-variable "delimiter" {
-  type        = string
-  default     = "-"
-  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
-}
-
 variable "attributes" {
-  type        = list(string)
+  type        = list
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
-  type        = map(string)
+  type        = map
   default     = {}
-  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)."
+  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
+}
+
+variable "delimiter" {
+  type        = string
+  default     = "-"
+  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
 }
 
 variable "enabled" {
@@ -70,28 +72,10 @@ variable "allowed_cidr_blocks_workers" {
   description = "List of CIDR blocks to be allowed to connect to the worker nodes."
 }
 
-variable "region" {
-  type        = string
-  default     = "us-east-1"
-  description = "AWS Region."
-}
-
-variable "vpc_cidr_block" {
-  type        = string
-  default     = "172.30.0.0/16"
-  description = "VPC CIDR block. See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html for more details."
-}
-
 variable "image_id" {
   type        = string
-  default     = "ami-0abcb9f9190e867ab"
+  default     = ""
   description = "EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images."
-}
-
-variable "eks_worker_ami_name_filter" {
-  type        = string
-  default     = "amazon-eks-node-v*"
-  description = "AMI name filter to lookup the most recent EKS AMI if `image_id` is not provided."
 }
 
 variable "instance_type" {
@@ -146,21 +130,9 @@ variable "cpu_utilization_low_threshold_percent" {
   description = "Worker nodes AutoScaling Group CPU utilization low threshold percent."
 }
 
-variable "availability_zones" {
-  type        = list(string)
-  default     = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
-  description = "Availability Zones for the cluster."
-}
-
-variable "apply_config_map_aws_auth" {
-  type        = bool
-  default     = true
-  description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster."
-}
-
 variable "key_name" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "SSH key name that should be used for the instance."
 }
 
@@ -174,4 +146,10 @@ variable "subnet_ids" {
   type        = list(string)
   default     = []
   description = "A list of subnet IDs to launch resources in."
+}
+
+variable "apply_config_map_aws_auth" {
+  type        = bool
+  default     = true
+  description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster"
 }

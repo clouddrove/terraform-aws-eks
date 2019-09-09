@@ -1,19 +1,21 @@
+#Module      : LABEL
+#Description : Terraform label module variables.
+variable "name" {
+  type        = string
+  default     = ""
+  description = "Name  (e.g. `app` or `cluster`)."
+}
+
 variable "application" {
   type        = string
-  default     = "uplift"
+  default     = ""
   description = "Application (e.g. `cd` or `clouddrove`)."
 }
 
 variable "environment" {
   type        = string
-  default     = "qa"
+  default     = ""
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
-}
-
-variable "name" {
-  type        = string
-  default     = "uplift"
-  description = "Name  (e.g. `app` or `cluster`)."
 }
 
 variable "label_order" {
@@ -22,22 +24,22 @@ variable "label_order" {
   description = "Label order, e.g. `name`,`application`."
 }
 
-variable "delimiter" {
-  type        = string
-  default     = "-"
-  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
-}
-
 variable "attributes" {
-  type        = list(string)
+  type        = list
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
-  type        = map(string)
+  type        = map
   default     = {}
-  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)."
+  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
+}
+
+variable "delimiter" {
+  type        = string
+  default     = "-"
+  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
 }
 
 variable "enabled" {
@@ -95,24 +97,6 @@ variable "image_id" {
   description = "EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images."
 }
 
-variable "use_custom_image_id" {
-  type        = bool
-  default     = false
-  description = "If set to `true`, will use variable `image_id` to run EKS workers inside autoscaling group."
-}
-
-variable "eks_worker_ami_name_filter" {
-  type        = string
-  default     = "amazon-eks-node-*"
-  description = "AMI name filter to lookup the most recent EKS AMI if `image_id` is not provided."
-}
-
-variable "eks_worker_ami_name_regex" {
-  type        = string
-  default     = "^amazon-eks-node-[1-9,\\.]+-v\\d{8}$"
-  description = "A regex string to apply to the AMI list returned by AWS."
-}
-
 variable "instance_type" {
   type        = string
   description = "Instance type to launch."
@@ -142,30 +126,11 @@ variable "ebs_optimized" {
   description = "If true, the launched EC2 instance will be EBS-optimized."
 }
 
-variable "block_device_mappings" {
-  type        = list(string)
-  default     = []
-  description = "Specify volumes to attach to the instance besides the volumes specified by the AMI."
-}
-
 variable "instance_market_options" {
   type        = list(string)
   default     = []
   description = "The market (purchasing) option for the instances."
 }
-
-variable "placement" {
-  type        = list(string)
-  default     = []
-  description = "The placement specifications of the instances."
-}
-
-variable "credit_specification" {
-  type        = list(string)
-  default     = []
-  description = "Customize the credit specification of the instances."
-}
-
 
 variable "disable_api_termination" {
   type        = bool
@@ -236,12 +201,6 @@ variable "suspended_processes" {
   description = "A list of processes to suspend for the AutoScaling Group. The allowed values are `Launch`, `Terminate`, `HealthCheck`, `ReplaceUnhealthy`, `AZRebalance`, `AlarmNotification`, `ScheduledActions`, `AddToLoadBalancer`. Note that if you suspend either the `Launch` or `Terminate` process types, it can prevent your autoscaling group from functioning properly."
 }
 
-variable "placement_group" {
-  type        = string
-  default     = ""
-  description = "The name of the placement group into which you'll launch your instances, if any."
-}
-
 variable "metrics_granularity" {
   type        = string
   default     = "1Minute"
@@ -249,7 +208,7 @@ variable "metrics_granularity" {
 }
 
 variable "enabled_metrics" {
-  type        = list(string)
+  type = list(string)
 
   default = [
     "GroupMinSize",
@@ -406,4 +365,3 @@ variable "aws_iam_instance_profile_name" {
   default     = ""
   description = "The name of the existing instance profile that will be used in autoscaling group for EKS workers. If empty will create a new instance profile."
 }
-

@@ -1,19 +1,21 @@
+#Module      : LABEL
+#Description : Terraform label module variables.
+variable "name" {
+  type        = string
+  default     = ""
+  description = "Name  (e.g. `app` or `cluster`)."
+}
+
 variable "application" {
   type        = string
-  default     = "uplift"
+  default     = ""
   description = "Application (e.g. `cd` or `clouddrove`)."
 }
 
 variable "environment" {
   type        = string
-  default     = "qa"
+  default     = ""
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
-}
-
-variable "name" {
-  type        = string
-  default     = "uplift"
-  description = "Name  (e.g. `app` or `cluster`)."
 }
 
 variable "label_order" {
@@ -22,22 +24,16 @@ variable "label_order" {
   description = "Label order, e.g. `name`,`application`."
 }
 
-variable "delimiter" {
-  type        = string
-  default     = "-"
-  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
-}
-
 variable "attributes" {
-  type        = list(string)
+  type        = list
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
-  type        = map(string)
+  type        = map
   default     = {}
-  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)."
+  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
 variable "enabled" {

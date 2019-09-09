@@ -4,14 +4,13 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git"
+  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
 
   name        = var.name
   application = var.application
   environment = var.environment
-  delimiter   = var.delimiter
   attributes  = compact(concat(var.attributes, ["cluster"]))
-  label_order = ["name", "environment"]
+  label_order = ["environment", "name", "application"]
 }
 
 data "aws_iam_policy_document" "assume_role" {

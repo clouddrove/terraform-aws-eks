@@ -15,7 +15,7 @@ locals {
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git"
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
   name        = var.name
   application = var.application
   environment = var.environment
@@ -23,7 +23,7 @@ module "labels" {
   tags        = local.tags
   attributes  = compact(concat(var.attributes, ["workers"]))
   enabled     = var.enabled
-  label_order = ["name", "environment"]
+  label_order = ["environment", "name", "application"]
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -167,7 +167,6 @@ module "autoscale_group" {
   name        = var.name
   application = var.application
   environment = var.environment
-  delimiter   = var.delimiter
   attributes  = var.attributes
 
   image_id                  = var.image_id
@@ -181,17 +180,13 @@ module "autoscale_group" {
   min_size                                = var.min_size
   max_size                                = var.max_size
   associate_public_ip_address             = var.associate_public_ip_address
-  disable_api_termination                 = var.disable_api_termination
-  ebs_optimized                           = var.ebs_optimized
   instance_initiated_shutdown_behavior    = var.instance_initiated_shutdown_behavior
-  instance_market_options                 = var.instance_market_options
   key_name                                = var.key_name
   enable_monitoring                       = var.enable_monitoring
   load_balancers                          = var.load_balancers
   health_check_grace_period               = var.health_check_grace_period
   health_check_type                       = var.health_check_type
   min_elb_capacity                        = var.min_elb_capacity
-  wait_for_elb_capacity                   = var.wait_for_elb_capacity
   target_group_arns                       = var.target_group_arns
   default_cooldown                        = var.default_cooldown
   force_delete                            = var.force_delete
