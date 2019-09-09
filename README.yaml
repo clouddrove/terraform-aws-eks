@@ -1,0 +1,71 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+# Name of this project
+name: Terraform AWS Eks Cluster
+
+# License of this project
+license: "MIT"
+
+# Canonical GitHub repo
+github_repo: clouddrove/terraform-aws-eks-cluster
+
+# Badges to display
+badges:
+  - name: "Terraform"
+    image: "https://img.shields.io/badge/Terraform-v0.12-green"
+    url: "https://www.terraform.io"
+  - name: "Licence"
+    image: "https://img.shields.io/badge/License-MIT-blue.svg"
+    url: "LICENSE.md"
+
+#  description of this project
+description: |-
+  Terraform module will be created Autoscaling, Workers, EKS Clusters.
+
+# extra content
+include:
+  - "terraform.md"
+
+# How to use this project
+usage : |-
+  ### Sample example
+  Here is an example of how you can use this module in your inventory structure:
+  ```hcl
+  module "eks-cluster" {
+    source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.0"
+
+    ## Tags
+    name        = "eks"
+    application = "clouddrove"
+    environment = "test"
+    enabled     = true
+
+    ## Network
+    vpc_cidr_block                  = "10.0.0.0/16"
+    allowed_security_groups_cluster = []
+    allowed_security_groups_workers = []
+
+    ## Ec2
+    key_name                    = "test"
+    image_id                    = "ami-0200e65a38edfb7e1"
+    instance_type               = "m5.large"
+    max_size                    = "3"
+    min_size                    = "1"
+    associate_public_ip_address = true
+    availability_zones          = ["eu-west-1a", "eu-west-1b"]
+
+    ## Cluster
+    wait_for_capacity_timeout = "15m"
+    apply_config_map_aws_auth = true
+
+    ## Health Checks
+    cpu_utilization_high_threshold_percent = "80"
+    cpu_utilization_low_threshold_percent  = "20"
+    health_check_type                      = "EC2"
+    vpc_id                                 = "vpc-xxxxxxxxxxxx"
+    subnet_ids                             = "subnet-xxxxxxxx"
+  }

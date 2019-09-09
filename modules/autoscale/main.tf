@@ -4,14 +4,14 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git"
+  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
 
   name        = var.name
   application = var.application
   environment = var.environment
   tags        = var.tags
   enabled     = var.enabled
-  label_order = ["name", "environment"]
+  label_order = ["environment", "name", "application"]
 }
 
 
@@ -19,7 +19,7 @@ module "labels" {
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
 resource "aws_launch_template" "default" {
-  count = var.enabled == "true" ? 1 : 0
+  count = var.enabled ? 1 : 0
 
   name_prefix = format("%s%s", module.labels.id, var.delimiter)
   block_device_mappings {
@@ -30,9 +30,9 @@ resource "aws_launch_template" "default" {
   }
   image_id                             = var.image_id
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
-  instance_type = var.instance_type
-  key_name      = var.key_name
-  user_data = var.user_data_base64
+  instance_type                        = var.instance_type
+  key_name                             = var.key_name
+  user_data                            = var.user_data_base64
 
   iam_instance_profile {
     name = var.iam_instance_profile_name
@@ -68,7 +68,7 @@ resource "aws_launch_template" "default" {
 }
 
 data "null_data_source" "tags_as_list_of_maps" {
-  count = var.enabled == "true" ? length(keys(var.tags)) : 0
+  count = var.enabled ? length(keys(var.tags)) : 0
 
   inputs = {
     "key"                 = element(keys(var.tags), count.index)
@@ -80,7 +80,7 @@ data "null_data_source" "tags_as_list_of_maps" {
 #Module      : AUTOSCALING GROUP
 #Description : Provides an AutoScaling Group resource.
 resource "aws_autoscaling_group" "default" {
-  count = var.enabled == "true" ? 1 : 0
+  count = var.enabled ? 1 : 0
 
   name_prefix               = format("%s%s", module.labels.id, var.delimiter)
   vpc_zone_identifier       = var.subnet_ids
@@ -112,4 +112,3 @@ resource "aws_autoscaling_group" "default" {
     create_before_destroy = true
   }
 }
-
