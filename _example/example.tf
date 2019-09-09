@@ -48,8 +48,8 @@ module "eks-cluster" {
   key_name                    = "test"
   image_id                    = "ami-0200e65a38edfb7e1"
   instance_type               = "m5.large"
-  max_size                    = "3"
-  min_size                    = "1"
+  max_size                    = 3
+  min_size                    = 1
   associate_public_ip_address = true
   availability_zones          = ["eu-west-1a", "eu-west-1b"]
 
@@ -58,8 +58,8 @@ module "eks-cluster" {
   apply_config_map_aws_auth = true
 
   ## Health Checks
-  cpu_utilization_high_threshold_percent = "80"
-  cpu_utilization_low_threshold_percent  = "20"
+  cpu_utilization_high_threshold_percent = 80
+  cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
   vpc_id                                 = module.vpc.vpc_id
   subnet_ids                             = module.subnets.public_subnet_id
