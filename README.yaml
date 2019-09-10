@@ -22,15 +22,22 @@ badges:
     image: "https://img.shields.io/badge/License-MIT-blue.svg"
     url: "LICENSE.md"
 
-#  description of this project
-description: |-
-  Terraform module will be created Autoscaling, Workers, EKS Clusters.
+# Prerequesties to display
+prerequesties:
+  - name: "Kubectl"
+    url: "https://kubernetes.io/docs/tasks/tools/install-kubectl/"
+  - name: "AWS IAM Authenticator"
+    url: "https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html"
 
 # What Includes to display
 what_includes:
   - name: "[Autoscale](modules/autoscale/README.md)"
   - name: "[EKS](modules/eks/README.md)"
   - name: "[Worker](modules/worker/README.md)"
+
+#  description of this project
+description: |-
+  Terraform module will be created Autoscaling, Workers, EKS Clusters.
 
 # extra content
 include:
