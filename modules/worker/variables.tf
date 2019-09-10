@@ -210,16 +210,7 @@ variable "metrics_granularity" {
 variable "enabled_metrics" {
   type = list(string)
 
-  default = [
-    "GroupMinSize",
-    "GroupMaxSize",
-    "GroupDesiredCapacity",
-    "GroupInServiceInstances",
-    "GroupPendingInstances",
-    "GroupStandbyInstances",
-    "GroupTerminatingInstances",
-    "GroupTotalInstances",
-  ]
+  default     = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
   description = "A list of metrics to collect. The allowed values are `GroupMinSize`, `GroupMaxSize`, `GroupDesiredCapacity`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupTerminatingInstances`, `GroupTotalInstances`."
 }
 
