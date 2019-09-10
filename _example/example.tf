@@ -47,6 +47,8 @@ module "eks-cluster" {
   enabled     = true
 
   ## Network
+  vpc_id                          = module.vpc.vpc_id
+  subnet_ids                      = module.subnets.public_subnet_id
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
 
@@ -66,6 +68,4 @@ module "eks-cluster" {
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
-  vpc_id                                 = module.vpc.vpc_id
-  subnet_ids                             = module.subnets.public_subnet_id
 }
