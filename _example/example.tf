@@ -17,6 +17,7 @@ module "vpc" {
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "name", "application"]
+  vpc_enabled = true
 
   cidr_block = "172.16.0.0/16"
 }
@@ -28,6 +29,7 @@ module "subnets" {
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "name", "application"]
+  enabled     = true
 
   availability_zones = ["eu-west-1a", "eu-west-1b"]
   vpc_id             = module.vpc.vpc_id
