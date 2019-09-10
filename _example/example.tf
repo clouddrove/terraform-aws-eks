@@ -17,6 +17,7 @@ module "vpc" {
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "name", "application"]
+  vpc_enabled = true
 
   cidr_block = "172.16.0.0/16"
 }
@@ -28,6 +29,7 @@ module "subnets" {
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "name", "application"]
+  enabled     = true
 
   availability_zones = ["us-east-1b", "us-east-1c"]
   vpc_id             = module.vpc.vpc_id
@@ -38,7 +40,7 @@ module "subnets" {
 
 
 module "eks-cluster" {
-  source = "./../"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git"
 
   ## Tags
   name        = "eks"
@@ -47,6 +49,8 @@ module "eks-cluster" {
   enabled     = true
 
   ## Network
+  vpc_id                          = module.vpc.vpc_id
+  subnet_ids                      = module.subnets.public_subnet_id
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
 
@@ -61,10 +65,9 @@ module "eks-cluster" {
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
+
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
-  vpc_id                                 = module.vpc.vpc_id
-  subnet_ids                             = module.subnets.public_subnet_id
 }
