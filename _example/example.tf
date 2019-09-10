@@ -38,7 +38,7 @@ module "subnets" {
 
 
 module "eks-cluster" {
-  source = "./../"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git"
 
   ## Tags
   name        = "eks"
@@ -61,6 +61,7 @@ module "eks-cluster" {
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
+
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
