@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "eu-west-1"
 }
 
 module "keypair" {
@@ -31,7 +31,7 @@ module "subnets" {
   label_order = ["environment", "name", "application"]
   enabled     = true
 
-  availability_zones = ["us-east-1b", "us-east-1c"]
+  availability_zones = ["eu-west-1a", "eu-west-1b"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "public"
@@ -40,7 +40,7 @@ module "subnets" {
 
 
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git"
+  source = "./../"
 
   ## Tags
   name        = "eks"
@@ -56,8 +56,8 @@ module "eks-cluster" {
 
   ## Ec2
   key_name                    = module.keypair.name
-  image_id                    = "ami-0200e65a38edfb7e1"
-  instance_type               = "m5.large"
+  image_id                    = "ami-06358f49b5839867c"
+  instance_type               = "m4.large"
   max_size                    = 3
   min_size                    = 1
   associate_public_ip_address = true

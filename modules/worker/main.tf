@@ -167,6 +167,7 @@ module "autoscale_group" {
   name        = var.name
   application = var.application
   environment = var.environment
+  delimiter   = var.delimiter
   attributes  = var.attributes
 
   image_id                  = var.image_id
