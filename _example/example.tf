@@ -37,7 +37,18 @@ module "subnets" {
   type               = "public"
   igw_id             = module.vpc.igw_id
 }
+module "ssh" {
+  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.1"
 
+  name        = "ssh"
+  application = "clouddrove"
+  environment = "test"
+  label_order = ["environment", "name", "application"]
+
+  vpc_id        = module.vpc.vpc_id
+  allowed_ip    = ["115.160.246.74/32"]
+  allowed_ports = [22]
+}
 
 module "eks-cluster" {
   source = "./../"
@@ -52,12 +63,12 @@ module "eks-cluster" {
   vpc_id                          = module.vpc.vpc_id
   subnet_ids                      = module.subnets.public_subnet_id
   allowed_security_groups_cluster = []
-  allowed_security_groups_workers = []
+  allowed_security_groups_workers = [module.ssh.security_group_ids]
 
   ## Ec2
   key_name                    = module.keypair.name
-  image_id                    = "ami-06358f49b5839867c"
-  instance_type               = "m4.large"
+  image_id                    = "ami-073dafa91555a49ca"
+  instance_type               = "t3.small"
   max_size                    = 3
   min_size                    = 1
   associate_public_ip_address = true
