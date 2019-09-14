@@ -11,7 +11,7 @@ module "keypair" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.1"
+  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.2"
 
   name        = "vpc"
   application = "clouddrove"
@@ -23,7 +23,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.1"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.2"
 
   name        = "public-subnet"
   application = "clouddrove"
@@ -51,12 +51,12 @@ module "ssh" {
 }
 
 module "eks-cluster" {
-  source = "./../"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.0"
 
   ## Tags
   name        = "eks"
   application = "clouddrove"
-  environment = "test"
+  environment = "up"
   enabled     = true
 
   ## Network
