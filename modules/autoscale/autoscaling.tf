@@ -6,7 +6,7 @@ locals {
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_up" {
   count                  = local.autoscaling_enabled ? 1 : 0
-  name                   = "${module.labels.id}${var.delimiter}scale${var.delimiter}up"
+  name                   = format("%s%sscale%sup", module.labels.id, var.delimiter, var.delimiter)
   scaling_adjustment     = var.scale_up_scaling_adjustment
   adjustment_type        = var.scale_up_adjustment_type
   policy_type            = var.scale_up_policy_type
@@ -18,7 +18,7 @@ resource "aws_autoscaling_policy" "scale_up" {
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_down" {
   count                  = local.autoscaling_enabled ? 1 : 0
-  name                   = "${module.labels.id}${var.delimiter}scale${var.delimiter}down"
+  name                   = format("%s%sscale%sdown", module.labels.id, var.delimiter, var.delimiter)
   scaling_adjustment     = var.scale_down_scaling_adjustment
   adjustment_type        = var.scale_down_adjustment_type
   policy_type            = var.scale_down_policy_type
@@ -29,8 +29,9 @@ resource "aws_autoscaling_policy" "scale_down" {
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
-  count               = local.autoscaling_enabled ? 1 : 0
-  alarm_name          = "${module.labels.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}high"
+  count      = local.autoscaling_enabled ? 1 : 0
+  alarm_name = format("%s%scpu%sutilization%shigh", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
+
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_high_evaluation_periods
   metric_name         = "CPUUtilization"
@@ -43,7 +44,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
     AutoScalingGroupName = join("", aws_autoscaling_group.default.*.name)
   }
 
-  alarm_description = "Scale up if CPU utilization is above ${var.cpu_utilization_high_threshold_percent} for ${var.cpu_utilization_high_period_seconds} seconds"
+  alarm_description = format("Scale up if CPU utilization is above%s for %s seconds", var.cpu_utilization_high_threshold_percent, var.cpu_utilization_high_period_seconds)
   alarm_actions     = [join("", aws_autoscaling_policy.scale_up.*.arn)]
 }
 
@@ -51,7 +52,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   count               = local.autoscaling_enabled ? 1 : 0
-  alarm_name          = "${module.labels.id}${var.delimiter}cpu${var.delimiter}utilization${var.delimiter}low"
+  alarm_name          = format("%s%scpu%sutilization%slow", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_low_evaluation_periods
   metric_name         = "CPUUtilization"
@@ -64,7 +65,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
     AutoScalingGroupName = join("", aws_autoscaling_group.default.*.name)
   }
 
-  alarm_description = "Scale down if the CPU utilization is below ${var.cpu_utilization_low_threshold_percent} for ${var.cpu_utilization_low_period_seconds} seconds"
+  alarm_description = format("Scale down if CPU utilization is above%s for %s seconds", var.cpu_utilization_high_threshold_percent, var.cpu_utilization_high_period_seconds)
   alarm_actions     = [join("", aws_autoscaling_policy.scale_down.*.arn)]
 }
 
