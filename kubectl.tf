@@ -29,7 +29,7 @@ resource "null_resource" "apply_config_map_aws_auth" {
     command = "kubectl apply -f ${local.config_map_aws_auth_filename} --kubeconfig ${local.kubeconfig_filename}"
   }
   provisioner "local-exec" {
-    command = "cp .terraform/modules/eks-cluster/kubeconfig-dev-eks-clouddrove-cluster.yaml _config/"
+    command = "cp ${local.kubeconfig_filename} _config/"
   }
 
   triggers = {
