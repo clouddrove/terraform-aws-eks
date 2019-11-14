@@ -73,7 +73,7 @@ data "null_data_source" "tags_as_list_of_maps" {
 
   inputs = {
     "key"                 = element(keys(module.labels.tags), count.index)
-    "value"               = element(values((module.labels.tags)), count.index)
+    "value"               = element(values(module.labels.tags), count.index)
     "propagate_at_launch" = true
   }
 }
