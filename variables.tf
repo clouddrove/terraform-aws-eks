@@ -153,3 +153,27 @@ variable "apply_config_map_aws_auth" {
   default     = true
   description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster"
 }
+
+variable "kubernetes_version" {
+  type        = string
+  default     = ""
+  description = "Desired Kubernetes master version. If you do not specify a value, the latest available version is used."
+}
+
+variable "endpoint_private_access" {
+  type        = bool
+  default     = false
+  description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false."
+}
+
+variable "endpoint_public_access" {
+  type        = bool
+  default     = true
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true."
+}
+
+variable "enabled_cluster_log_types" {
+  type        = list(string)
+  default     = []
+  description = "A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]."
+}

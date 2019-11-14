@@ -12,6 +12,7 @@ resource "aws_autoscaling_policy" "scale_up" {
   policy_type            = var.scale_up_policy_type
   cooldown               = var.scale_up_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.default.*.name)
+
 }
 
 #Module      : AUTOSCALING POLICY DOWN
@@ -24,6 +25,7 @@ resource "aws_autoscaling_policy" "scale_down" {
   policy_type            = var.scale_down_policy_type
   cooldown               = var.scale_down_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.default.*.name)
+
 }
 
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
@@ -39,6 +41,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   period              = var.cpu_utilization_high_period_seconds
   statistic           = var.cpu_utilization_high_statistic
   threshold           = var.cpu_utilization_high_threshold_percent
+  tags                = module.labels.tags
 
   dimensions = {
     AutoScalingGroupName = join("", aws_autoscaling_group.default.*.name)
@@ -60,6 +63,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   period              = var.cpu_utilization_low_period_seconds
   statistic           = var.cpu_utilization_low_statistic
   threshold           = var.cpu_utilization_low_threshold_percent
+  tags                = module.labels.tags
 
   dimensions = {
     AutoScalingGroupName = join("", aws_autoscaling_group.default.*.name)

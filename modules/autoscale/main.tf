@@ -11,7 +11,8 @@ module "labels" {
   environment = var.environment
   tags        = var.tags
   enabled     = var.enabled
-  label_order = ["environment", "name", "application"]
+  attributes  = compact(concat(var.attributes, ["autoscaling"]))
+  label_order = var.label_order
 }
 
 
@@ -71,8 +72,8 @@ data "null_data_source" "tags_as_list_of_maps" {
   count = var.enabled ? length(keys(var.tags)) : 0
 
   inputs = {
-    "key"                 = element(keys(var.tags), count.index)
-    "value"               = element(values(var.tags), count.index)
+    "key"                 = element(keys(module.labels.tags), count.index)
+    "value"               = element(values((module.labels.tags)), count.index)
     "propagate_at_launch" = true
   }
 }
@@ -82,7 +83,7 @@ data "null_data_source" "tags_as_list_of_maps" {
 resource "aws_autoscaling_group" "default" {
   count = var.enabled ? 1 : 0
 
-  name_prefix               = format("%s%s", module.labels.id, var.delimiter)
+  name_prefix               = module.labels.id
   vpc_zone_identifier       = var.subnet_ids
   max_size                  = var.max_size
   min_size                  = var.min_size
