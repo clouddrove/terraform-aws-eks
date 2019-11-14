@@ -9,7 +9,7 @@ module "labels" {
   application = var.application
   environment = var.environment
   enabled     = var.enabled
-  label_order = ["environment", "name", "application"]
+  label_order = var.label_order
 
 }
 
@@ -21,7 +21,7 @@ module "cluster_labels" {
   environment = var.environment
   attributes  = compact(concat(var.attributes, ["cluster"]))
   enabled     = var.enabled
-  label_order = ["environment", "name", "application"]
+  label_order = var.label_order
 }
 
 locals {
