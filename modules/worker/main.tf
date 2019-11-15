@@ -23,7 +23,7 @@ module "labels" {
   tags        = local.tags
   attributes  = compact(concat(var.attributes, ["workers"]))
   enabled     = var.enabled
-  label_order = ["environment", "name", "application"]
+  label_order = var.label_order
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -163,12 +163,13 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 module "autoscale_group" {
   source = "../autoscale"
 
-  //enabled    = "${var.enabled}"
+  enabled     = var.enabled
   name        = var.name
   application = var.application
   environment = var.environment
   delimiter   = var.delimiter
   attributes  = var.attributes
+  label_order = var.label_order
 
   image_id                  = var.image_id
   iam_instance_profile_name = local.use_existing_instance_profile == false ? join("", aws_iam_instance_profile.default.*.name) : var.aws_iam_instance_profile_name

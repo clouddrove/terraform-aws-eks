@@ -10,7 +10,7 @@ module "labels" {
   application = var.application
   environment = var.environment
   attributes  = compact(concat(var.attributes, ["cluster"]))
-  label_order = ["environment", "name", "application"]
+  label_order = var.label_order
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -125,6 +125,8 @@ resource "aws_eks_cluster" "default" {
   role_arn                  = join("", aws_iam_role.default.*.arn)
   version                   = var.kubernetes_version
   enabled_cluster_log_types = var.enabled_cluster_log_types
+  tags                      = module.labels.tags
+
 
   vpc_config {
     security_group_ids      = [join("", aws_security_group.default.*.id)]

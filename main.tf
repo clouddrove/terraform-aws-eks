@@ -9,7 +9,7 @@ module "labels" {
   application = var.application
   environment = var.environment
   enabled     = var.enabled
-  label_order = ["environment", "name", "application"]
+  label_order = var.label_order
 
 }
 
@@ -21,7 +21,7 @@ module "cluster_labels" {
   environment = var.environment
   attributes  = compact(concat(var.attributes, ["cluster"]))
   enabled     = var.enabled
-  label_order = ["environment", "name", "application"]
+  label_order = var.label_order
 }
 
 locals {
@@ -36,18 +36,23 @@ locals {
 #Description : Manages an EKS Cluster.
 module "eks_cluster" {
   source                       = "./modules/eks"
+  enabled                      = var.enabled
   name                         = var.name
   application                  = var.application
   environment                  = var.environment
   attributes                   = var.attributes
+  label_order                  = var.label_order
   tags                         = var.tags
   vpc_id                       = var.vpc_id
   subnet_ids                   = var.subnet_ids
+  endpoint_private_access      = var.endpoint_private_access
+  endpoint_public_access       = var.endpoint_public_access
+  kubernetes_version           = var.kubernetes_version
   allowed_security_groups      = var.allowed_security_groups_cluster
   workers_security_group_ids   = [module.eks_workers.security_group_id]
   workers_security_group_count = 1
   allowed_cidr_blocks          = var.allowed_cidr_blocks_cluster
-  enabled                      = var.enabled
+  enabled_cluster_log_types    = var.enabled_cluster_log_types
 }
 
 #Module      : EKS Worker
