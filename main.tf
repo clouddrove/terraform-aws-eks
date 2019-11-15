@@ -71,6 +71,12 @@ module "eks_workers" {
   health_check_type                      = var.health_check_type
   min_size                               = var.min_size
   max_size                               = var.max_size
+  spot_max_size                          = var.spot_max_size
+  spot_min_size                          = var.spot_min_size
+  spot_enabled                           = var.spot_enabled
+  max_price                              = var.max_price
+  volume_size                            = var.volume_size
+  spot_instance_type                     = var.spot_instance_type
   wait_for_capacity_timeout              = var.wait_for_capacity_timeout
   associate_public_ip_address            = var.associate_public_ip_address
   cluster_name                           = module.cluster_labels.id
@@ -84,5 +90,6 @@ module "eks_workers" {
   autoscaling_policies_enabled           = var.autoscaling_policies_enabled
   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
+
 }
 

@@ -177,3 +177,42 @@ variable "enabled_cluster_log_types" {
   default     = []
   description = "A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]."
 }
+
+variable "volume_size" {
+  type        = number
+  default     = 20
+  description = "The size of ebs volume."
+}
+
+###Spot
+variable "spot_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances."
+}
+
+variable "instance_interruption_behavior" {
+  type        = string
+  default     = "terminate"
+  description = "The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate)."
+}
+variable "max_price" {
+  type        = string
+  default     = "0.20"
+  description = "The maximum hourly price you're willing to pay for the Spot Instances."
+}
+
+variable "spot_instance_type" {
+  type        = string
+  description = "Sport instance type to launch."
+}
+
+variable "spot_max_size" {
+  type        = number
+  description = "The maximum size of the spot autoscale group."
+}
+
+variable "spot_min_size" {
+  type        = number
+  description = "The minimum size of the spot autoscale group."
+}

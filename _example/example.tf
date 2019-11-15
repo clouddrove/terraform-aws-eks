@@ -68,17 +68,19 @@ module "eks-cluster" {
   endpoint_private_access         = false
   endpoint_public_access          = true
   ## Ec2
-  key_name                    = module.keypair.name
-  image_id                    = "ami-073dafa91555a49ca"
-  instance_type               = "t3.small"
-  max_size                    = 3
-  min_size                    = 1
+  key_name      = module.keypair.name
+  image_id      = "ami-0dd0a16a2bd0784b8"
+  instance_type = "t3.small"
+  max_size      = 3
+  min_size      = 2
+  volume_size   = 20
+
   associate_public_ip_address = true
-  kubernetes_version          = "1.14"
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
+  kubernetes_version        = "1.14"
 
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80
@@ -87,4 +89,11 @@ module "eks-cluster" {
 
   #logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+
+  #spot
+  spot_enabled       = true
+  spot_max_size      = 3
+  spot_min_size      = 1
+  max_price          = "0.50"
+  spot_instance_type = "m5.large"
 }
