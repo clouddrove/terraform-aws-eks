@@ -76,7 +76,13 @@ module "eks-cluster" {
   min_size      = 2
   volume_size   = 20
 
-  associate_public_ip_address = true
+  #spot
+  spot_enabled                = true
+  spot_max_size               = 3
+  spot_min_size               = 1
+  max_price                   = "0.20"
+  spot_instance_type          = "m5.large"
+  associate_public_ip_address = false
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
@@ -91,10 +97,4 @@ module "eks-cluster" {
   #logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
-  #spot
-  spot_enabled       = true
-  spot_max_size      = 3
-  spot_min_size      = 1
-  max_price          = "0.50"
-  spot_instance_type = "m5.large"
 }
