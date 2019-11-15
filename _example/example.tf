@@ -19,7 +19,7 @@ module "vpc" {
   label_order = ["environment", "application", "name"]
   vpc_enabled = true
 
-  cidr_block = "172.16.0.0/16"
+  cidr_block = "10.10.0.0/16"
 }
 
 module "subnets" {
