@@ -34,7 +34,7 @@ module "subnets" {
   availability_zones = ["eu-west-1a", "eu-west-1b"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
-  type               = "public"
+  type               = "public-private-subnet"
   igw_id             = module.vpc.igw_id
 }
 module "ssh" {
