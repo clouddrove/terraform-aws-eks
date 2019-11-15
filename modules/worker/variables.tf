@@ -356,3 +356,42 @@ variable "aws_iam_instance_profile_name" {
   default     = ""
   description = "The name of the existing instance profile that will be used in autoscaling group for EKS workers. If empty will create a new instance profile."
 }
+
+variable "volume_size" {
+  type        = number
+  default     = 20
+  description = "The size of ebs volume."
+}
+
+###Spot
+variable "spot_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances."
+}
+
+variable "instance_interruption_behavior" {
+  type        = string
+  default     = "terminate"
+  description = "The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate)."
+}
+variable "max_price" {
+  type        = string
+  default     = "0.20"
+  description = "The maximum hourly price you're willing to pay for the Spot Instances."
+}
+
+variable "spot_instance_type" {
+  type        = string
+  description = "Sport instance type to launch."
+}
+
+variable "spot_max_size" {
+  type        = number
+  description = "The maximum size of the spot autoscale group."
+}
+
+variable "spot_min_size" {
+  type        = number
+  description = "The minimum size of the spot autoscale group."
+}

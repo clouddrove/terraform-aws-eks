@@ -56,6 +56,25 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
   role       = join("", aws_iam_role.default.*.name)
 }
 
+resource "aws_iam_policy" "ecr" {
+  name   = format("%s%secr-policy", module.labels.id, var.delimiter)
+  policy = data.aws_iam_policy_document.ecr.json
+}
+data "aws_iam_policy_document" "ecr" {
+  statement {
+    actions = [
+      "ecr:*",
+      "cloudtrail:LookupEvents"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "test-attach" {
+  role       = join("", aws_iam_role.default.*.name)
+  policy_arn = aws_iam_policy.ecr.arn
+}
+
 #Module      : IAM ROLE POLICY ATTACHMENT CNI
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
@@ -181,6 +200,12 @@ module "autoscale_group" {
   subnet_ids                              = var.subnet_ids
   min_size                                = var.min_size
   max_size                                = var.max_size
+  spot_max_size                           = var.spot_max_size
+  spot_min_size                           = var.spot_min_size
+  spot_enabled                            = var.spot_enabled
+  max_price                               = var.max_price
+  volume_size                             = var.volume_size
+  spot_instance_type                      = var.spot_instance_type
   associate_public_ip_address             = var.associate_public_ip_address
   instance_initiated_shutdown_behavior    = var.instance_initiated_shutdown_behavior
   key_name                                = var.key_name
