@@ -67,6 +67,7 @@ module "eks-cluster" {
   allowed_security_groups_workers = [module.ssh.security_group_ids]
   endpoint_private_access         = false
   endpoint_public_access          = true
+
   ## Ec2
   key_name      = module.keypair.name
   image_id      = "ami-0dd0a16a2bd0784b8"
