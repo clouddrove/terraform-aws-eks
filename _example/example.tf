@@ -56,7 +56,7 @@ module "eks-cluster" {
   ## Tags
   name        = "eks"
   application = "clouddrove"
-  environment = "up"
+  environment = "test"
   enabled     = true
   label_order = ["environment", "name"]
 
