@@ -316,6 +316,24 @@ variable "volume_size" {
   description = "The size of ebs volume."
 }
 
+variable "volume_type" {
+  type        = string
+  default     = "standard"
+  description = "The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`)."
+}
+
+variable "ebs_encryption" {
+  type        = bool
+  default     = false
+  description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
+}
+
+variable "kms_key" {
+  type        = string
+  default     = ""
+  description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."
+}
+
 ###Spot
 variable "spot_enabled" {
   type        = bool
@@ -328,6 +346,7 @@ variable "instance_interruption_behavior" {
   default     = "terminate"
   description = "The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate)."
 }
+
 variable "max_price" {
   type        = string
   default     = "0.20"
@@ -336,15 +355,18 @@ variable "max_price" {
 
 variable "spot_instance_type" {
   type        = string
+  default     = ""
   description = "Sport instance type to launch."
 }
 
 variable "spot_max_size" {
   type        = number
+  default     = 5
   description = "The maximum size of the spot autoscale group."
 }
 
 variable "spot_min_size" {
   type        = number
+  default     = 2
   description = "The minimum size of the spot autoscale group."
 }

@@ -27,6 +27,9 @@ resource "aws_launch_template" "on_demand" {
     device_name = "/dev/sda1"
     ebs {
       volume_size = var.volume_size
+      encrypted   = var.ebs_encryption
+      kms_key_id  = var.kms_key
+      volume_type = var.volume_type
     }
   }
   image_id                             = var.image_id
@@ -77,6 +80,9 @@ resource "aws_launch_template" "spot" {
     device_name = "/dev/sda1"
     ebs {
       volume_size = var.volume_size
+      encrypted   = var.ebs_encryption
+      kms_key_id  = var.kms_key
+      volume_type = var.volume_type
     }
   }
   image_id                             = var.image_id

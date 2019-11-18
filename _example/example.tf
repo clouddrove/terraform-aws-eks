@@ -34,7 +34,7 @@ module "subnets" {
   availability_zones = ["eu-west-1a", "eu-west-1b"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
-  type               = "public-private-subnet"
+  type               = "public-private"
   igw_id             = module.vpc.igw_id
 }
 module "ssh" {
@@ -50,6 +50,9 @@ module "ssh" {
   allowed_ports = [22]
 }
 
+
+
+
 module "eks-cluster" {
   source = "./../"
 
@@ -62,11 +65,11 @@ module "eks-cluster" {
 
   ## Network
   vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.subnets.public_subnet_id
+  subnet_ids                      = module.subnets.private_subnet_id
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = [module.ssh.security_group_ids]
-  endpoint_private_access         = false
-  endpoint_public_access          = true
+  endpoint_private_access         = true
+  endpoint_public_access          = false
 
   ## Ec2
   key_name      = module.keypair.name
@@ -76,8 +79,8 @@ module "eks-cluster" {
   min_size      = 2
   volume_size   = 20
 
-  #spot
-  spot_enabled                = true
+  # Spot
+  spot_enabled                = false
   spot_max_size               = 3
   spot_min_size               = 1
   max_price                   = "0.20"
@@ -93,6 +96,9 @@ module "eks-cluster" {
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
+
+  # ebs encryption
+  ebs_encryption = false
 
   #logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]

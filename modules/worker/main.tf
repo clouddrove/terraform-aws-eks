@@ -205,6 +205,9 @@ module "autoscale_group" {
   spot_enabled                            = var.spot_enabled
   max_price                               = var.max_price
   volume_size                             = var.volume_size
+  ebs_encryption                          = var.ebs_encryption
+  kms_key                                 = var.kms_key
+  volume_type                             = var.volume_type
   spot_instance_type                      = var.spot_instance_type
   associate_public_ip_address             = var.associate_public_ip_address
   instance_initiated_shutdown_behavior    = var.instance_initiated_shutdown_behavior
