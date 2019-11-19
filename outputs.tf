@@ -119,6 +119,6 @@ output "workers_security_group_name" {
 }
 
 output "tags" {
-  value       = module.labels.tags
+  value       = module.eks_cluster.tags
   description = "A mapping of tags to assign to the resource."
 }

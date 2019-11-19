@@ -42,3 +42,8 @@ output "eks_cluster_version" {
   value       = join("", aws_eks_cluster.default.*.version)
   description = "The Kubernetes server version of the cluster."
 }
+
+output "tags" {
+  value       = module.labels.tags
+  description = "A mapping of tags to assign to the resource."
+}

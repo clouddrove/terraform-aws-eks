@@ -22,7 +22,7 @@ resource "null_resource" "apply_config_map_aws_auth" {
   count = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
 
   provisioner "local-exec" {
-    command = "sleep 20"
+    command = "sleep 30"
   }
 
   provisioner "local-exec" {
@@ -31,6 +31,11 @@ resource "null_resource" "apply_config_map_aws_auth" {
   provisioner "local-exec" {
     command = "cp ${local.kubeconfig_filename} _config/"
   }
+
+  provisioner "local-exec" {
+    command = "cp ${local.config_map_aws_auth_filename} _config/"
+  }
+
 
   triggers = {
     kubeconfig_rendered          = module.eks_cluster.kubeconfig

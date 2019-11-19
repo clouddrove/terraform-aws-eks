@@ -1,37 +1,7 @@
 ## Managed By : CloudDrove
 ## Copyright @ CloudDrove. All Right Reserved.
 
-#Module      : label
-#Description : Terraform module to create consistent naming for multiple names.
-module "labels" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
-  name        = var.name
-  application = var.application
-  environment = var.environment
-  enabled     = var.enabled
-  label_order = var.label_order
 
-}
-
-# This `label` is needed to prevent `count can't be computed` errors
-module "cluster_labels" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
-  name        = var.name
-  application = var.application
-  environment = var.environment
-  attributes  = compact(concat(var.attributes, ["cluster"]))
-  enabled     = var.enabled
-  label_order = var.label_order
-}
-
-locals {
-  tags = merge(
-    var.tags,
-    {
-      "kubernetes.io/cluster/${module.labels.id}" = "shared"
-    }
-  )
-}
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
 module "eks_cluster" {
@@ -82,7 +52,7 @@ module "eks_workers" {
   spot_instance_type                     = var.spot_instance_type
   wait_for_capacity_timeout              = var.wait_for_capacity_timeout
   associate_public_ip_address            = var.associate_public_ip_address
-  cluster_name                           = module.cluster_labels.id
+  cluster_name                           = module.eks_cluster.eks_cluster_id
   cluster_endpoint                       = module.eks_cluster.eks_cluster_endpoint
   cluster_certificate_authority_data     = module.eks_cluster.eks_cluster_certificate_authority_data
   cluster_security_group_id              = module.eks_cluster.security_group_id
