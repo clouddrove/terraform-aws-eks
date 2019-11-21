@@ -71,6 +71,7 @@ This module has a few dependencies:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| additional_security_group_ids | Additional list of security groups that will be attached to the autoscaling group. | list(string) | `<list>` | no |
 | allowed_cidr_blocks | List of CIDR blocks to be allowed to connect to the worker nodes. | list(string) | `<list>` | no |
 | allowed_security_groups | List of Security Group IDs to be allowed to connect to the worker nodes. | list(string) | `<list>` | no |
 | application | Application (e.g. `cd` or `clouddrove`). | string | `` | no |
@@ -83,6 +84,7 @@ This module has a few dependencies:
 | cluster_endpoint | EKS cluster endpoint. | string | - | yes |
 | cluster_name | The name of the EKS cluster. | string | - | yes |
 | cluster_security_group_id | Security Group ID of the EKS cluster. | string | - | yes |
+| cluster_security_group_ingress_enabled | Whether to enable the EKS cluster Security Group as ingress to workers Security Group | bool | `true` | no |
 | cpu_utilization_high_evaluation_periods | The number of periods over which data is compared to the specified threshold. | number | `2` | no |
 | cpu_utilization_high_period_seconds | The period in seconds over which the specified statistic is applied. | number | `300` | no |
 | cpu_utilization_high_statistic | The statistic to apply to the alarm's associated metric. Either of the following is supported: `SampleCount`, `Average`, `Sum`, `Minimum`, `Maximum`. | string | `Average` | no |
@@ -94,6 +96,7 @@ This module has a few dependencies:
 | default_cooldown | The amount of time, in seconds, after a scaling activity completes before another scaling activity can start. | number | `300` | no |
 | delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | string | `-` | no |
 | disable_api_termination | If `true`, enables EC2 Instance Termination Protection. | bool | `false` | no |
+| ebs_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id. | bool | `false` | no |
 | ebs_optimized | If true, the launched EC2 instance will be EBS-optimized. | bool | `false` | no |
 | enable_monitoring | Enable/disable detailed monitoring. | bool | `true` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | bool | `true` | no |
@@ -104,11 +107,14 @@ This module has a few dependencies:
 | health_check_type | Controls how health checking is done. Valid values are `EC2` or `ELB`. | string | `EC2` | no |
 | image_id | EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images. | string | `` | no |
 | instance_initiated_shutdown_behavior | Shutdown behavior for the instances. Can be `stop` or `terminate`. | string | `terminate` | no |
+| instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate). | string | `terminate` | no |
 | instance_market_options | The market (purchasing) option for the instances. | list(string) | `<list>` | no |
 | instance_type | Instance type to launch. | string | - | yes |
 | key_name | SSH key name that should be used for the instance. | string | `` | no |
+| kms_key | AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set. | string | `` | no |
 | label_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |
 | load_balancers | A list of elastic load balancer names to add to the autoscaling group names. Only valid for classic load balancers. For ALBs, use `target_group_arns` instead. | list(string) | `<list>` | no |
+| max_price | The maximum hourly price you're willing to pay for the Spot Instances. | string | `` | no |
 | max_size | The maximum size of the autoscale group. | number | - | yes |
 | metrics_granularity | The granularity to associate with the metrics to collect. The only valid value is 1Minute. | string | `1Minute` | no |
 | min_elb_capacity | Setting this causes Terraform to wait for this number of instances to show up healthy in the ELB only on creation. Updates will not wait on ELB instance number changes. | number | `0` | no |
@@ -124,14 +130,22 @@ This module has a few dependencies:
 | scale_up_policy_type | The scalling policy type, either `SimpleScaling`, `StepScaling` or `TargetTrackingScaling`. | string | `SimpleScaling` | no |
 | scale_up_scaling_adjustment | The number of instances by which to scale. `scale_up_adjustment_type` determines the interpretation of this number (e.g. as an absolute number or as a percentage of the existing Auto Scaling group size). A positive increment adds to the current capacity and a negative value removes from the current capacity. | number | `1` | no |
 | service_linked_role_arn | The ARN of the service-linked role that the ASG will use to call other AWS services. | string | `` | no |
+| spot_enabled | Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances. | bool | `false` | no |
+| spot_instance_type | Sport instance type to launch. | string | `` | no |
+| spot_max_size | The maximum size of the spot autoscale group. | number | `5` | no |
+| spot_min_size | The minimum size of the spot autoscale group. | number | `2` | no |
 | subnet_ids | A list of subnet IDs to launch resources in. | list(string) | - | yes |
 | suspended_processes | A list of processes to suspend for the AutoScaling Group. The allowed values are `Launch`, `Terminate`, `HealthCheck`, `ReplaceUnhealthy`, `AZRebalance`, `AlarmNotification`, `ScheduledActions`, `AddToLoadBalancer`. Note that if you suspend either the `Launch` or `Terminate` process types, it can prevent your autoscaling group from functioning properly. | list(string) | `<list>` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
 | target_group_arns | A list of aws_alb_target_group ARNs, for use with Application Load Balancing. | list(string) | `<list>` | no |
 | termination_policies | A list of policies to decide how the instances in the auto scale group should be terminated. The allowed values are `OldestInstance`, `NewestInstance`, `OldestLaunchConfiguration`, `ClosestToNextInstanceHour`, `Default`. | list(string) | `<list>` | no |
+| use_existing_security_group | If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed.` | bool | `false` | no |
+| volume_size | The size of ebs volume. | number | `20` | no |
+| volume_type | The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`). | string | `standard` | no |
 | vpc_id | VPC ID for the EKS cluster. | string | - | yes |
 | wait_for_capacity_timeout | A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. Setting this to '0' causes Terraform to skip all Capacity Waiting behavior. | string | `15m` | no |
 | wait_for_elb_capacity | Setting this will cause Terraform to wait for exactly this number of healthy instances in all attached load balancers on both create and update operations. Takes precedence over `min_elb_capacity` behavior. | number | `0` | no |
+| workers_security_group_id | The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created. | string | `` | no |
 
 ## Outputs
 

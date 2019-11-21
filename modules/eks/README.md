@@ -102,6 +102,7 @@ This module has a few dependencies:
 | security_group_arn | ARN of the EKS cluster Security Group. |
 | security_group_id | ID of the EKS cluster Security Group. |
 | security_group_name | Name of the EKS cluster Security Group. |
+| tags | A mapping of tags to assign to the resource. |
 
 
 

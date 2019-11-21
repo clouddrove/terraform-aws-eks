@@ -52,6 +52,9 @@ module "eks_workers" {
   spot_instance_type                     = var.spot_instance_type
   wait_for_capacity_timeout              = var.wait_for_capacity_timeout
   associate_public_ip_address            = var.associate_public_ip_address
+  additional_security_group_ids          = var.additional_security_group_ids
+  use_existing_security_group            = var.use_existing_security_group
+  workers_security_group_id              = var.workers_security_group_id
   cluster_name                           = module.eks_cluster.eks_cluster_id
   cluster_endpoint                       = module.eks_cluster.eks_cluster_endpoint
   cluster_certificate_authority_data     = module.eks_cluster.eks_cluster_certificate_authority_data

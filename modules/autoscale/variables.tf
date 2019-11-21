@@ -349,7 +349,7 @@ variable "instance_interruption_behavior" {
 
 variable "max_price" {
   type        = string
-  default     = "0.20"
+  default     = ""
   description = "The maximum hourly price you're willing to pay for the Spot Instances."
 }
 

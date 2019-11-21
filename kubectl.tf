@@ -28,6 +28,11 @@ resource "null_resource" "apply_config_map_aws_auth" {
   provisioner "local-exec" {
     command = "kubectl apply -f ${local.config_map_aws_auth_filename} --kubeconfig ${local.kubeconfig_filename}"
   }
+
+  provisioner "local-exec" {
+    command = "mkdir _config"
+  }
+
   provisioner "local-exec" {
     command = "cp ${local.kubeconfig_filename} _config/"
   }
