@@ -86,6 +86,7 @@ This module has a few dependencies:
 | cpu_utilization_low_threshold_percent | The value against which the specified statistic is compared. | number | `10` | no |
 | default_cooldown | The amount of time, in seconds, after a scaling activity completes before another scaling activity can start. | number | `300` | no |
 | delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | string | `-` | no |
+| ebs_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id. | bool | `false` | no |
 | enable_monitoring | Enable/disable detailed monitoring. | bool | `true` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | bool | `true` | no |
 | enabled_metrics | A list of metrics to collect. The allowed values are `GroupMinSize`, `GroupMaxSize`, `GroupDesiredCapacity`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupTerminatingInstances`, `GroupTotalInstances`. | list(string) | `<list>` | no |
@@ -96,10 +97,13 @@ This module has a few dependencies:
 | iam_instance_profile_name | The IAM instance profile name to associate with launched instances. | string | `` | no |
 | image_id | The EC2 image ID to launch. | string | `` | no |
 | instance_initiated_shutdown_behavior | Shutdown behavior for the instances. Can be `stop` or `terminate`. | string | `terminate` | no |
+| instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate). | string | `terminate` | no |
 | instance_type | Instance type to launch. | string | - | yes |
 | key_name | The SSH key name that should be used for the instance. | string | `` | no |
+| kms_key | AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set. | string | `` | no |
 | label_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |
 | load_balancers | A list of elastic load balancer names to add to the autoscaling group names. Only valid for classic load balancers. For ALBs, use `target_group_arns` instead. | list(string) | `<list>` | no |
+| max_price | The maximum hourly price you're willing to pay for the Spot Instances. | string | `` | no |
 | max_size | The maximum size of the autoscale group. | number | - | yes |
 | metrics_granularity | The granularity to associate with the metrics to collect. The only valid value is 1Minute. | string | `1Minute` | no |
 | min_elb_capacity | Setting this causes Terraform to wait for this number of instances to show up healthy in the ELB only on creation. Updates will not wait on ELB instance number changes. | number | `0` | no |
@@ -116,12 +120,18 @@ This module has a few dependencies:
 | scale_up_scaling_adjustment | The number of instances by which to scale. `scale_up_adjustment_type` determines the interpretation of this number (e.g. as an absolute number or as a percentage of the existing Auto Scaling group size). A positive increment adds to the current capacity and a negative value removes from the current capacity. | number | `1` | no |
 | security_group_ids | A list of associated security group IDs. | list(string) | `<list>` | no |
 | service_linked_role_arn | The ARN of the service-linked role that the ASG will use to call other AWS services. | string | `` | no |
+| spot_enabled | Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances. | bool | `false` | no |
+| spot_instance_type | Sport instance type to launch. | string | `` | no |
+| spot_max_size | The maximum size of the spot autoscale group. | number | `5` | no |
+| spot_min_size | The minimum size of the spot autoscale group. | number | `2` | no |
 | subnet_ids | A list of subnet IDs to launch resources in. | list(string) | - | yes |
 | suspended_processes | A list of processes to suspend for the AutoScaling Group. The allowed values are `Launch`, `Terminate`, `HealthCheck`, `ReplaceUnhealthy`, `AZRebalance`, `AlarmNotification`, `ScheduledActions`, `AddToLoadBalancer`. Note that if you suspend either the `Launch` or `Terminate` process types, it can prevent your autoscaling group from functioning properly. | list(string) | `<list>` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
 | target_group_arns | A list of aws_alb_target_group ARNs, for use with Application Load Balancing. | list(string) | `<list>` | no |
 | termination_policies | A list of policies to decide how the instances in the auto scale group should be terminated. The allowed values are `OldestInstance`, `NewestInstance`, `OldestLaunchConfiguration`, `ClosestToNextInstanceHour`, `Default`. | list(string) | `<list>` | no |
 | user_data_base64 | The Base64-encoded user data to provide when launching the instances. | string | `` | no |
+| volume_size | The size of ebs volume. | number | `20` | no |
+| volume_type | The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`). | string | `standard` | no |
 | wait_for_capacity_timeout | A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. Setting this to '0' causes Terraform to skip all Capacity Waiting behavior. | string | `15m` | no |
 
 ## Outputs

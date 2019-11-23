@@ -60,6 +60,24 @@ variable "allowed_security_groups_workers" {
   description = "List of Security Group IDs to be allowed to connect to the worker nodes."
 }
 
+variable "workers_security_group_id" {
+  type        = string
+  default     = ""
+  description = "The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created"
+}
+
+variable "use_existing_security_group" {
+  type        = bool
+  description = "If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed`"
+  default     = false
+}
+
+variable "additional_security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Additional list of security groups that will be attached to the autoscaling group"
+}
+
 variable "allowed_cidr_blocks_cluster" {
   type        = list(string)
   default     = []
@@ -184,6 +202,24 @@ variable "volume_size" {
   description = "The size of ebs volume."
 }
 
+variable "volume_type" {
+  type        = string
+  default     = "standard"
+  description = "The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`)."
+}
+
+variable "ebs_encryption" {
+  type        = bool
+  default     = false
+  description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
+}
+
+variable "kms_key" {
+  type        = string
+  default     = ""
+  description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."
+}
+
 ###Spot
 variable "spot_enabled" {
   type        = bool
@@ -196,23 +232,28 @@ variable "instance_interruption_behavior" {
   default     = "terminate"
   description = "The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate)."
 }
+
 variable "max_price" {
   type        = string
-  default     = "0.20"
+  default     = ""
   description = "The maximum hourly price you're willing to pay for the Spot Instances."
 }
 
 variable "spot_instance_type" {
   type        = string
+  default     = ""
   description = "Sport instance type to launch."
 }
 
 variable "spot_max_size" {
   type        = number
+  default     = 5
   description = "The maximum size of the spot autoscale group."
 }
 
 variable "spot_min_size" {
   type        = number
+  default     = 2
   description = "The minimum size of the spot autoscale group."
 }
+

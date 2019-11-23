@@ -49,35 +49,55 @@ usage : |-
   Here is an example of how you can use this module in your inventory structure:
   ```hcl
   module "eks-cluster" {
-    source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.0"
+    source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.1"
 
     ## Tags
-    name                                   = "eks"
-    application                            = "clouddrove"
-    environment                            = "test"
-    enabled                                = true
+    name        = "eks"
+    application = "clouddrove"
+    environment = "test"
+    enabled     = true
+    label_order = ["environment", "name", "application"]
 
     ## Network
-    vpc_id                                 = "vpc-xxxxxxxxxxxx"
-    subnet_ids                             = "subnet-xxxxxxxx"
-    allowed_security_groups_cluster        = []
-    allowed_security_groups_workers        = []
+    vpc_id                          = module.vpc.vpc_id
+    subnet_ids                      = module.subnets.public_subnet_id
+    allowed_security_groups_cluster = []
+    allowed_security_groups_workers = []
+    additional_security_group_ids   = [module.ssh.security_group_ids]
+    endpoint_private_access         = false
+    endpoint_public_access          = true
 
     ## Ec2
-    key_name                               = "test"
-    image_id                               = "ami-0200e65a38edfb7e1"
-    instance_type                          = "m5.large"
-    max_size                               = 3
-    min_size                               = 1
-    associate_public_ip_address            = true
+    key_name      = module.keypair.name
+    image_id      = "ami-0dd0a16a2bd0784b8"
+    instance_type = "t3.small"
+    max_size      = 3
+    min_size      = 1
+    volume_size   = 20
+
+    ## Spot
+    spot_enabled                = true
+    spot_max_size               = 3
+    spot_min_size               = 1
+    max_price                   = "0.20"
+    spot_instance_type          = "m5.large"
+    associate_public_ip_address = true
 
     ## Cluster
-    wait_for_capacity_timeout              = "15m"
-    apply_config_map_aws_auth              = true
+    wait_for_capacity_timeout = "15m"
+    apply_config_map_aws_auth = true
+    kubernetes_version        = "1.14"
 
     ## Health Checks
     cpu_utilization_high_threshold_percent = 80
     cpu_utilization_low_threshold_percent  = 20
     health_check_type                      = "EC2"
+
+    ## ebs encryption
+    ebs_encryption = false
+
+    ## logs
+    enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+
   }
   ```

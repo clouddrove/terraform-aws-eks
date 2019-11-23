@@ -27,6 +27,9 @@ resource "aws_launch_template" "on_demand" {
     device_name = "/dev/sda1"
     ebs {
       volume_size = var.volume_size
+      encrypted   = var.ebs_encryption
+      kms_key_id  = var.kms_key
+      volume_type = var.volume_type
     }
   }
   image_id                             = var.image_id
@@ -77,6 +80,9 @@ resource "aws_launch_template" "spot" {
     device_name = "/dev/sda1"
     ebs {
       volume_size = var.volume_size
+      encrypted   = var.ebs_encryption
+      kms_key_id  = var.kms_key
+      volume_type = var.volume_type
     }
   }
   image_id                             = var.image_id
@@ -125,15 +131,6 @@ resource "aws_launch_template" "spot" {
   }
 }
 
-data "null_data_source" "tags_as_list_of_maps" {
-  count = var.enabled ? length(keys(var.tags)) : 0
-
-  inputs = {
-    "key"                 = element(keys(module.labels.tags), count.index)
-    "value"               = element(values(module.labels.tags), count.index)
-    "propagate_at_launch" = true
-  }
-}
 
 #Module      : AUTOSCALING GROUP
 #Description : Provides an AutoScaling Group resource.
@@ -164,8 +161,14 @@ resource "aws_autoscaling_group" "default" {
     version = aws_launch_template.on_demand[0].latest_version
   }
 
-  tags = data.null_data_source.tags_as_list_of_maps.*.outputs
-
+  tags = flatten([
+    for key in keys(module.labels.tags) :
+    {
+      key                 = key
+      value               = module.labels.tags[key]
+      propagate_at_launch = true
+    }
+  ])
   lifecycle {
     create_before_destroy = true
   }
@@ -200,7 +203,14 @@ resource "aws_autoscaling_group" "spot" {
     version = aws_launch_template.spot[0].latest_version
   }
 
-  tags = data.null_data_source.tags_as_list_of_maps.*.outputs
+  tags = flatten([
+    for key in keys(module.labels.tags) :
+    {
+      key                 = key
+      value               = module.labels.tags[key]
+      propagate_at_launch = true
+    }
+  ])
 
   lifecycle {
     create_before_destroy = true

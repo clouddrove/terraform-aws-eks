@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "keypair" {
-  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.12.1"
+  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.12.2"
 
   key_path        = "~/.ssh/id_rsa.pub"
   key_name        = "main-key"
@@ -34,7 +34,7 @@ module "subnets" {
   availability_zones = ["eu-west-1a", "eu-west-1b"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
-  type               = "public-private-subnet"
+  type               = "public-private"
   igw_id             = module.vpc.igw_id
 }
 module "ssh" {
@@ -46,25 +46,29 @@ module "ssh" {
   label_order = ["environment", "application", "name"]
 
   vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["115.160.246.74/32"]
-  allowed_ports = [22]
+  allowed_ip    = ["115.160.246.74/32", module.vpc.vpc_cidr_block]
+  allowed_ports = [22, 80, 443]
 }
 
+
+
+
 module "eks-cluster" {
-  source = "./../"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.1"
 
   ## Tags
   name        = "eks"
   application = "clouddrove"
   environment = "test"
   enabled     = true
-  label_order = ["environment", "name"]
+  label_order = ["environment", "name", "application"]
 
   ## Network
   vpc_id                          = module.vpc.vpc_id
   subnet_ids                      = module.subnets.public_subnet_id
   allowed_security_groups_cluster = []
-  allowed_security_groups_workers = [module.ssh.security_group_ids]
+  allowed_security_groups_workers = []
+  additional_security_group_ids   = [module.ssh.security_group_ids]
   endpoint_private_access         = false
   endpoint_public_access          = true
 
@@ -73,16 +77,16 @@ module "eks-cluster" {
   image_id      = "ami-0dd0a16a2bd0784b8"
   instance_type = "t3.small"
   max_size      = 3
-  min_size      = 2
+  min_size      = 1
   volume_size   = 20
 
-  #spot
+  ## Spot
   spot_enabled                = true
   spot_max_size               = 3
   spot_min_size               = 1
   max_price                   = "0.20"
   spot_instance_type          = "m5.large"
-  associate_public_ip_address = false
+  associate_public_ip_address = true
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
@@ -94,7 +98,10 @@ module "eks-cluster" {
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
 
-  #logs
+  ## ebs encryption
+  ebs_encryption = false
+
+  ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
 }

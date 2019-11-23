@@ -55,6 +55,7 @@ This module has a few dependencies:
 - [Go](https://golang.org/doc/install)
 - [github.com/stretchr/testify/assert](https://github.com/stretchr/testify)
 - [github.com/gruntwork-io/terratest/modules/terraform](https://github.com/gruntwork-io/terratest)
+
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [AWS IAM Authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
 
@@ -63,6 +64,7 @@ This module has a few dependencies:
 
 ## What Includes
 
+Followiing things includes in this role:
 - [Autoscale](modules/autoscale/README.md)
 - [EKS](modules/eks/README.md)
 - [Worker](modules/worker/README.md)
@@ -82,36 +84,56 @@ This module has a few dependencies:
 Here is an example of how you can use this module in your inventory structure:
 ```hcl
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.0"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.1"
 
   ## Tags
-  name                                   = "eks"
-  application                            = "clouddrove"
-  environment                            = "test"
-  enabled                                = true
+  name        = "eks"
+  application = "clouddrove"
+  environment = "test"
+  enabled     = true
+  label_order = ["environment", "name", "application"]
 
   ## Network
-  vpc_id                                 = "vpc-xxxxxxxxxxxx"
-  subnet_ids                             = "subnet-xxxxxxxx"
-  allowed_security_groups_cluster        = []
-  allowed_security_groups_workers        = []
+  vpc_id                          = module.vpc.vpc_id
+  subnet_ids                      = module.subnets.public_subnet_id
+  allowed_security_groups_cluster = []
+  allowed_security_groups_workers = []
+  additional_security_group_ids   = [module.ssh.security_group_ids]
+  endpoint_private_access         = false
+  endpoint_public_access          = true
 
   ## Ec2
-  key_name                               = "test"
-  image_id                               = "ami-0200e65a38edfb7e1"
-  instance_type                          = "m5.large"
-  max_size                               = 3
-  min_size                               = 1
-  associate_public_ip_address            = true
+  key_name      = module.keypair.name
+  image_id      = "ami-0dd0a16a2bd0784b8"
+  instance_type = "t3.small"
+  max_size      = 3
+  min_size      = 1
+  volume_size   = 20
+
+  ## Spot
+  spot_enabled                = true
+  spot_max_size               = 3
+  spot_min_size               = 1
+  max_price                   = "0.20"
+  spot_instance_type          = "m5.large"
+  associate_public_ip_address = true
 
   ## Cluster
-  wait_for_capacity_timeout              = "15m"
-  apply_config_map_aws_auth              = true
+  wait_for_capacity_timeout = "15m"
+  apply_config_map_aws_auth = true
+  kubernetes_version        = "1.14"
 
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
+
+  ## ebs encryption
+  ebs_encryption = false
+
+  ## logs
+  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+
 }
 ```
 
@@ -124,6 +146,7 @@ module "eks-cluster" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| additional_security_group_ids | Additional list of security groups that will be attached to the autoscaling group | list(string) | `<list>` | no |
 | allowed_cidr_blocks_cluster | List of CIDR blocks to be allowed to connect to the EKS cluster. | list(string) | `<list>` | no |
 | allowed_cidr_blocks_workers | List of CIDR blocks to be allowed to connect to the worker nodes. | list(string) | `<list>` | no |
 | allowed_security_groups_cluster | List of Security Group IDs to be allowed to connect to the EKS cluster. | list(string) | `<list>` | no |
@@ -136,20 +159,36 @@ module "eks-cluster" {
 | cpu_utilization_high_threshold_percent | Worker nodes AutoScaling Group CPU utilization high threshold percent. | number | `80` | no |
 | cpu_utilization_low_threshold_percent | Worker nodes AutoScaling Group CPU utilization low threshold percent. | number | `20` | no |
 | delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | string | `-` | no |
+| ebs_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id. | bool | `false` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | bool | `true` | no |
+| enabled_cluster_log_types | A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]. | list(string) | `<list>` | no |
+| endpoint_private_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false. | bool | `false` | no |
+| endpoint_public_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true. | bool | `true` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | string | `` | no |
 | health_check_type | Controls how health checking is done. Valid values are `EC2` or `ELB`. | string | `EC2` | no |
 | image_id | EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images. | string | `` | no |
+| instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate). | string | `terminate` | no |
 | instance_type | Instance type to launch. | string | `t2.nano` | no |
 | key_name | SSH key name that should be used for the instance. | string | `` | no |
+| kms_key | AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set. | string | `` | no |
+| kubernetes_version | Desired Kubernetes master version. If you do not specify a value, the latest available version is used. | string | `` | no |
 | label_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |
+| max_price | The maximum hourly price you're willing to pay for the Spot Instances. | string | `` | no |
 | max_size | The maximum size of the AutoScaling Group. | string | `1` | no |
 | min_size | The minimum size of the AutoScaling Group. | string | `1` | no |
 | name | Name  (e.g. `app` or `cluster`). | string | `` | no |
+| spot_enabled | Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances. | bool | `false` | no |
+| spot_instance_type | Sport instance type to launch. | string | `` | no |
+| spot_max_size | The maximum size of the spot autoscale group. | number | `5` | no |
+| spot_min_size | The minimum size of the spot autoscale group. | number | `2` | no |
 | subnet_ids | A list of subnet IDs to launch resources in. | list(string) | `<list>` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
+| use_existing_security_group | If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed` | bool | `false` | no |
+| volume_size | The size of ebs volume. | number | `20` | no |
+| volume_type | The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`). | string | `standard` | no |
 | vpc_id | VPC ID for the EKS cluster. | string | `` | no |
 | wait_for_capacity_timeout | A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. Setting this to '0' causes Terraform to skip all Capacity Waiting behavior. | string | `15m` | no |
+| workers_security_group_id | The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created | string | `` | no |
 
 ## Outputs
 

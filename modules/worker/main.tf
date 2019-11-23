@@ -102,7 +102,7 @@ resource "aws_iam_instance_profile" "default" {
 #Module      : SECURITY GROUP
 #Description : Provides a security group resource.
 resource "aws_security_group" "default" {
-  count       = var.enabled ? 1 : 0
+  count       = var.enabled && var.use_existing_security_group == false ? 1 : 0
   name        = module.labels.id
   description = "Security Group for EKS worker nodes"
   vpc_id      = var.vpc_id
@@ -113,7 +113,7 @@ resource "aws_security_group" "default" {
 #Description : Provides a security group rule resource. Represents a single egress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "egress" {
-  count             = var.enabled ? 1 : 0
+  count             = var.enabled && var.use_existing_security_group == false ? 1 : 0
   description       = "Allow all egress traffic"
   from_port         = 0
   to_port           = 0
@@ -127,7 +127,7 @@ resource "aws_security_group_rule" "egress" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_self" {
-  count                    = var.enabled ? 1 : 0
+  count                    = var.enabled && var.use_existing_security_group == false ? 1 : 0
   description              = "Allow nodes to communicate with each other"
   from_port                = 0
   to_port                  = 65535
@@ -141,7 +141,7 @@ resource "aws_security_group_rule" "ingress_self" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cluster" {
-  count                    = var.enabled ? 1 : 0
+  count                    = var.enabled && var.cluster_security_group_ingress_enabled && var.use_existing_security_group == false ? 1 : 0
   description              = "Allow worker kubelets and pods to receive communication from the cluster control plane"
   from_port                = 0
   to_port                  = 65535
@@ -155,7 +155,7 @@ resource "aws_security_group_rule" "ingress_cluster" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_security_groups" {
-  count                    = var.enabled ? length(var.allowed_security_groups) : 0
+  count                    = var.enabled && var.use_existing_security_group == false ? length(var.allowed_security_groups) : 0
   description              = "Allow inbound traffic from existing Security Groups"
   from_port                = 0
   to_port                  = 65535
@@ -169,7 +169,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
-  count             = var.enabled && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
+  count             = var.enabled && length(var.allowed_cidr_blocks) > 0 && var.use_existing_security_group == false ? 1 : 0
   description       = "Allow inbound traffic from CIDR blocks"
   from_port         = 0
   to_port           = 0
@@ -192,9 +192,16 @@ module "autoscale_group" {
 
   image_id                  = var.image_id
   iam_instance_profile_name = local.use_existing_instance_profile == false ? join("", aws_iam_instance_profile.default.*.name) : var.aws_iam_instance_profile_name
-  security_group_ids        = [join("", aws_security_group.default.*.id)]
-  user_data_base64          = base64encode(join("", data.template_file.userdata.*.rendered))
-  tags                      = module.labels.tags
+  security_group_ids = compact(
+    concat(
+      [
+        var.use_existing_security_group == false ? join("", aws_security_group.default.*.id) : var.workers_security_group_id
+      ],
+      var.additional_security_group_ids
+    )
+  )
+  user_data_base64 = base64encode(join("", data.template_file.userdata.*.rendered))
+  tags             = module.labels.tags
 
   instance_type                           = var.instance_type
   subnet_ids                              = var.subnet_ids
@@ -205,6 +212,9 @@ module "autoscale_group" {
   spot_enabled                            = var.spot_enabled
   max_price                               = var.max_price
   volume_size                             = var.volume_size
+  ebs_encryption                          = var.ebs_encryption
+  kms_key                                 = var.kms_key
+  volume_type                             = var.volume_type
   spot_instance_type                      = var.spot_instance_type
   associate_public_ip_address             = var.associate_public_ip_address
   instance_initiated_shutdown_behavior    = var.instance_initiated_shutdown_behavior
