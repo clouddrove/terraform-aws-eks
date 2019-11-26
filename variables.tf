@@ -63,19 +63,19 @@ variable "allowed_security_groups_workers" {
 variable "workers_security_group_id" {
   type        = string
   default     = ""
-  description = "The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created"
+  description = "The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created."
 }
 
 variable "use_existing_security_group" {
   type        = bool
-  description = "If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed`"
+  description = "If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed`."
   default     = false
 }
 
 variable "additional_security_group_ids" {
   type        = list(string)
   default     = []
-  description = "Additional list of security groups that will be attached to the autoscaling group"
+  description = "Additional list of security groups that will be attached to the autoscaling group."
 }
 
 variable "allowed_cidr_blocks_cluster" {
@@ -169,7 +169,7 @@ variable "subnet_ids" {
 variable "apply_config_map_aws_auth" {
   type        = bool
   default     = true
-  description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster"
+  description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster."
 }
 
 variable "kubernetes_version" {

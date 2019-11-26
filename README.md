@@ -4,11 +4,11 @@
 
 
 <h1 align="center">
-    Terraform AWS Eks Cluster
+    Terraform AWS EKS
 </h1>
 
 <p align="center" style="font-size: 1.2rem;">
-    Terraform module will be created Autoscaling, Workers, EKS Clusters.
+    Terraform module will be created Autoscaling, Workers, EKS.
      </p>
 
 <p align="center">
@@ -24,13 +24,13 @@
 </p>
 <p align="center">
 
-<a href='https://facebook.com/sharer/sharer.php?u=https://github.com/clouddrove/terraform-aws-eks-cluster'>
+<a href='https://facebook.com/sharer/sharer.php?u=https://github.com/clouddrove/terraform-aws-eks'>
   <img title="Share on Facebook" src="https://user-images.githubusercontent.com/50652676/62817743-4f64cb80-bb59-11e9-90c7-b057252ded50.png" />
 </a>
-<a href='https://www.linkedin.com/shareArticle?mini=true&title=Terraform+AWS+Eks+Cluster&url=https://github.com/clouddrove/terraform-aws-eks-cluster'>
+<a href='https://www.linkedin.com/shareArticle?mini=true&title=Terraform+AWS+EKS&url=https://github.com/clouddrove/terraform-aws-eks'>
   <img title="Share on LinkedIn" src="https://user-images.githubusercontent.com/50652676/62817742-4e339e80-bb59-11e9-87b9-a1f68cae1049.png" />
 </a>
-<a href='https://twitter.com/intent/tweet/?text=Terraform+AWS+Eks+Cluster&url=https://github.com/clouddrove/terraform-aws-eks-cluster'>
+<a href='https://twitter.com/intent/tweet/?text=Terraform+AWS+EKS&url=https://github.com/clouddrove/terraform-aws-eks'>
   <img title="Share on Twitter" src="https://user-images.githubusercontent.com/50652676/62817740-4c69db00-bb59-11e9-8a79-3580fbbf6d5c.png" />
 </a>
 
@@ -77,14 +77,14 @@ Followiing things includes in this role:
 ## Examples
 
 
-**IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/clouddrove/terraform-aws-eks-cluster/releases).
+**IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/clouddrove/terraform-aws-eks/releases).
 
 
 ### Sample example
 Here is an example of how you can use this module in your inventory structure:
 ```hcl
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.1"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.1"
 
   ## Tags
   name        = "eks"
@@ -146,13 +146,13 @@ module "eks-cluster" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| additional_security_group_ids | Additional list of security groups that will be attached to the autoscaling group | list(string) | `<list>` | no |
+| additional_security_group_ids | Additional list of security groups that will be attached to the autoscaling group. | list(string) | `<list>` | no |
 | allowed_cidr_blocks_cluster | List of CIDR blocks to be allowed to connect to the EKS cluster. | list(string) | `<list>` | no |
 | allowed_cidr_blocks_workers | List of CIDR blocks to be allowed to connect to the worker nodes. | list(string) | `<list>` | no |
 | allowed_security_groups_cluster | List of Security Group IDs to be allowed to connect to the EKS cluster. | list(string) | `<list>` | no |
 | allowed_security_groups_workers | List of Security Group IDs to be allowed to connect to the worker nodes. | list(string) | `<list>` | no |
 | application | Application (e.g. `cd` or `clouddrove`). | string | `` | no |
-| apply_config_map_aws_auth | Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster | bool | `true` | no |
+| apply_config_map_aws_auth | Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster. | bool | `true` | no |
 | associate_public_ip_address | Associate a public IP address with the worker nodes in the VPC. | bool | `true` | no |
 | attributes | Additional attributes (e.g. `1`). | list | `<list>` | no |
 | autoscaling_policies_enabled | Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling. | bool | `true` | no |
@@ -183,12 +183,12 @@ module "eks-cluster" {
 | spot_min_size | The minimum size of the spot autoscale group. | number | `2` | no |
 | subnet_ids | A list of subnet IDs to launch resources in. | list(string) | `<list>` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
-| use_existing_security_group | If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed` | bool | `false` | no |
+| use_existing_security_group | If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed`. | bool | `false` | no |
 | volume_size | The size of ebs volume. | number | `20` | no |
 | volume_type | The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`). | string | `standard` | no |
 | vpc_id | VPC ID for the EKS cluster. | string | `` | no |
 | wait_for_capacity_timeout | A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. Setting this to '0' causes Terraform to skip all Capacity Waiting behavior. | string | `15m` | no |
-| workers_security_group_id | The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created | string | `` | no |
+| workers_security_group_id | The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created. | string | `` | no |
 
 ## Outputs
 
@@ -234,9 +234,9 @@ You need to run the following command in the testing folder:
 
 
 ## Feedback
-If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-eks-cluster/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
+If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-eks/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
-If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-eks-cluster)!
+If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-eks)!
 
 ## About us
 
