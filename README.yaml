@@ -5,13 +5,13 @@
 #
 
 # Name of this project
-name: Terraform AWS Eks Cluster
+name: Terraform AWS EKS
 
 # License of this project
 license: "MIT"
 
 # Canonical GitHub repo
-github_repo: clouddrove/terraform-aws-eks-cluster
+github_repo: clouddrove/terraform-aws-eks
 
 # Badges to display
 badges:
@@ -37,7 +37,7 @@ what_includes:
 
 #  description of this project
 description: |-
-  Terraform module will be created Autoscaling, Workers, EKS Clusters.
+  Terraform module will be created Autoscaling, Workers, EKS.
 
 # extra content
 include:
@@ -49,7 +49,7 @@ usage : |-
   Here is an example of how you can use this module in your inventory structure:
   ```hcl
   module "eks-cluster" {
-    source = "git::https://github.com/clouddrove/terraform-aws-eks-cluster.git?ref=tags/0.12.1"
+    source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.1"
 
     ## Tags
     name        = "eks"
