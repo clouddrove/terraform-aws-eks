@@ -65,7 +65,8 @@ module "eks-cluster" {
 
   ## Network
   vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.subnets.public_subnet_id
+  eks_subnet_ids                  = module.subnets.public_subnet_id
+  worker_subnet_ids               = module.subnets.private_subnet_id
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]

@@ -14,7 +14,7 @@ module "eks_cluster" {
   label_order                  = var.label_order
   tags                         = var.tags
   vpc_id                       = var.vpc_id
-  subnet_ids                   = var.subnet_ids
+  subnet_ids                   = var.eks_subnet_ids
   endpoint_private_access      = var.endpoint_private_access
   endpoint_public_access       = var.endpoint_public_access
   kubernetes_version           = var.kubernetes_version
@@ -37,7 +37,7 @@ module "eks_workers" {
   image_id                               = var.image_id
   instance_type                          = var.instance_type
   vpc_id                                 = var.vpc_id
-  subnet_ids                             = var.subnet_ids
+  subnet_ids                             = var.worker_subnet_ids
   health_check_type                      = var.health_check_type
   min_size                               = var.min_size
   max_size                               = var.max_size
