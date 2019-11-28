@@ -160,10 +160,16 @@ variable "vpc_id" {
   description = "VPC ID for the EKS cluster."
 }
 
-variable "subnet_ids" {
+variable "eks_subnet_ids" {
   type        = list(string)
   default     = []
-  description = "A list of subnet IDs to launch resources in."
+  description = "A list of subnet IDs to launch resources in EKS."
+}
+
+variable "worker_subnet_ids" {
+  type        = list(string)
+  default     = []
+  description = "A list of subnet IDs to launch resources in workers."
 }
 
 variable "apply_config_map_aws_auth" {

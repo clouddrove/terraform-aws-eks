@@ -54,7 +54,7 @@ module "ssh" {
 
 
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.1"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.2"
 
   ## Tags
   name        = "eks"
@@ -65,7 +65,8 @@ module "eks-cluster" {
 
   ## Network
   vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.subnets.public_subnet_id
+  eks_subnet_ids                  = module.subnets.public_subnet_id
+  worker_subnet_ids               = module.subnets.private_subnet_id
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
@@ -81,7 +82,7 @@ module "eks-cluster" {
   volume_size   = 20
 
   ## Spot
-  spot_enabled                = true
+  spot_enabled                = false
   spot_max_size               = 3
   spot_min_size               = 1
   max_price                   = "0.20"
