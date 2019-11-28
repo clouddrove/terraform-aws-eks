@@ -57,7 +57,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
 }
 
 resource "aws_iam_policy" "ecr" {
-  name   = format("%s%secr-policy", module.labels.id, var.delimiter)
+  name   = format("%s-%s%s-ecr-policy", var.name, module.labels.id)
   policy = data.aws_iam_policy_document.ecr.json
 }
 data "aws_iam_policy_document" "ecr" {
@@ -95,7 +95,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
   count = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  name  = module.labels.id
+  name   = format("%s-%s%s-instance_profile", var.name, module.labels.id)
   role  = join("", aws_iam_role.default.*.name)
 }
 
