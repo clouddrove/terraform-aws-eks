@@ -54,7 +54,7 @@ module "ssh" {
 
 
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.1"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.2"
 
   ## Tags
   name        = "eks"
@@ -81,7 +81,7 @@ module "eks-cluster" {
   volume_size   = 20
 
   ## Spot
-  spot_enabled                = true
+  spot_enabled                = false
   spot_max_size               = 3
   spot_min_size               = 1
   max_price                   = "0.20"
