@@ -354,8 +354,7 @@ variable "max_price" {
 }
 
 variable "spot_instance_type" {
-  type        = list(string)
-  default     = ["t2.medium"]
+  default = ""
   description = "Sport instance type to launch."
 }
 
