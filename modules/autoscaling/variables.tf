@@ -361,13 +361,13 @@ variable "spot_instance_type" {
 
 variable "spot_max_size" {
   type        = number
-  default     = ""
+  default     = "1"
   description = "The maximum size of the spot autoscale group."
 }
 
 variable "spot_min_size" {
   type        = number
-  default     = ""
+  default     = "1"
   description = "The minimum size of the spot autoscale group."
 }
 
