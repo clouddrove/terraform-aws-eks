@@ -143,7 +143,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low_spot" {
 
 resource "aws_autoscaling_schedule" "scaledown" {
   count                  = local.autoscaling_enabled ? 1 : 0
-  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
+  autoscaling_group_name = "${aws_autoscaling_group.default.*.name}"
   scheduled_action_name  = "${var.name}-scheduler-down"
   min_size               = 0
   max_size               = 1
@@ -153,7 +153,7 @@ resource "aws_autoscaling_schedule" "scaledown" {
 
 resource "aws_autoscaling_schedule" "scaleup" {
   count                  = local.autoscaling_enabled ? 1 : 0
-  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
+  autoscaling_group_name = "${aws_autoscaling_group.default.*.name}"
   scheduled_action_name  = "${var.name}-scheduler-up"
   max_size               = "${var.max_size}"
   min_size               = "${var.min_size}"
@@ -163,7 +163,7 @@ resource "aws_autoscaling_schedule" "scaleup" {
 
 resource "aws_autoscaling_schedule" "spot_scaledown" {
   count                  = local.spot_autoscaling_enabled ? 1 : 0
-  autoscaling_group_name = "${aws_autoscaling_group.spot.name}"
+  autoscaling_group_name = "${aws_autoscaling_group.spot.*.name}"
   scheduled_action_name  = "${var.name}-scheduler-down"
   min_size               = 0
   max_size               = 1
@@ -173,7 +173,7 @@ resource "aws_autoscaling_schedule" "spot_scaledown" {
 
 resource "aws_autoscaling_schedule" "spot_scaleup" {
   count                  = local.spot_autoscaling_enabled ? 1 : 0
-  autoscaling_group_name = "${aws_autoscaling_group.spot.name}"
+  autoscaling_group_name = "${aws_autoscaling_group.spot.*.name}"
   scheduled_action_name  = "${var.name}-scheduler-up"
   max_size               = "${var.max_size}"
   min_size               = "${var.min_size}"
