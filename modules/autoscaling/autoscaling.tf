@@ -13,7 +13,6 @@ resource "aws_autoscaling_policy" "scale_up" {
   policy_type            = var.scale_up_policy_type
   cooldown               = var.scale_up_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.default.*.name)
-  recurrence             = "${var.scheduler_up}"
 
 }
 #Module      : AUTOSCALING POLICY UP
@@ -26,7 +25,6 @@ resource "aws_autoscaling_policy" "scale_up_spot" {
   policy_type            = var.scale_up_policy_type
   cooldown               = var.scale_up_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
-  recurrence             = "${var.scheduler_up}"
 
 }
 
@@ -40,7 +38,6 @@ resource "aws_autoscaling_policy" "scale_down" {
   policy_type            = var.scale_down_policy_type
   cooldown               = var.scale_down_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.default.*.name)
-  recurrence             = "${var.scheduler_down}"
 }
 
 #Module      : AUTOSCALING POLICY DOWN
@@ -53,7 +50,6 @@ resource "aws_autoscaling_policy" "scale_down_spot" {
   policy_type            = var.scale_down_policy_type
   cooldown               = var.scale_down_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
-  recurrence             = "${var.scheduler_down}"
 }
 
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
@@ -144,3 +140,39 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low_spot" {
   alarm_actions     = [join("", aws_autoscaling_policy.scale_down_spot.*.arn)]
 }
 
+
+resource "aws_autoscaling_schedule" "scaledown" {
+  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
+  scheduled_action_name  = "${var.name}-scheduler-down"
+  min_size               = 0
+  max_size               = 1
+  desired_capacity       = 0
+  recurrence             = "${var.scheduler_down}"
+}
+
+resource "aws_autoscaling_schedule" "scaleup" {
+  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
+  scheduled_action_name  = "${var.name}-scheduler-up"
+  max_size               = "${var.max_size}"
+  min_size               = "${var.min_size}"
+  desired_capacity       = "${var.min_size}"
+  recurrence             = "${var.scheduler_up}"
+}
+
+resource "aws_autoscaling_schedule" "spot_scaledown" {
+  autoscaling_group_name = "${aws_autoscaling_group.spot.name}"
+  scheduled_action_name  = "${var.name}-scheduler-down"
+  min_size               = 0
+  max_size               = 1
+  desired_capacity       = 0
+  recurrence             = "${var.scheduler_down}"
+}
+
+resource "aws_autoscaling_schedule" "spot_scaleup" {
+  autoscaling_group_name = "${aws_autoscaling_group.spot.name}"
+  scheduled_action_name  = "${var.name}-scheduler-up"
+  max_size               = "${var.max_size}"
+  min_size               = "${var.min_size}"
+  desired_capacity       = "${var.min_size}"
+  recurrence             = "${var.scheduler_up}"
+}
