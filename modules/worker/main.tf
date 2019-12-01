@@ -95,7 +95,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
   count = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  name   = format("%s-%s-instance_profile", var.environment, module.labels.id)
+  name  = format("%s-%s-instance_profile", var.environment, module.labels.id)
   role  = join("", aws_iam_role.default.*.name)
 }
 

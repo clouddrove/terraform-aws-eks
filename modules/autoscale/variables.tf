@@ -371,12 +371,12 @@ variable "spot_min_size" {
   description = "The minimum size of the spot autoscale group."
 
   variable "scheduler_down" {
-	description = "What is the recurrency for scaling up operations ?"
-	default     = "0 19 * * MON-FRI"                                   # 21:00  CET
+    description = "What is the recurrency for scaling up operations ?"
+    default     = "0 19 * * MON-FRI" # 21:00  CET
   }
 
   variable "scheduler_up" {
-	description = "What is the recurrency for scaling down operations ?"
-	default     = "0 6 * * MON-FRI"                                      # 07:00 CET
+    description = "What is the recurrency for scaling down operations ?"
+    default     = "0 6 * * MON-FRI" # 07:00 CET
   }
 }

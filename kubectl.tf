@@ -2,7 +2,7 @@
 # If you want to automatically apply the Kubernetes configuration, set `var.apply_config_map_aws_auth` to "true"
 
 locals {
-  kubeconfig_filename           = "_config/kubeconfig${var.delimiter}${module.eks_cluster.eks_cluster_id}.yaml"
+  kubeconfig_filename          = "_config/kubeconfig${var.delimiter}${module.eks_cluster.eks_cluster_id}.yaml"
   config_map_aws_auth_filename = "_config/config-map-aws-auth${var.delimiter}${module.eks_cluster.eks_cluster_id}.yaml"
 }
 
