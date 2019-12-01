@@ -354,8 +354,8 @@ variable "max_price" {
 }
 
 variable "spot_instance_type" {
-  type        = string
-  default     = ""
+  type        = list(string)
+  default     = []
   description = "Sport instance type to launch."
 }
 
@@ -369,14 +369,14 @@ variable "spot_min_size" {
   type        = number
   default     = ""
   description = "The minimum size of the spot autoscale group."
+}
 
-  variable "scheduler_down" {
-    description = "What is the recurrency for scaling up operations ?"
-    default     = "0 19 * * MON-FRI" # 21:00  CET
-  }
+variable "scheduler_down" {
+  description = "What is the recurrency for scaling up operations ?"
+  default     = "0 19 * * MON-FRI" # 21:00  CET
+}
 
-  variable "scheduler_up" {
-    description = "What is the recurrency for scaling down operations ?"
-    default     = "0 6 * * MON-FRI" # 07:00 CET
-  }
+variable "scheduler_up" {
+  description = "What is the recurrency for scaling down operations ?"
+  default     = "0 6 * * MON-FRI" # 07:00 CET
 }

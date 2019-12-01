@@ -180,7 +180,7 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 }
 
 module "autoscale_group" {
-  source = "../autoscale"
+  source = "../autoscaling"
 
   enabled     = var.enabled
   name        = var.name
