@@ -312,7 +312,7 @@ variable "cpu_utilization_low_statistic" {
 
 variable "volume_size" {
   type        = number
-  default     = ""
+  default     = 100
   description = "The size of ebs volume."
 }
 
