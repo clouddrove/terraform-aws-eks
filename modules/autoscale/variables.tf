@@ -126,7 +126,7 @@ variable "subnet_ids" {
 
 variable "default_cooldown" {
   type        = number
-  default     = 300
+  default     = 150
   description = "The amount of time, in seconds, after a scaling activity completes before another scaling activity can start."
 }
 
@@ -217,7 +217,7 @@ variable "autoscaling_policies_enabled" {
 
 variable "scale_up_cooldown_seconds" {
   type        = number
-  default     = 300
+  default     = 150
   description = "The amount of time, in seconds, after a scaling activity completes and before the next scaling activity can start."
 }
 
@@ -294,7 +294,7 @@ variable "cpu_utilization_low_evaluation_periods" {
 
 variable "cpu_utilization_low_period_seconds" {
   type        = number
-  default     = 300
+  default     = 200
   description = "The period in seconds over which the specified statistic is applied."
 }
 
@@ -312,7 +312,7 @@ variable "cpu_utilization_low_statistic" {
 
 variable "volume_size" {
   type        = number
-  default     = 20
+  default     = ""
   description = "The size of ebs volume."
 }
 
@@ -361,12 +361,22 @@ variable "spot_instance_type" {
 
 variable "spot_max_size" {
   type        = number
-  default     = 5
+  default     = ""
   description = "The maximum size of the spot autoscale group."
 }
 
 variable "spot_min_size" {
   type        = number
-  default     = 2
+  default     = ""
   description = "The minimum size of the spot autoscale group."
+
+  variable "scheduler_down" {
+	description = "What is the recurrency for scaling up operations ?"
+	default     = "0 19 * * MON-FRI"                                   # 21:00  CET
+  }
+
+  variable "scheduler_up" {
+	description = "What is the recurrency for scaling down operations ?"
+	default     = "0 6 * * MON-FRI"                                      # 07:00 CET
+  }
 }

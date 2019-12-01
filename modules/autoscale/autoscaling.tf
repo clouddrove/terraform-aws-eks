@@ -13,6 +13,7 @@ resource "aws_autoscaling_policy" "scale_up" {
   policy_type            = var.scale_up_policy_type
   cooldown               = var.scale_up_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.default.*.name)
+  recurrence             = "${var.scheduler_up}"
 
 }
 #Module      : AUTOSCALING POLICY UP
@@ -25,6 +26,7 @@ resource "aws_autoscaling_policy" "scale_up_spot" {
   policy_type            = var.scale_up_policy_type
   cooldown               = var.scale_up_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
+  recurrence             = "${var.scheduler_up}"
 
 }
 
@@ -38,6 +40,7 @@ resource "aws_autoscaling_policy" "scale_down" {
   policy_type            = var.scale_down_policy_type
   cooldown               = var.scale_down_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.default.*.name)
+  recurrence             = "${var.scheduler_down}"
 }
 
 #Module      : AUTOSCALING POLICY DOWN
@@ -50,6 +53,7 @@ resource "aws_autoscaling_policy" "scale_down_spot" {
   policy_type            = var.scale_down_policy_type
   cooldown               = var.scale_down_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
+  recurrence             = "${var.scheduler_down}"
 }
 
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
