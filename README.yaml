@@ -88,6 +88,14 @@ usage : |-
     apply_config_map_aws_auth = true
     kubernetes_version        = "1.14"
 
+    ## Schedule
+    scheduler_down          = "0 19 * * MON-FRI"
+    scheduler_up            = "0 6 * * MON-FRI"
+    min_size_scaledown      = 0
+    max_size_scaledown      = 1
+    spot_min_size_scaledown = 0
+    spot_max_size_scaledown = 1
+
     ## Health Checks
     cpu_utilization_high_threshold_percent = 80
     cpu_utilization_low_threshold_percent  = 20
@@ -98,6 +106,5 @@ usage : |-
 
     ## logs
     enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-
   }
   ```

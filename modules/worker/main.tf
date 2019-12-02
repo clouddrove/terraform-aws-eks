@@ -5,6 +5,7 @@
 #Description : Terraform module to create consistent naming for multiple names.
 locals {
   tags = merge(
+    var.tags,
     {
       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     }
@@ -22,7 +23,6 @@ module "labels" {
   delimiter   = var.delimiter
   tags        = local.tags
   attributes  = compact(concat(var.attributes, ["workers"]))
-  enabled     = var.enabled
   label_order = var.label_order
 }
 
@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "assume_role" {
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  name               = format("%s-%s", var.environment, module.labels.id)
+  name               = module.labels.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
 }
 
@@ -57,7 +57,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
 }
 
 resource "aws_iam_policy" "ecr" {
-  name   = format("%s-%s-ecr-policy", var.environment, module.labels.id)
+  name   = format("%s-ecr-policy", module.labels.id)
   policy = data.aws_iam_policy_document.ecr.json
 }
 data "aws_iam_policy_document" "ecr" {
@@ -95,7 +95,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
   count = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  name  = format("%s-%s-instance_profile", var.environment, module.labels.id)
+  name  = format("%s-instance-profile", module.labels.id)
   role  = join("", aws_iam_role.default.*.name)
 }
 
@@ -210,6 +210,12 @@ module "autoscale_group" {
   spot_max_size                           = var.spot_max_size
   spot_min_size                           = var.spot_min_size
   spot_enabled                            = var.spot_enabled
+  scheduler_down                          = var.scheduler_down
+  scheduler_up                            = var.scheduler_up
+  min_size_scaledown                      = var.min_size_scaledown
+  max_size_scaledown                      = var.max_size_scaledown
+  spot_min_size_scaledown                 = var.spot_min_size_scaledown
+  spot_max_size_scaledown                 = var.spot_max_size_scaledown
   max_price                               = var.max_price
   volume_size                             = var.volume_size
   ebs_encryption                          = var.ebs_encryption

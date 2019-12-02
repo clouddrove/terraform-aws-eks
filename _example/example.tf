@@ -25,17 +25,18 @@ module "vpc" {
 module "subnets" {
   source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.3"
 
-  name        = "public-subnet"
+  name        = "subnets"
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "application", "name"]
   enabled     = true
 
-  availability_zones = ["eu-west-1a", "eu-west-1b"]
-  vpc_id             = module.vpc.vpc_id
-  cidr_block         = module.vpc.vpc_cidr_block
-  type               = "public-private"
-  igw_id             = module.vpc.igw_id
+  nat_gateway_enabled = true
+  availability_zones  = ["eu-west-1a", "eu-west-1b"]
+  vpc_id              = module.vpc.vpc_id
+  cidr_block          = module.vpc.vpc_cidr_block
+  type                = "public-private"
+  igw_id              = module.vpc.igw_id
 }
 module "ssh" {
   source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.2"
@@ -60,8 +61,9 @@ module "eks-cluster" {
   name        = "eks"
   application = "clouddrove"
   environment = "test"
-  enabled     = true
   label_order = ["environment", "name", "application"]
+  enabled     = true
+
 
   ## Network
   vpc_id                          = module.vpc.vpc_id
@@ -82,9 +84,10 @@ module "eks-cluster" {
   volume_size   = 20
 
   ## Spot
-  spot_enabled                = false
-  spot_max_size               = 3
-  spot_min_size               = 1
+  spot_enabled  = true
+  spot_max_size = 3
+  spot_min_size = 1
+
   max_price                   = "0.20"
   spot_instance_type          = "m5.large"
   associate_public_ip_address = true
@@ -93,6 +96,14 @@ module "eks-cluster" {
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
   kubernetes_version        = "1.14"
+
+  ## Schedule
+  scheduler_down          = "0 19 * * MON-FRI"
+  scheduler_up            = "0 6 * * MON-FRI"
+  min_size_scaledown      = 0
+  max_size_scaledown      = 1
+  spot_min_size_scaledown = 0
+  spot_max_size_scaledown = 1
 
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80
@@ -104,5 +115,4 @@ module "eks-cluster" {
 
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-
 }
