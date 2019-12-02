@@ -109,12 +109,22 @@ resource "aws_launch_template" "spot" {
 
   tag_specifications {
     resource_type = "volume"
-    tags          = module.labels.tags
+    tags = merge(
+      module.labels.tags,
+      {
+        "Market_Type" = "spot"
+      }
+    )
   }
 
   tag_specifications {
     resource_type = "instance"
-    tags          = module.labels.tags
+    tags = merge(
+      module.labels.tags,
+      {
+        "Market_Type" = "spot"
+      }
+    )
   }
   instance_market_options {
     market_type = "spot"
@@ -124,8 +134,12 @@ resource "aws_launch_template" "spot" {
       spot_instance_type             = "one-time"
     }
   }
-  tags = module.labels.tags
-
+  tags = merge(
+    module.labels.tags,
+    {
+      "Market_Type" = "spot"
+    }
+  )
   lifecycle {
     create_before_destroy = true
   }
@@ -179,7 +193,7 @@ resource "aws_autoscaling_group" "default" {
 resource "aws_autoscaling_group" "spot" {
   count = var.enabled && var.spot_enabled ? 1 : 0
 
-  name_prefix               = format("%s%s-spot", module.labels.id, var.delimiter)
+  name_prefix               = format("%s%sspot%s", module.labels.id, var.delimiter, var.delimiter)
   vpc_zone_identifier       = var.subnet_ids
   max_size                  = var.spot_max_size
   min_size                  = var.spot_min_size

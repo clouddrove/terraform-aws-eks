@@ -423,8 +423,8 @@ variable "max_price" {
 }
 
 variable "spot_instance_type" {
-  type = string
-  default = "t2.medium"
+  type        = string
+  default     = "t2.medium"
   description = "Sport instance type to launch."
 }
 
@@ -439,4 +439,41 @@ variable "spot_min_size" {
   type        = number
   default     = 2
   description = "The minimum size of the spot autoscale group."
+}
+
+variable "scheduler_down" {
+  type        = string
+  default     = "0 19 * * MON-FRI" # 21:00  CET
+  description = "What is the recurrency for scaling up operations ?"
+
+}
+
+variable "scheduler_up" {
+  type        = string
+  default     = "0 6 * * MON-FRI" # 07:00 CET
+  description = "What is the recurrency for scaling down operations ?"
+}
+
+variable "min_size_scaledown" {
+  type        = number
+  default     = 0
+  description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+}
+
+variable "max_size_scaledown" {
+  type        = number
+  default     = 1
+  description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+}
+
+variable "spot_min_size_scaledown" {
+  type        = number
+  default     = 0
+  description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+}
+
+variable "spot_max_size_scaledown" {
+  type        = number
+  default     = 1
+  description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }

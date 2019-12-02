@@ -32,6 +32,7 @@ module "eks_workers" {
   name                                   = var.name
   application                            = var.application
   environment                            = var.environment
+  label_order                            = var.label_order
   attributes                             = var.attributes
   tags                                   = var.tags
   image_id                               = var.image_id
@@ -44,6 +45,12 @@ module "eks_workers" {
   spot_max_size                          = var.spot_max_size
   spot_min_size                          = var.spot_min_size
   spot_enabled                           = var.spot_enabled
+  scheduler_down                         = var.scheduler_down
+  scheduler_up                           = var.scheduler_up
+  min_size_scaledown                     = var.min_size_scaledown
+  max_size_scaledown                     = var.max_size_scaledown
+  spot_min_size_scaledown                = var.spot_min_size_scaledown
+  spot_max_size_scaledown                = var.spot_max_size_scaledown
   max_price                              = var.max_price
   volume_size                            = var.volume_size
   ebs_encryption                         = var.ebs_encryption
