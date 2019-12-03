@@ -149,7 +149,7 @@ resource "aws_autoscaling_schedule" "scaledown" {
   scheduled_action_name  = format("%s-scheduler-down", module.labels.id)
   min_size               = var.min_size_scaledown
   max_size               = var.max_size_scaledown
-  desired_capacity       = 0
+  desired_capacity       = 1
   recurrence             = var.scheduler_down
 }
 
