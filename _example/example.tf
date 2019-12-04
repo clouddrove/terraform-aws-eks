@@ -105,12 +105,18 @@ module "eks-cluster" {
   spot_min_size_scaledown = 0
   spot_max_size_scaledown = 1
 
+  scale_up_desired        = 2
+  spot_scale_up_desired   = 2
+  scale_down_desired      = 1
+  spot_scale_down_desired = 1
+
+
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
 
-  ## ebs encryption
+  ## EBS Encryption
   ebs_encryption = false
 
   ## logs
