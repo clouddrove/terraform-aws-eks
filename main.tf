@@ -45,6 +45,10 @@ module "eks_workers" {
   spot_max_size                          = var.spot_max_size
   spot_min_size                          = var.spot_min_size
   spot_enabled                           = var.spot_enabled
+  spot_scale_down_desired                 = var.spot_scale_down_desired
+  spot_scale_up_desired                   = var.spot_scale_up_desired
+  scale_up_desired                        = var.scale_up_desired
+  scale_down_desired                      = var.scale_down_desired
   scheduler_down                         = var.scheduler_down
   scheduler_up                           = var.scheduler_up
   min_size_scaledown                     = var.min_size_scaledown

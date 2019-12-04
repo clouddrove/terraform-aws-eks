@@ -263,6 +263,30 @@ variable "spot_max_size_scaledown" {
   description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
+variable "scale_down_desired" {
+  type        = number
+  default     = 0
+  description = " The number of Amazon EC2 instances that should be running in the group."
+}
+
+variable "spot_scale_down_desired" {
+  type        = number
+  default     = 0
+  description = " The number of Amazon EC2 instances that should be running in the group."
+}
+
+variable "scale_up_desired" {
+  type        = number
+  default     = 0
+  description = " The number of Amazon EC2 instances that should be running in the group."
+}
+
+variable "spot_scale_up_desired" {
+  type        = number
+  default     = 0
+  description = " The number of Amazon EC2 instances that should be running in the group."
+}
+
 ###Spot
 variable "spot_enabled" {
   type        = bool

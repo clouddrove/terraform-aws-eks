@@ -149,7 +149,7 @@ resource "aws_autoscaling_schedule" "scaledown" {
   scheduled_action_name  = format("%s-scheduler-down", module.labels.id)
   min_size               = var.min_size_scaledown
   max_size               = var.max_size_scaledown
-  desired_capacity       = 1
+  desired_capacity       = var.scale_down_desired
   recurrence             = var.scheduler_down
 }
 
@@ -161,7 +161,7 @@ resource "aws_autoscaling_schedule" "scaleup" {
   scheduled_action_name  = format("%s-scheduler-up", module.labels.id)
   max_size               = var.max_size
   min_size               = var.min_size
-  desired_capacity       = var.min_size
+  desired_capacity       = var.scale_up_desired
   recurrence             = var.scheduler_up
 }
 
@@ -173,7 +173,7 @@ resource "aws_autoscaling_schedule" "spot_scaledown" {
   scheduled_action_name  = format("spot-%s-scheduler-down", module.labels.id)
   min_size               = var.spot_min_size_scaledown
   max_size               = var.spot_max_size_scaledown
-  desired_capacity       = 0
+  desired_capacity       = var.spot_scale_down_desired
   recurrence             = var.scheduler_down
 }
 
@@ -185,6 +185,6 @@ resource "aws_autoscaling_schedule" "spot_scaleup" {
   scheduled_action_name  = format("spot-%s-scheduler-up", module.labels.id)
   max_size               = var.spot_max_size
   min_size               = var.spot_min_size
-  desired_capacity       = var.spot_min_size
+  desired_capacity       = var.spot_scale_up_desired
   recurrence             = var.scheduler_up
 }

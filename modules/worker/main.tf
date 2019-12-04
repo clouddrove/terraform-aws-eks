@@ -216,6 +216,10 @@ module "autoscale_group" {
   max_size_scaledown                      = var.max_size_scaledown
   spot_min_size_scaledown                 = var.spot_min_size_scaledown
   spot_max_size_scaledown                 = var.spot_max_size_scaledown
+  spot_scale_down_desired                 = var.spot_scale_down_desired
+  spot_scale_up_desired                   = var.spot_scale_up_desired
+  scale_up_desired                        = var.scale_up_desired
+  scale_down_desired                      = var.scale_down_desired
   max_price                               = var.max_price
   volume_size                             = var.volume_size
   ebs_encryption                          = var.ebs_encryption

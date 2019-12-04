@@ -83,7 +83,7 @@ This module has a few dependencies:
 Here is an example of how you can use this module in your inventory structure:
 ```hcl
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.2"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.3"
 
   ## Tags
   name        = "eks"
