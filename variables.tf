@@ -265,13 +265,13 @@ variable "spot_max_size_scaledown" {
 
 variable "scale_down_desired" {
   type        = number
-  default     = 0
+  default     = 1
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
 variable "spot_scale_down_desired" {
   type        = number
-  default     = 0
+  default     = 1
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
