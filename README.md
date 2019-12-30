@@ -7,7 +7,7 @@
     Terraform AWS EKS
 </h1>
 
-<p align="center" style="font-size: 1.2rem;"> 
+<p align="center" style="font-size: 1.2rem;">
     Terraform module will be created Autoscaling, Workers, EKS.
      </p>
 
@@ -38,7 +38,7 @@
 <hr>
 
 
-We eat, drink, sleep and most importantly love **DevOps**. We are working towards stratergies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure. 
+We eat, drink, sleep and most importantly love **DevOps**. We are working towards stratergies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure.
 
 This module is basically combination of [Terraform open source](https://www.terraform.io/) and includes automatation tests and examples. It also helps to create and improve your infrastructure with minimalistic code instead of maintaining the whole infrastructure code yourself.
 
@@ -49,7 +49,7 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 
 ## Prerequisites
 
-This module has a few dependencies: 
+This module has a few dependencies:
 
 - [Terraform 0.12](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - [Go](https://golang.org/doc/install)
@@ -83,62 +83,52 @@ This module has a few dependencies:
 Here is an example of how you can use this module in your inventory structure:
 ```hcl
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.3"
-
-  ## Tags
+  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.4"
   name        = "eks"
   application = "clouddrove"
   environment = "test"
+  label_order = ["environment", "application", "name"]
   enabled     = true
-  label_order = ["environment", "name", "application"]
 
-  ## Network
   vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.subnets.public_subnet_id
+  eks_subnet_ids                  = module.subnets.public_subnet_id
+  worker_subnet_ids               = module.subnets.private_subnet_id
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
   endpoint_private_access         = false
   endpoint_public_access          = true
-
-  ## Ec2
   key_name      = module.keypair.name
   image_id      = "ami-0dd0a16a2bd0784b8"
   instance_type = "t3.small"
   max_size      = 3
   min_size      = 1
   volume_size   = 20
-
-  ## Spot
-  spot_enabled                = true
-  spot_max_size               = 3
-  spot_min_size               = 1
+  spot_enabled  = true
+  spot_max_size = 3
+  spot_min_size = 1
   max_price                   = "0.20"
   spot_instance_type          = "m5.large"
   associate_public_ip_address = true
-
-  ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
   kubernetes_version        = "1.14"
-
-  ## Schedule
   scheduler_down          = "0 19 * * MON-FRI"
   scheduler_up            = "0 6 * * MON-FRI"
+  schedule_enabled        = true
   min_size_scaledown      = 0
   max_size_scaledown      = 1
+  scale_up_desired        = 2
+  scale_down_desired      = 1
+  spot_schedule_enabled   = true
   spot_min_size_scaledown = 0
   spot_max_size_scaledown = 1
-
-  ## Health Checks
+  spot_scale_up_desired   = 2
+  spot_scale_down_desired = 1
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
-
-  ## ebs encryption
   ebs_encryption = false
-
-  ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }
 ```
@@ -237,7 +227,7 @@ module "eks-cluster" {
 
 
 ## Testing
-In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system. 
+In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system.
 
 You need to run the following command in the testing folder:
 ```hcl
@@ -246,7 +236,7 @@ You need to run the following command in the testing folder:
 
 
 
-## Feedback 
+## Feedback
 If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-eks/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
 If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-eks)!

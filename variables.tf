@@ -325,3 +325,14 @@ variable "spot_min_size" {
   description = "The minimum size of the spot autoscale group."
 }
 
+variable "schedule_enabled" {
+  type        = bool
+  default     = false
+  description = "AutoScaling Schedule resource"
+}
+
+variable "spot_schedule_enabled" {
+  type        = bool
+  default     = false
+  description = "AutoScaling Schedule resource for spot"
+}

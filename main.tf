@@ -45,10 +45,12 @@ module "eks_workers" {
   spot_max_size                          = var.spot_max_size
   spot_min_size                          = var.spot_min_size
   spot_enabled                           = var.spot_enabled
-  spot_scale_down_desired                 = var.spot_scale_down_desired
-  spot_scale_up_desired                   = var.spot_scale_up_desired
-  scale_up_desired                        = var.scale_up_desired
-  scale_down_desired                      = var.scale_down_desired
+  spot_scale_down_desired                = var.spot_scale_down_desired
+  spot_scale_up_desired                  = var.spot_scale_up_desired
+  scale_up_desired                       = var.scale_up_desired
+  scale_down_desired                     = var.scale_down_desired
+  schedule_enabled                       = var.schedule_enabled
+  spot_schedule_enabled                  = var.spot_schedule_enabled
   scheduler_down                         = var.scheduler_down
   scheduler_up                           = var.scheduler_up
   min_size_scaledown                     = var.min_size_scaledown
@@ -77,6 +79,5 @@ module "eks_workers" {
   autoscaling_policies_enabled           = var.autoscaling_policies_enabled
   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
-
 }
 
