@@ -1,7 +1,7 @@
 locals {
-  autoscaling_enabled      = var.enabled && var.autoscaling_policies_enabled ? true : false
-  spot_autoscaling_enabled = var.enabled && var.autoscaling_policies_enabled && var.spot_enabled ? true : false
-  autoscaling_enabled_schedule = var.enabled && var.autoscaling_policies_enabled && var.schedule_enabled ? true : false
+  autoscaling_enabled               = var.enabled && var.autoscaling_policies_enabled ? true : false
+  spot_autoscaling_enabled          = var.enabled && var.autoscaling_policies_enabled && var.spot_enabled ? true : false
+  autoscaling_enabled_schedule      = var.enabled && var.autoscaling_policies_enabled && var.schedule_enabled ? true : false
   autoscaling_enabled_spot_schedule = var.enabled && var.autoscaling_policies_enabled && var.spot_schedule_enabled ? true : false
 }
 

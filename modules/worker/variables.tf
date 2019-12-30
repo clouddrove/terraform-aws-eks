@@ -503,13 +503,13 @@ variable "spot_scale_up_desired" {
 }
 
 variable "schedule_enabled" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "AutoScaling Schedule resource"
 }
 
 variable "spot_schedule_enabled" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "AutoScaling Schedule resource for spot"
 }
