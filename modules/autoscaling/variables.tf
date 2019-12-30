@@ -432,4 +432,17 @@ variable "spot_scale_up_desired" {
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
+variable "schedule_enabled" {
+  type = bool
+  default = false
+  description = "AutoScaling Schedule resource"
+}
+
+variable "spot_schedule_enabled" {
+  type = bool
+  default = false
+  description = "AutoScaling Schedule resource for spot"
+}
+
+
 

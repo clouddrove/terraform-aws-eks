@@ -23,7 +23,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.3"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.4"
 
   name        = "subnets"
   application = "clouddrove"
@@ -38,8 +38,9 @@ module "subnets" {
   type                = "public-private"
   igw_id              = module.vpc.igw_id
 }
+
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.2"
+  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.3"
 
   name        = "ssh"
   application = "clouddrove"
@@ -55,13 +56,13 @@ module "ssh" {
 
 
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.3"
+  source = "./../"
 
   ## Tags
   name        = "eks"
   application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "name", "application"]
+  label_order = ["environment", "application", "name"]
   enabled     = true
 
 
@@ -98,6 +99,8 @@ module "eks-cluster" {
   kubernetes_version        = "1.14"
 
   ## Schedule
+  schedule_enabled        = true
+  spot_schedule_enabled   = true
   scheduler_down          = "0 19 * * MON-FRI"
   scheduler_up            = "0 6 * * MON-FRI"
   min_size_scaledown      = 0

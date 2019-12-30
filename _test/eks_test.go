@@ -31,5 +31,5 @@ func Test(t *testing.T) {
 
 	// Verify we're getting back the outputs we expect
 	assert.Contains(t, Arn, "arn:aws:eks")
-	assert.Equal(t, "test-eks-clouddrove", Tags["Name"])
+	assert.Equal(t, "test-clouddrove-eks", Tags["Name"])
 }
