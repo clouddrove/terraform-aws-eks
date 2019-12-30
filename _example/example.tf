@@ -49,7 +49,7 @@ module "ssh" {
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["115.160.246.74/32", module.vpc.vpc_cidr_block]
-  allowed_ports = [22, 80, 443]
+  allowed_ports = [22]
 }
 
 
@@ -99,18 +99,19 @@ module "eks-cluster" {
   kubernetes_version        = "1.14"
 
   ## Schedule
-  schedule_enabled        = true
+  scheduler_down = "0 19 * * MON-FRI"
+  scheduler_up   = "0 6 * * MON-FRI"
+
+  schedule_enabled   = true
+  min_size_scaledown = 0
+  max_size_scaledown = 1
+  scale_up_desired   = 2
+  scale_down_desired = 1
+
   spot_schedule_enabled   = true
-  scheduler_down          = "0 19 * * MON-FRI"
-  scheduler_up            = "0 6 * * MON-FRI"
-  min_size_scaledown      = 0
-  max_size_scaledown      = 1
   spot_min_size_scaledown = 0
   spot_max_size_scaledown = 1
-
-  scale_up_desired        = 2
   spot_scale_up_desired   = 2
-  scale_down_desired      = 1
   spot_scale_down_desired = 1
 
 
