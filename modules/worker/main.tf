@@ -71,6 +71,7 @@ data "aws_iam_policy_document" "ecr" {
   }
 }
 resource "aws_iam_role_policy_attachment" "test-attach" {
+  count      = var.enabled ? 1 : 0
   role       = join("", aws_iam_role.default.*.name)
   policy_arn = aws_iam_policy.ecr.arn
 }
