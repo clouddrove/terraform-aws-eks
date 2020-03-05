@@ -83,55 +83,77 @@ This module has a few dependencies:
 Here is an example of how you can use this module in your inventory structure:
 ```hcl
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.4"
-  name        = "eks"
-  application = "clouddrove"
-  environment = "test"
-  label_order = ["environment", "application", "name"]
-  enabled     = true
+source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.4"
 
-  vpc_id                          = module.vpc.vpc_id
-  eks_subnet_ids                  = module.subnets.public_subnet_id
-  worker_subnet_ids               = module.subnets.private_subnet_id
-  allowed_security_groups_cluster = []
-  allowed_security_groups_workers = []
-  additional_security_group_ids   = [module.ssh.security_group_ids]
-  endpoint_private_access         = false
-  endpoint_public_access          = true
-  key_name      = module.keypair.name
-  image_id      = "ami-0dd0a16a2bd0784b8"
-  instance_type = "t3.small"
-  max_size      = 3
-  min_size      = 1
-  volume_size   = 20
-  spot_enabled  = true
-  spot_max_size = 3
-  spot_min_size = 1
-  max_price                   = "0.20"
-  spot_instance_type          = "m5.large"
-  associate_public_ip_address = true
-  wait_for_capacity_timeout = "15m"
-  apply_config_map_aws_auth = true
-  kubernetes_version        = "1.14"
-  scheduler_down          = "0 19 * * MON-FRI"
-  scheduler_up            = "0 6 * * MON-FRI"
-  schedule_enabled        = true
-  min_size_scaledown      = 0
-  max_size_scaledown      = 1
-  scale_up_desired        = 2
-  scale_down_desired      = 1
-  spot_schedule_enabled   = true
-  spot_min_size_scaledown = 0
-  spot_max_size_scaledown = 1
-  spot_scale_up_desired   = 2
-  spot_scale_down_desired = 1
-  cpu_utilization_high_threshold_percent = 80
-  cpu_utilization_low_threshold_percent  = 20
-  health_check_type                      = "EC2"
-  ebs_encryption = false
-  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-}
-```
+## Tags
+name        = "eks"
+application = "clouddrove"
+environment = "test"
+label_order = ["environment", "application", "name"]
+enabled     = true
+
+
+## Network
+vpc_id                          = module.vpc.vpc_id
+eks_subnet_ids                  = module.subnets.public_subnet_id
+worker_subnet_ids               = module.subnets.private_subnet_id
+allowed_security_groups_cluster = []
+allowed_security_groups_workers = []
+additional_security_group_ids   = [module.ssh.security_group_ids]
+endpoint_private_access         = false
+endpoint_public_access          = true
+
+## Ec2
+key_name      = module.keypair.name
+image_id      = "ami-0dd0a16a2bd0784b8"
+instance_type = "t3.small"
+max_size      = 3
+min_size      = 1
+volume_size   = 20
+
+## Spot
+spot_enabled  = true
+spot_max_size = 3
+spot_min_size = 1
+
+max_price                   = "0.20"
+spot_instance_type          = "m5.large"
+associate_public_ip_address = true
+
+## Cluster
+wait_for_capacity_timeout = "15m"
+apply_config_map_aws_auth = true
+kubernetes_version        = "1.14"
+
+## Schedule
+scheduler_down          = "0 19 * * MON-FRI"
+scheduler_up            = "0 6 * * MON-FRI"
+
+schedule_enabled        = true
+min_size_scaledown      = 0
+max_size_scaledown      = 1
+scale_up_desired        = 2
+scale_down_desired      = 1
+
+spot_schedule_enabled   = true
+spot_min_size_scaledown = 0
+spot_max_size_scaledown = 1
+spot_scale_up_desired   = 2
+spot_scale_down_desired = 1
+
+
+## Health Checks
+cpu_utilization_high_threshold_percent = 80
+cpu_utilization_low_threshold_percent  = 20
+health_check_type                      = "EC2"
+
+## EBS Encryption
+ebs_encryption = false
+
+## logs
+enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  }
+ ```
 
 
 
@@ -174,8 +196,11 @@ module "eks-cluster" {
 | max_size | The maximum size of the AutoScaling Group. | string | `1` | no |
 | max_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
 | min_size | The minimum size of the AutoScaling Group. | string | `1` | no |
-| min_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `0` | no |
+| min_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
 | name | Name  (e.g. `app` or `cluster`). | string | `` | no |
+| scale_down_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
+| scale_up_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
+| schedule_enabled | AutoScaling Schedule resource | bool | `false` | no |
 | scheduler_down | What is the recurrency for scaling up operations ? | string | `0 19 * * MON-FRI` | no |
 | scheduler_up | What is the recurrency for scaling down operations ? | string | `0 6 * * MON-FRI` | no |
 | spot_enabled | Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances. | bool | `false` | no |
@@ -183,7 +208,10 @@ module "eks-cluster" {
 | spot_max_size | The maximum size of the spot autoscale group. | number | `5` | no |
 | spot_max_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
 | spot_min_size | The minimum size of the spot autoscale group. | number | `2` | no |
-| spot_min_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `0` | no |
+| spot_min_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
+| spot_scale_down_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
+| spot_scale_up_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
+| spot_schedule_enabled | AutoScaling Schedule resource for spot | bool | `false` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
 | use_existing_security_group | If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed`. | bool | `false` | no |
 | volume_size | The size of ebs volume. | number | `20` | no |
