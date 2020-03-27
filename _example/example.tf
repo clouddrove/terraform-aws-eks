@@ -56,7 +56,7 @@ module "ssh" {
 
 
 module "eks-cluster" {
-  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=tags/0.12.4"
+  source = "../"
 
   ## Tags
   name        = "eks"
