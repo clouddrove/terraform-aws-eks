@@ -9,6 +9,7 @@ module "labels" {
   name        = var.name
   application = var.application
   environment = var.environment
+  managedby   = var.managedby
   attributes  = compact(concat(var.attributes, ["cluster"]))
   label_order = var.label_order
 }

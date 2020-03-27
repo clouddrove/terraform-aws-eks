@@ -20,6 +20,7 @@ module "labels" {
   name        = var.name
   application = var.application
   environment = var.environment
+  managedby   = var.managedby
   delimiter   = var.delimiter
   tags        = local.tags
   attributes  = compact(concat(var.attributes, ["workers"]))

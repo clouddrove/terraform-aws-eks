@@ -10,6 +10,7 @@ module "eks_cluster" {
   name                         = var.name
   application                  = var.application
   environment                  = var.environment
+  managedby                    = var.managedby
   attributes                   = var.attributes
   label_order                  = var.label_order
   tags                         = var.tags
@@ -32,6 +33,7 @@ module "eks_workers" {
   name                                   = var.name
   application                            = var.application
   environment                            = var.environment
+  managedby                              = var.managedby
   label_order                            = var.label_order
   attributes                             = var.attributes
   tags                                   = var.tags

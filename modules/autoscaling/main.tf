@@ -11,6 +11,7 @@ module "labels" {
   environment = var.environment
   tags        = var.tags
   enabled     = var.enabled
+  managedby   = var.managedby
   attributes  = compact(concat(var.attributes, ["autoscaling"]))
   label_order = var.label_order
 }
