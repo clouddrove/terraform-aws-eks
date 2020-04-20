@@ -1,3 +1,9 @@
+locals {
+  tags = {
+      "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
+    }
+}
+
 provider "aws" {
   region = "eu-west-1"
 }
@@ -29,13 +35,14 @@ module "subnets" {
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "application", "name"]
+  tags        = local.tags
   enabled     = true
 
-  nat_gateway_enabled = true      # set to false when using node-group
+  nat_gateway_enabled = true      
   availability_zones  = ["eu-west-1a", "eu-west-1b"]
   vpc_id              = module.vpc.vpc_id
   cidr_block          = module.vpc.vpc_cidr_block
-  type                = "public-private"      # set to "public" when using node-group
+  type                = "public-private"      
   igw_id              = module.vpc.igw_id
 }
 
@@ -66,20 +73,19 @@ module "eks-cluster" {
   ## Network
   vpc_id                          = module.vpc.vpc_id
   eks_subnet_ids                  = module.subnets.public_subnet_id
-  worker_subnet_ids               = module.subnets.private_subnet_id      # set to "public_subnet_id" if using node-group
+  worker_subnet_ids               = module.subnets.private_subnet_id
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
   endpoint_private_access         = false
   endpoint_public_access          = true
 
-  ## Node-Group        # uncomment below if using node-group
+  ## Node-Group
 
-  # autoscaling_policies_enabled = false
-  # apply_config_map_aws_auth    = false
-  # node_group_enabled           = true
-  # desired_size                 = 2
-  # node_group_instance_types    = ["t3.medium"]
+  # autoscaling_policies_enabled = false      # uncomment this when only using node-group
+  node_group_enabled           = true
+  desired_size                 = 1
+  node_group_instance_types    = ["t3.medium"]
   
   ## Ec2
   key_name                     = module.keypair.name
@@ -100,7 +106,7 @@ module "eks-cluster" {
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
-  apply_config_map_aws_auth = true      # comment this when using node-group
+  apply_config_map_aws_auth = true      # comment this when only using node-group
   kubernetes_version        = "1.14"
 
   ## Schedule

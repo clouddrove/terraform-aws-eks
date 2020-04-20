@@ -252,6 +252,10 @@ resource "aws_eks_node_group" "default" {
     aws_iam_role_policy_attachment.amazon_eks_cni_policy,
     aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 module "autoscale_group" {
