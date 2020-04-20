@@ -21,7 +21,7 @@ module "labels" {
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
 resource "aws_launch_template" "on_demand" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.autoscaling_policies_enabled ? 1 : 0
 
   name_prefix = format("%s%s", module.labels.id, var.delimiter)
   block_device_mappings {
@@ -150,7 +150,7 @@ resource "aws_launch_template" "spot" {
 #Module      : AUTOSCALING GROUP
 #Description : Provides an AutoScaling Group resource.
 resource "aws_autoscaling_group" "default" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.autoscaling_policies_enabled ? 1 : 0
 
   name_prefix               = format("%s%s", module.labels.id, var.delimiter)
   vpc_zone_identifier       = var.subnet_ids

@@ -8,8 +8,15 @@ locals {
     var.tags,
     {
       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    },
+    {
+      "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
+    },
+    {
+      "k8s.io/cluster-autoscaler/enabled" = "${var.node_group_enabled}"
     }
   )
+  enabled                       = var.enabled && var.autoscaling_policies_enabled ? true : false
   use_existing_instance_profile = var.aws_iam_instance_profile_name != "" ? true : false
 }
 
@@ -41,6 +48,23 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
+  count = var.enabled && var.node_group_enabled ? 1 : 0
+
+  statement {
+    effect  = "Allow"
+    actions = [
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeAutoScalingInstances",
+      "autoscaling:DescribeLaunchConfigurations",
+      "autoscaling:DescribeTags",
+      "autoscaling:SetDesiredCapacity",
+      "autoscaling:TerminateInstanceInAutoScalingGroup"
+    ]
+    resources = ["*"]
+  }
+}
+
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
@@ -57,10 +81,23 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
   role       = join("", aws_iam_role.default.*.name)
 }
 
+resource "aws_iam_policy" "amazon_eks_node_group_autoscaler_policy" {
+  count  = var.enabled && var.node_group_enabled ? 1 : 0
+  name   = format("%s-node-group-policy", module.labels.id)
+  policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_eks_node_group_autoscaler_policy" {
+  count      = var.enabled && var.node_group_enabled ? 1 : 0
+  policy_arn = join("", aws_iam_policy.amazon_eks_node_group_autoscaler_policy.*.arn)
+  role       = join("", aws_iam_role.default.*.name)
+}
+
 resource "aws_iam_policy" "ecr" {
   name   = format("%s-ecr-policy", module.labels.id)
   policy = data.aws_iam_policy_document.ecr.json
 }
+
 data "aws_iam_policy_document" "ecr" {
   statement {
     actions = [
@@ -71,6 +108,7 @@ data "aws_iam_policy_document" "ecr" {
     resources = ["*"]
   }
 }
+
 resource "aws_iam_role_policy_attachment" "test-attach" {
   count      = var.enabled ? 1 : 0
   role       = join("", aws_iam_role.default.*.name)
@@ -96,7 +134,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
 #Module      : IAM INSTANCE PROFILE
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
-  count = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
+  count = var.enabled && local.use_existing_instance_profile || var.autoscaling_policies_enabled ? 1 : 0
   name  = format("%s-instance-profile", module.labels.id)
   role  = join("", aws_iam_role.default.*.name)
 }
@@ -181,10 +219,45 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   type              = "ingress"
 }
 
+#Module:     : NODE GROUP
+#Description : Creating a node group for eks cluster
+resource "aws_eks_node_group" "default" {
+  count           = var.enabled && var.node_group_enabled ? 1 : 0
+  cluster_name    = var.cluster_name
+  node_group_name = format("%s-node-group", module.labels.id)
+  node_role_arn   = join("", aws_iam_role.default.*.arn)
+  subnet_ids      = var.subnet_ids
+  ami_type        = var.ami_type
+  disk_size       = var.volume_size 
+  instance_types  = var.node_group_instance_types
+  labels          = var.kubernetes_labels
+  release_version = var.ami_release_version
+  version         = var.kubernetes_version
+
+  tags = module.labels.tags
+
+  scaling_config {
+    desired_size = var.desired_size
+    max_size     = var.max_size
+    min_size     = var.min_size
+  }
+  
+  remote_access {
+    ec2_ssh_key = var.key_name
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
+    aws_iam_role_policy_attachment.amazon_eks_node_group_autoscaler_policy,
+    aws_iam_role_policy_attachment.amazon_eks_cni_policy,
+    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only
+  ]
+}
+
 module "autoscale_group" {
   source = "../autoscaling"
 
-  enabled     = var.enabled
+  enabled     = local.enabled
   name        = var.name
   application = var.application
   environment = var.environment
@@ -268,7 +341,7 @@ module "autoscale_group" {
 }
 
 data "template_file" "userdata" {
-  count    = var.enabled ? 1 : 0
+  count    = local.enabled ? 1 : 0
   template = file("${path.module}/userdata.tpl")
 
   vars = {
@@ -285,11 +358,10 @@ data "aws_iam_instance_profile" "default" {
 }
 
 data "template_file" "config_map_aws_auth" {
-  count    = var.enabled ? 1 : 0
+  count    = local.enabled ? 1 : 0
   template = file("${path.module}/config_map_aws_auth.tpl")
 
   vars = {
     aws_iam_role_arn = local.use_existing_instance_profile ? join("", data.aws_iam_instance_profile.default.*.role_arn) : join("", aws_iam_role.default.*.arn)
   }
 }
-

@@ -1,4 +1,3 @@
-
 # If you want to automatically apply the Kubernetes configuration, set `var.apply_config_map_aws_auth` to "true"
 
 locals {
@@ -7,7 +6,7 @@ locals {
 }
 
 resource "local_file" "kubeconfig" {
-  count    = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
+  count    = var.enabled || var.apply_config_map_aws_auth ? 1 : 0
   content  = module.eks_cluster.kubeconfig
   filename = local.kubeconfig_filename
 }

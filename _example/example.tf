@@ -31,11 +31,11 @@ module "subnets" {
   label_order = ["environment", "application", "name"]
   enabled     = true
 
-  nat_gateway_enabled = true
+  nat_gateway_enabled = true      # set to false when using node-group
   availability_zones  = ["eu-west-1a", "eu-west-1b"]
   vpc_id              = module.vpc.vpc_id
   cidr_block          = module.vpc.vpc_cidr_block
-  type                = "public-private"
+  type                = "public-private"      # set to "public" when using node-group
   igw_id              = module.vpc.igw_id
 }
 
@@ -48,12 +48,9 @@ module "ssh" {
   label_order = ["environment", "application", "name"]
 
   vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["115.160.246.74/32", module.vpc.vpc_cidr_block]
+  allowed_ip    = ["49.36.133.46/32", module.vpc.vpc_cidr_block]
   allowed_ports = [22]
 }
-
-
-
 
 module "eks-cluster" {
   source = "../"
@@ -69,20 +66,28 @@ module "eks-cluster" {
   ## Network
   vpc_id                          = module.vpc.vpc_id
   eks_subnet_ids                  = module.subnets.public_subnet_id
-  worker_subnet_ids               = module.subnets.private_subnet_id
+  worker_subnet_ids               = module.subnets.private_subnet_id      # set to "public_subnet_id" if using node-group
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
   endpoint_private_access         = false
   endpoint_public_access          = true
 
+  ## Node-Group        # uncomment below if using node-group
+
+  # autoscaling_policies_enabled = false
+  # apply_config_map_aws_auth    = false
+  # node_group_enabled           = true
+  # desired_size                 = 2
+  # node_group_instance_types    = ["t3.medium"]
+  
   ## Ec2
-  key_name      = module.keypair.name
-  image_id      = "ami-0dd0a16a2bd0784b8"
-  instance_type = "t3.small"
-  max_size      = 3
-  min_size      = 1
-  volume_size   = 20
+  key_name                     = module.keypair.name
+  image_id                     = "ami-0dd0a16a2bd0784b8"
+  instance_type                = "t3.small"
+  max_size                     = 3
+  min_size                     = 1
+  volume_size                  = 20
 
   ## Spot
   spot_enabled  = true
@@ -95,7 +100,7 @@ module "eks-cluster" {
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
-  apply_config_map_aws_auth = true
+  apply_config_map_aws_auth = true      # comment this when using node-group
   kubernetes_version        = "1.14"
 
   ## Schedule
