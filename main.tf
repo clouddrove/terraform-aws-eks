@@ -24,6 +24,15 @@ module "eks_cluster" {
   workers_security_group_count = 1
   allowed_cidr_blocks          = var.allowed_cidr_blocks_cluster
   enabled_cluster_log_types    = var.enabled_cluster_log_types
+  public_access_cidrs          = var.public_access_cidrs
+  key_usage                    = var.key_usage
+  customer_master_key_spec     = var.customer_master_key_spec
+  deletion_window_in_days      = var.deletion_window_in_days
+  is_enabled                   = var.is_enabled
+  enable_key_rotation          = var.enable_key_rotation
+  resources                    = var.resources
+  aws_account_id               = var.aws_account_id
+  kms_encryption_enabled       = var.kms_encryption_enabled
 }
 
 #Module      : EKS Worker

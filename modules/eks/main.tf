@@ -28,6 +28,21 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "kms_policy" {
+  count = var.enabled && var.kms_encryption_enabled ? 1 : 0
+  
+  statement {
+    sid     = "Enable IAM User Permissions"
+    actions = ["kms:*"]
+    effect    = "Allow"
+    resources = ["*"]
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${var.aws_account_id}:root"]
+    }
+  }
+}
+
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
@@ -118,6 +133,20 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   type              = "ingress"
 }
 
+#Module      : KMS 
+#Description : KMS security key for eks cluster
+resource "aws_kms_key" "cluster_kms_key" {
+  count                    = var.enabled && var.kms_encryption_enabled ? 1 : 0
+  description              = "KMS security key for eks cluster"
+  policy                   = join("", data.aws_iam_policy_document.kms_policy.*.json)
+  key_usage                = var.key_usage
+  customer_master_key_spec = var.customer_master_key_spec
+  deletion_window_in_days  = var.deletion_window_in_days
+  is_enabled               = var.is_enabled
+  enable_key_rotation      = var.enable_key_rotation
+  tags                     = module.labels.tags
+}
+
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
 resource "aws_eks_cluster" "default" {
@@ -134,6 +163,14 @@ resource "aws_eks_cluster" "default" {
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.endpoint_private_access
     endpoint_public_access  = var.endpoint_public_access
+    public_access_cidrs     = var.public_access_cidrs
+  }
+
+  encryption_config {
+    provider {
+      key_arn = join("", aws_kms_key.cluster_kms_key.*.arn)
+    }
+    resources = var.resources
   }
 
   depends_on = [

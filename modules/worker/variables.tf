@@ -532,8 +532,14 @@ variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"  
 }
 
+variable "desired_size" {
+  type        = number
+  description = "Desired number of worker nodes"
+}
+
 variable "ami_release_version" {
   type        = string
+  default     = ""
   description = "AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version"
 }
 
@@ -541,11 +547,6 @@ variable "kubernetes_version" {
   type        = string
   default     = ""
   description = "Kubernetes version. Defaults to EKS Cluster Kubernetes version. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-variable "desired_size" {
-  type        = number
-  description = "Desired number of worker nodes"
 }
 
 variable "kubernetes_labels" {
@@ -556,5 +557,6 @@ variable "kubernetes_labels" {
 
 variable "node_group_instance_types" {
   type        = list
+  default     = []
   description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
 }

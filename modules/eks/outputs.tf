@@ -43,6 +43,16 @@ output "eks_cluster_version" {
   description = "The Kubernetes server version of the cluster."
 }
 
+output "kms_key_arn" {
+  value       = join("", aws_kms_key.cluster_kms_key.*.arn)
+  description = "The Amazon Resource Name (ARN) of the key."
+}
+
+output "kms_key_id" {
+  value       = join("", aws_kms_key.cluster_kms_key.*.key_id)
+  description = "The globally unique identifier for the key."
+}
+
 output "tags" {
   value       = module.labels.tags
   description = "A mapping of tags to assign to the resource."

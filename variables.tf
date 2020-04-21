@@ -374,6 +374,60 @@ variable "kubernetes_labels" {
 
 variable "node_group_instance_types" {
   type        = list
-  default     = ["t3.medium"]
+  default     = []
   description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
+}
+
+variable "public_access_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
+}
+
+variable "key_usage" {
+  type        = string
+  default     = ""
+  description = "Specifies the intended use of the key. Valid values: ENCRYPT_DECRYPT or SIGN_VERIFY. Defaults to ENCRYPT_DECRYPT."
+}
+
+variable "customer_master_key_spec" {
+  type        = string
+  default     = ""
+  description = "Specifies whether the key contains a symmetric key or an asymmetric key pair and the encryption algorithms or signing algorithms that the key supports. Valid values: SYMMETRIC_DEFAULT, RSA_2048, RSA_3072, RSA_4096, ECC_NIST_P256, ECC_NIST_P384, ECC_NIST_P521, or ECC_SECG_P256K1. Defaults to SYMMETRIC_DEFAULT."
+}
+
+variable "deletion_window_in_days" {
+  type        = number
+  default     = 7
+  description = "Duration in days after which the key is deleted after destruction of the resource, must be between 7 and 30 days. Defaults to 30 days."
+}
+
+variable "is_enabled" {
+  type        = bool
+  default     = true
+  description = "Specifies whether the key is enabled. Defaults to true." 
+}
+
+variable "enable_key_rotation" {
+  type        = bool
+  default     = false
+  description = "Specifies whether key rotation is enabled. Defaults to false."
+}
+
+variable "resources" {
+  type        = list(string)
+  default     = []
+  description = "List of strings with resources to be encrypted. Valid values: secrets"
+}
+
+variable "aws_account_id" {
+  type        = string
+  default     = ""
+  description = "The AWS account id of the user."
+}
+
+variable "kms_encryption_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether kms encryption is enabled or not"
 }
