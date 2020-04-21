@@ -399,7 +399,7 @@ variable "min_size_scaledown" {
 variable "max_size_scaledown" {
   type        = number
   default     = 1
-  description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+  description = "The maximum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 variable "spot_min_size_scaledown" {
@@ -411,7 +411,7 @@ variable "spot_min_size_scaledown" {
 variable "spot_max_size_scaledown" {
   type        = number
   default     = 1
-  description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+  description = "The maximum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 variable "scale_down_desired" {
@@ -449,6 +449,3 @@ variable "spot_schedule_enabled" {
   default     = false
   description = "AutoScaling Schedule resource for spot"
 }
-
-
-
