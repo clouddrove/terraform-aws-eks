@@ -77,13 +77,12 @@ module "eks-cluster" {
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
-  endpoint_private_access         = false    # set to true if using "public_access_cidrs"
-  endpoint_public_access          = true     # set to false if using "public_access_cidrs" 
-  #public_access_cidrs             = ["49.36.133.46/32"]
+  endpoint_private_access         = true    # set to true if using "public_access_cidrs"
+  endpoint_public_access          = true 
+  public_access_cidrs             = ["49.36.133.46/32"]
   resources                       = ["secrets"]
 
   ## KMS Key
-  kms_encryption_enabled   = false
   is_enabled               = true
   aws_account_id           = "364940552322"
   deletion_window_in_days  = 7

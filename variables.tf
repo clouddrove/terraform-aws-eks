@@ -425,9 +425,3 @@ variable "aws_account_id" {
   default     = ""
   description = "The AWS account id of the user."
 }
-
-variable "kms_encryption_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether kms encryption is enabled or not"
-}

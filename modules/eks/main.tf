@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 data "aws_iam_policy_document" "kms_policy" {
-  count = var.enabled && var.kms_encryption_enabled ? 1 : 0
+  count = var.enabled ? 1 : 0
   
   statement {
     sid     = "Enable IAM User Permissions"
@@ -136,7 +136,7 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 #Module      : KMS 
 #Description : KMS security key for eks cluster
 resource "aws_kms_key" "cluster_kms_key" {
-  count                    = var.enabled && var.kms_encryption_enabled ? 1 : 0
+  count                    = var.enabled ? 1 : 0
   description              = "KMS security key for eks cluster"
   policy                   = join("", data.aws_iam_policy_document.kms_policy.*.json)
   key_usage                = var.key_usage

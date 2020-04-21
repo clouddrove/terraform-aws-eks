@@ -111,13 +111,13 @@ variable "public_access_cidrs" {
 
 variable "key_usage" {
   type        = string
-  default     = "ENCRYPT_DECRYPT"
+  default     = ""
   description = "Specifies the intended use of the key. Valid values: ENCRYPT_DECRYPT or SIGN_VERIFY. Defaults to ENCRYPT_DECRYPT."
 }
 
 variable "customer_master_key_spec" {
   type        = string
-  default     = "SYMMETRIC_DEFAULT"
+  default     = ""
   description = "Specifies whether the key contains a symmetric key or an asymmetric key pair and the encryption algorithms or signing algorithms that the key supports. Valid values: SYMMETRIC_DEFAULT, RSA_2048, RSA_3072, RSA_4096, ECC_NIST_P256, ECC_NIST_P384, ECC_NIST_P521, or ECC_SECG_P256K1. Defaults to SYMMETRIC_DEFAULT."
 }
 
@@ -129,7 +129,7 @@ variable "deletion_window_in_days" {
 
 variable "is_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Specifies whether the key is enabled. Defaults to true." 
 }
 
@@ -149,10 +149,4 @@ variable "aws_account_id" {
   type        = string
   default     = ""
   description = "The AWS account id of the user."
-}
-
-variable "kms_encryption_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether kms encryption is enabled or not"
 }
