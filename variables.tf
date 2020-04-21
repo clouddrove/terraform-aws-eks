@@ -180,7 +180,7 @@ variable "worker_subnet_ids" {
 
 variable "apply_config_map_aws_auth" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster."
 }
 
@@ -341,4 +341,39 @@ variable "spot_schedule_enabled" {
   type        = bool
   default     = false
   description = "AutoScaling Schedule resource for spot"
+}
+
+variable "node_group_enabled" {
+  type        = bool
+  default     = false
+  description = "Enabling or disabling the node group"
+}
+
+variable "ami_type" {
+  type        = string
+  default     = "AL2_x86_64"
+  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"  
+}
+
+variable "desired_size" {
+  type        = number
+  description = "Desired number of worker nodes"
+}
+
+variable "ami_release_version" {
+  type        = string
+  default     = ""
+  description = "AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version"
+}
+
+variable "kubernetes_labels" {
+  type        = map
+  default     = {}
+  description = "Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed"
+}
+
+variable "node_group_instance_types" {
+  type        = list
+  default     = ["t3.medium"]
+  description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
 }
