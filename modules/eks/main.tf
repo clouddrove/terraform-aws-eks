@@ -168,3 +168,4 @@ data "template_file" "kubeconfig" {
     cluster_name               = module.labels.id
   }
 }
+

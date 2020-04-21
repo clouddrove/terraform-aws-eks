@@ -44,13 +44,6 @@ module "eks_workers" {
   health_check_type                      = var.health_check_type
   min_size                               = var.min_size
   max_size                               = var.max_size
-  node_group_enabled                     = var.node_group_enabled
-  ami_type                               = var.ami_type
-  ami_release_version                    = var.ami_release_version
-  desired_size                           = var.desired_size
-  kubernetes_labels                      = var.kubernetes_labels
-  kubernetes_version                     = var.kubernetes_version
-  node_group_instance_types              = var.node_group_instance_types
   spot_max_size                          = var.spot_max_size
   spot_min_size                          = var.spot_min_size
   spot_enabled                           = var.spot_enabled
@@ -89,3 +82,4 @@ module "eks_workers" {
   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
 }
+
