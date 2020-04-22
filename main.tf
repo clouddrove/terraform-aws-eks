@@ -60,6 +60,8 @@ module "eks_workers" {
   kubernetes_labels                      = var.kubernetes_labels
   kubernetes_version                     = var.kubernetes_version
   node_group_instance_types              = var.node_group_instance_types
+  fargate_enabled                        = var.fargate_enabled
+  cluster_namespace                      = var.cluster_namespace
   spot_max_size                          = var.spot_max_size
   spot_min_size                          = var.spot_min_size
   spot_enabled                           = var.spot_enabled

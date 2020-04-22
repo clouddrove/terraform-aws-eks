@@ -77,9 +77,9 @@ module "eks-cluster" {
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
-  endpoint_private_access         = true    # set to true if using "public_access_cidrs"
+  endpoint_private_access         = false      # set to true if using "public_access_cidrs"
   endpoint_public_access          = true 
-  public_access_cidrs             = ["49.36.133.46/32"]
+  public_access_cidrs             = ["49.36.133.46/32"]      # comment it if not using
   resources                       = ["secrets"]
 
   ## KMS Key
@@ -90,9 +90,13 @@ module "eks-cluster" {
   key_usage                = "ENCRYPT_DECRYPT"
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
 
+  ## EKS Fargate
+  fargate_enabled   = true      # comment this when only using node-group and auto-scaling
+  cluster_namespace = "kube-system"
+
   ## Node-Group
-  autoscaling_policies_enabled = false      # uncomment this when only using node-group
-  node_group_enabled           = true
+  #autoscaling_policies_enabled = false      # uncomment this when only using node-group and fargate
+  node_group_enabled           = true      # comment this when only using fargate and auto-scaling
   desired_size                 = 2
   node_group_instance_types    = ["t3.medium"]
   
@@ -115,7 +119,7 @@ module "eks-cluster" {
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
-  #apply_config_map_aws_auth = true      # comment this when only using node-group
+  #apply_config_map_aws_auth = true      # comment this when only using node-group and fargate
   kubernetes_version        = "1.14"
 
   ## Schedule

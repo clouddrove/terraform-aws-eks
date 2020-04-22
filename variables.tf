@@ -431,3 +431,15 @@ variable "alias" {
   default     = ""
   description = "The display name of the alias. The name must start with the word `alias` followed by a forward slash."
 }
+
+variable "fargate_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether fargate profile is enabled or not"
+}
+
+variable "cluster_namespace" {
+  type        = string
+  default     = ""
+  description = "Kubernetes namespace for selection"
+}

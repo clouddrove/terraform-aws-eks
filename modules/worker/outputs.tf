@@ -102,3 +102,23 @@ output "eks_node_group_status" {
   value       = join("", aws_eks_node_group.default.*.status)
   description = "Status of the EKS Node Group"
 }
+
+output "eks_fargate_arn" {
+  value       = join("", aws_eks_fargate_profile.default.*.arn)
+  description = "Amazon Resource Name (ARN) of the EKS Fargate Profile."
+}
+
+output "eks_fargate_id" {
+  value       = join("", aws_eks_fargate_profile.default.*.id)
+  description = "EKS Cluster name and EKS Fargate Profile name separated by a colon (:)."
+}
+
+output "eks_fargate_role_arn" {
+  value       = join("", aws_iam_role.fargate_role.*.arn)
+  description = "AWS EKS Fargate role arn"
+}
+
+output "eks_fargate_role_name" {
+  value       = join("", aws_iam_role.fargate_role.*.name)
+  description = "AWS EKS Fargate role name"
+}

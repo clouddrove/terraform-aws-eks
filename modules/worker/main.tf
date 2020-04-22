@@ -48,6 +48,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+# Autoscaler policy for node group
 data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
   count = var.enabled && var.node_group_enabled ? 1 : 0
 
@@ -65,12 +66,33 @@ data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
   }
 }
 
+# AWS EKS Fargate policy
+data "aws_iam_policy_document" "aws_eks_fargate_policy" {
+  count = var.enabled && var.fargate_enabled ? 1 : 0
+
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type = "Service"
+      identifiers = ["eks-fargate-pods.amazonaws.com"]
+    }
+  }
+}
+
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
   name               = module.labels.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
+}
+
+resource "aws_iam_role" "fargate_role" {
+  count              = var.enabled && var.fargate_enabled ? 1 : 0
+  name               = format("%s-fargate-role", module.labels.id)
+  assume_role_policy = join("", data.aws_iam_policy_document.aws_eks_fargate_policy.*.json)
 }
 
 #Module      : IAM ROLE POLICY ATTACHMENT NODE
@@ -91,6 +113,12 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_node_group_autoscaler_poli
   count      = var.enabled && var.node_group_enabled ? 1 : 0
   policy_arn = join("", aws_iam_policy.amazon_eks_node_group_autoscaler_policy.*.arn)
   role       = join("", aws_iam_role.default.*.name)
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_eks_fargate_pod_execution_role_policy" {
+  count      = var.enabled && var.fargate_enabled ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+  role       = join("", aws_iam_role.fargate_role.*.name)
 }
 
 resource "aws_iam_policy" "ecr" {
@@ -217,6 +245,22 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   cidr_blocks       = var.allowed_cidr_blocks
   security_group_id = join("", aws_security_group.default.*.id)
   type              = "ingress"
+}
+
+#Module      : EKS Fargate
+#Descirption : Enabling fargate for AWS EKS
+resource "aws_eks_fargate_profile" "default" {
+  count                  = var.enabled && var.fargate_enabled ? 1 : 0
+  cluster_name           = var.cluster_name
+  fargate_profile_name   = format("%s-fargate-eks", module.labels.id)
+  pod_execution_role_arn = join("", aws_iam_role.fargate_role.*.arn)
+  subnet_ids             = var.subnet_ids
+  tags                   = module.labels.tags
+
+  selector {
+    namespace = var.cluster_namespace
+    labels    = var.kubernetes_labels
+  }
 }
 
 #Module:     : NODE GROUP

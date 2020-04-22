@@ -560,3 +560,15 @@ variable "node_group_instance_types" {
   default     = []
   description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
 }
+
+variable "fargate_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether fargate profile is enabled or not"
+}
+
+variable "cluster_namespace" {
+  type        = string
+  default     = ""
+  description = "Kubernetes namespace for selection"
+}
