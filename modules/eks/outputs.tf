@@ -44,13 +44,23 @@ output "eks_cluster_version" {
 }
 
 output "kms_key_arn" {
-  value       = join("", aws_kms_key.cluster_kms_key.*.arn)
+  value       = module.kms_key.key_arn
   description = "The Amazon Resource Name (ARN) of the key."
 }
 
 output "kms_key_id" {
-  value       = join("", aws_kms_key.cluster_kms_key.*.key_id)
+  value       = module.kms_key.key_id
   description = "The globally unique identifier for the key."
+}
+
+output "alias_arn" {
+  value       = module.kms_key.alias_arn
+  description = "Alias ARN."
+}
+
+output "alias_name" {
+  value       = module.kms_key.alias_name
+  description = "Alias name."
 }
 
 output "tags" {

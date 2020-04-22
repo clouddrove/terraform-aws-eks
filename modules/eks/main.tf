@@ -28,21 +28,6 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "kms_policy" {
-  count = var.enabled ? 1 : 0
-  
-  statement {
-    sid     = "Enable IAM User Permissions"
-    actions = ["kms:*"]
-    effect    = "Allow"
-    resources = ["*"]
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${var.aws_account_id}:root"]
-    }
-  }
-}
-
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
@@ -135,16 +120,103 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 
 #Module      : KMS 
 #Description : KMS security key for eks cluster
-resource "aws_kms_key" "cluster_kms_key" {
-  count                    = var.enabled ? 1 : 0
-  description              = "KMS security key for eks cluster"
-  policy                   = join("", data.aws_iam_policy_document.kms_policy.*.json)
-  key_usage                = var.key_usage
-  customer_master_key_spec = var.customer_master_key_spec
-  deletion_window_in_days  = var.deletion_window_in_days
-  is_enabled               = var.is_enabled
-  enable_key_rotation      = var.enable_key_rotation
-  tags                     = module.labels.tags
+module "kms_key" {
+    source      = "git::https://github.com/aashishgoyal246/terraform-aws-kms.git?ref=slave"
+    
+    name        = var.name
+    application = var.application
+    environment = var.environment
+    managedby   = var.managedby
+    label_order = var.label_order
+    enabled     = var.enabled
+    
+    description              = "KMS key for cloudtrail"
+    alias                    = var.alias
+    key_usage                = var.key_usage
+    customer_master_key_spec = var.customer_master_key_spec
+    deletion_window_in_days  = var.deletion_window_in_days
+    is_enabled               = var.is_enabled
+    enable_key_rotation      = var.enable_key_rotation
+    policy                   = data.aws_iam_policy_document.default.json
+    tags                     = module.labels.tags
+}
+
+data "aws_iam_policy_document" "default" {
+  version = "2012-10-17"
+  
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+  
+  statement {
+    sid    = "Allow CloudTrail to encrypt logs"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    actions   = ["kms:GenerateDataKey*"]
+    resources = ["*"]
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+      values   = ["arn:aws:cloudtrail:*:${var.aws_account_id}:trail/*"]
+    }
+  }
+
+  statement {
+    sid    = "Allow CloudTrail to describe key"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    actions   = ["kms:DescribeKey"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "Allow principals in the account to decrypt log files"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:ReEncryptFrom"
+    ]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "kms:CallerAccount"
+      values = [
+      "${var.aws_account_id}"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+      values   = ["arn:aws:cloudtrail:*:${var.aws_account_id}:trail/*"]
+    }
+  }
+
+  statement {
+    sid    = "Allow alias creation during setup"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions   = ["kms:CreateAlias"]
+    resources = ["*"]
+  }
 }
 
 #Module      : EKS CLUSTER
@@ -168,7 +240,7 @@ resource "aws_eks_cluster" "default" {
 
   encryption_config {
     provider {
-      key_arn = join("", aws_kms_key.cluster_kms_key.*.arn)
+      key_arn = module.kms_key.key_arn
     }
     resources = var.resources
   }

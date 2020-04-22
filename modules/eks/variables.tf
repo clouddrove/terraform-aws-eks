@@ -150,3 +150,9 @@ variable "aws_account_id" {
   default     = ""
   description = "The AWS account id of the user."
 }
+
+variable "alias" {
+  type        = string
+  default     = ""
+  description = "The display name of the alias. The name must start with the word `alias` followed by a forward slash."
+}

@@ -84,6 +84,7 @@ module "eks-cluster" {
 
   ## KMS Key
   is_enabled               = true
+  alias                    = "alias/cloudtrail"
   aws_account_id           = "364940552322"
   deletion_window_in_days  = 7
   key_usage                = "ENCRYPT_DECRYPT"

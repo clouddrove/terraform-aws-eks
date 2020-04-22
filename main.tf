@@ -32,6 +32,7 @@ module "eks_cluster" {
   enable_key_rotation          = var.enable_key_rotation
   resources                    = var.resources
   aws_account_id               = var.aws_account_id
+  alias                        = var.alias
 }
 
 #Module      : EKS Worker
