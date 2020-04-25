@@ -8,6 +8,12 @@ locals {
     var.tags,
     {
       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    }
+  )
+  node_group_tags = merge(
+    var.tags,
+    {
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
     {
       "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
@@ -30,6 +36,18 @@ module "labels" {
   managedby   = var.managedby
   delimiter   = var.delimiter
   tags        = local.tags
+  attributes  = compact(concat(var.attributes, ["workers"]))
+  label_order = var.label_order
+}
+
+module "node_group_labels" {
+  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
+  name        = var.name
+  application = var.application
+  environment = var.environment
+  managedby   = var.managedby
+  delimiter   = var.delimiter
+  tags        = local.node_group_tags
   attributes  = compact(concat(var.attributes, ["workers"]))
   label_order = var.label_order
 }
@@ -266,9 +284,9 @@ resource "aws_eks_fargate_profile" "default" {
 #Module:     : NODE GROUP
 #Description : Creating a node group for eks cluster
 resource "aws_eks_node_group" "default" {
-  count           = var.enabled && var.node_group_enabled ? 1 : 0
+  count           = var.enabled && var.node_group_enabled ? var.number_of_node_groups : 0
   cluster_name    = var.cluster_name
-  node_group_name = format("%s-node-group", module.labels.id)
+  node_group_name = format("%s-node-group-${count.index + 1}", module.node_group_labels.id)
   node_role_arn   = join("", aws_iam_role.default.*.arn)
   subnet_ids      = var.subnet_ids
   ami_type        = var.ami_type
@@ -278,8 +296,8 @@ resource "aws_eks_node_group" "default" {
   release_version = var.ami_release_version
   version         = var.kubernetes_version
 
-  tags = module.labels.tags
-
+  tags = module.node_group_labels.tags
+  
   scaling_config {
     desired_size = var.desired_size
     max_size     = var.max_size
@@ -348,7 +366,7 @@ module "autoscale_group" {
   max_price                               = var.max_price
   volume_size                             = var.volume_size
   ebs_encryption                          = var.ebs_encryption
-  kms_key                                 = var.kms_key
+  kms_key_arn                             = var.kms_key_arn
   volume_type                             = var.volume_type
   spot_instance_type                      = var.spot_instance_type
   associate_public_ip_address             = var.associate_public_ip_address

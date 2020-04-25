@@ -25,14 +25,8 @@ module "eks_cluster" {
   allowed_cidr_blocks          = var.allowed_cidr_blocks_cluster
   enabled_cluster_log_types    = var.enabled_cluster_log_types
   public_access_cidrs          = var.public_access_cidrs
-  key_usage                    = var.key_usage
-  customer_master_key_spec     = var.customer_master_key_spec
-  deletion_window_in_days      = var.deletion_window_in_days
-  is_enabled                   = var.is_enabled
-  enable_key_rotation          = var.enable_key_rotation
+  kms_key_arn                  = var.kms_key_arn
   resources                    = var.resources
-  aws_account_id               = var.aws_account_id
-  alias                        = var.alias
 }
 
 #Module      : EKS Worker
@@ -54,6 +48,7 @@ module "eks_workers" {
   min_size                               = var.min_size
   max_size                               = var.max_size
   node_group_enabled                     = var.node_group_enabled
+  number_of_node_groups                  = var.number_of_node_groups
   ami_type                               = var.ami_type
   ami_release_version                    = var.ami_release_version
   desired_size                           = var.desired_size
@@ -80,7 +75,7 @@ module "eks_workers" {
   max_price                              = var.max_price
   volume_size                            = var.volume_size
   ebs_encryption                         = var.ebs_encryption
-  kms_key                                = var.kms_key
+  kms_key_arn                            = var.kms_key_arn
   volume_type                            = var.volume_type
   spot_instance_type                     = var.spot_instance_type
   wait_for_capacity_timeout              = var.wait_for_capacity_timeout

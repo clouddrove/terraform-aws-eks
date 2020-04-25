@@ -334,7 +334,7 @@ variable "ebs_encryption" {
   description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
 }
 
-variable "kms_key" {
+variable "kms_key_arn" {
   type        = string
   default     = ""
   description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."

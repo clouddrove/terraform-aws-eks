@@ -48,26 +48,6 @@ output "eks_cluster_version" {
   description = "The Kubernetes server version of the cluster."
 }
 
-output "eks_cluster_kms_key_arn" {
-  value       = module.eks_cluster.kms_key_arn
-  description = "The Amazon Resource Name (ARN) of the key."
-}
-
-output "eks_cluster_kms_key_id" {
-  value       = module.eks_cluster.kms_key_id
-  description = "The globally unique identifier for the key."
-}
-
-output "eks_cluster_kms_alias_arn" {
-  value       = module.eks_cluster.alias_arn
-  description = "Alias ARN."
-}
-
-output "eks_cluster_kms_alias_name" {
-  value       = module.eks_cluster.alias_name
-  description = "Alias name."
-}
-
 output "workers_launch_template_id" {
   value       = module.eks_workers.launch_template_id
   description = "ID of the launch template."

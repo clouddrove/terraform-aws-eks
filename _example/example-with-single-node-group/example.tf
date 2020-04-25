@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 locals {
   tags = {
       "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
@@ -55,12 +57,109 @@ module "ssh" {
   label_order = ["environment", "application", "name"]
 
   vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["49.36.133.46/32", module.vpc.vpc_cidr_block]
+  allowed_ip    = ["49.36.129.154/32", module.vpc.vpc_cidr_block]
   allowed_ports = [22]
 }
 
+module "kms_key" {
+    source      = "git::https://github.com/aashishgoyal246/terraform-aws-kms.git?ref=slave"
+    
+    name        = "kms"
+    application = "clouddrove"
+    environment = "test"
+    label_order = ["environment", "application", "name"]
+    enabled     = true
+    
+    description              = "KMS key for cloudtrail"
+    alias                    = "alias/cloudtrail"
+    key_usage                = "ENCRYPT_DECRYPT"
+    customer_master_key_spec = "SYMMETRIC_DEFAULT"
+    deletion_window_in_days  = 7
+    is_enabled               = true
+    enable_key_rotation      = false
+    policy                   = data.aws_iam_policy_document.default.json
+}
+
+data "aws_iam_policy_document" "default" {
+  version = "2012-10-17"
+  
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+  
+  statement {
+    sid    = "Allow CloudTrail to encrypt logs"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    actions   = ["kms:GenerateDataKey*"]
+    resources = ["*"]
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+      values   = ["arn:aws:cloudtrail:*:${data.aws_caller_identity.current.account_id}:trail/*"]
+    }
+  }
+
+  statement {
+    sid    = "Allow CloudTrail to describe key"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    actions   = ["kms:DescribeKey"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "Allow principals in the account to decrypt log files"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:ReEncryptFrom"
+    ]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "kms:CallerAccount"
+      values = [
+      "${data.aws_caller_identity.current.account_id}"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+      values   = ["arn:aws:cloudtrail:*:${data.aws_caller_identity.current.account_id}:trail/*"]
+    }
+  }
+
+  statement {
+    sid    = "Allow alias creation during setup"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions   = ["kms:CreateAlias"]
+    resources = ["*"]
+  }
+}
+
 module "eks-cluster" {
-  source = "../"
+  source = "../../"
 
   ## Tags
   name        = "eks"
@@ -77,36 +176,30 @@ module "eks-cluster" {
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
-  endpoint_private_access         = false      # set to true if using "public_access_cidrs"
-  endpoint_public_access          = true 
-  public_access_cidrs             = ["49.36.133.46/32"]      # comment it if not using
+  endpoint_private_access         = false
+  endpoint_public_access          = true
+  public_access_cidrs             = ["0.0.0.0/0"]
   resources                       = ["secrets"]
 
-  ## KMS Key
-  is_enabled               = true
-  alias                    = "alias/cloudtrail"
-  aws_account_id           = "364940552322"
-  deletion_window_in_days  = 7
-  key_usage                = "ENCRYPT_DECRYPT"
-  customer_master_key_spec = "SYMMETRIC_DEFAULT"
-
   ## EKS Fargate
-  fargate_enabled   = true      # comment this when only using node-group and auto-scaling
+  fargate_enabled   = false     
   cluster_namespace = "kube-system"
 
   ## Node-Group
-  #autoscaling_policies_enabled = false      # uncomment this when only using node-group and fargate
-  node_group_enabled           = true      # comment this when only using fargate and auto-scaling
+  node_group_enabled           = true
+  number_of_node_groups        = 1
   desired_size                 = 2
   node_group_instance_types    = ["t3.medium"]
   
   ## Ec2
+  autoscaling_policies_enabled = false
   key_name                     = module.keypair.name
-  image_id                     = "ami-0dd0a16a2bd0784b8"
+  image_id                     = "ami-0ceab0713d94f9276"
   instance_type                = "t3.small"
   max_size                     = 3
   min_size                     = 1
   volume_size                  = 20
+  kms_key_arn                  = module.kms_key.key_arn
 
   ## Spot
   spot_enabled  = true
@@ -119,8 +212,8 @@ module "eks-cluster" {
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
-  #apply_config_map_aws_auth = true      # comment this when only using node-group and fargate
-  kubernetes_version        = "1.14"
+  apply_config_map_aws_auth = false
+  kubernetes_version        = "1.15"
 
   ## Schedule
   scheduler_down = "0 19 * * MON-FRI"
@@ -138,15 +231,14 @@ module "eks-cluster" {
   spot_scale_up_desired   = 2
   spot_scale_down_desired = 1
 
-
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
 
   ## EBS Encryption
-  ebs_encryption = false
-
+  ebs_encryption = true
+  
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }
