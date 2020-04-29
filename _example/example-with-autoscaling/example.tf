@@ -19,7 +19,7 @@ module "keypair" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.4"
+  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.5"
 
   name        = "vpc"
   application = "clouddrove"
@@ -49,7 +49,7 @@ module "subnets" {
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.3"
+  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.4"
 
   name        = "ssh"
   application = "clouddrove"
@@ -70,8 +70,8 @@ module "kms_key" {
     label_order = ["environment", "application", "name"]
     enabled     = true
     
-    description              = "KMS key for cloudtrail"
-    alias                    = "alias/cloudtrail"
+    description              = "KMS key for eks"
+    alias                    = "alias/eks"
     key_usage                = "ENCRYPT_DECRYPT"
     customer_master_key_spec = "SYMMETRIC_DEFAULT"
     deletion_window_in_days  = 7
@@ -88,72 +88,9 @@ data "aws_iam_policy_document" "default" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["*"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
     actions   = ["kms:*"]
-    resources = ["*"]
-  }
-  
-  statement {
-    sid    = "Allow CloudTrail to encrypt logs"
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-    actions   = ["kms:GenerateDataKey*"]
-    resources = ["*"]
-    condition {
-      test     = "StringLike"
-      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
-      values   = ["arn:aws:cloudtrail:*:${data.aws_caller_identity.current.account_id}:trail/*"]
-    }
-  }
-
-  statement {
-    sid    = "Allow CloudTrail to describe key"
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-    actions   = ["kms:DescribeKey"]
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "Allow principals in the account to decrypt log files"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "kms:Decrypt",
-      "kms:ReEncryptFrom"
-    ]
-    resources = ["*"]
-    condition {
-      test     = "StringEquals"
-      variable = "kms:CallerAccount"
-      values = [
-      "${data.aws_caller_identity.current.account_id}"]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
-      values   = ["arn:aws:cloudtrail:*:${data.aws_caller_identity.current.account_id}:trail/*"]
-    }
-  }
-
-  statement {
-    sid    = "Allow alias creation during setup"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions   = ["kms:CreateAlias"]
     resources = ["*"]
   }
 }
