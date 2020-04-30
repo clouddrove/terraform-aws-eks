@@ -115,11 +115,13 @@ variable "health_check_type" {
 }
 
 variable "max_size" {
-  default     = 1
+  type        = number
+  default     = 3
   description = "The maximum size of the AutoScaling Group."
 }
 
 variable "min_size" {
+  type        = number
   default     = 1
   description = "The minimum size of the AutoScaling Group."
 }
@@ -138,7 +140,7 @@ variable "associate_public_ip_address" {
 
 variable "autoscaling_policies_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."
 }
 
@@ -312,7 +314,6 @@ variable "spot_instance_type" {
   description = "Sport instance type to launch."
 }
 
-
 variable "spot_max_size" {
   type        = number
   default     = 5
@@ -351,6 +352,7 @@ variable "ami_type" {
 
 variable "desired_size" {
   type        = number
+  default     = 2
   description = "Desired number of worker nodes"
 }
 

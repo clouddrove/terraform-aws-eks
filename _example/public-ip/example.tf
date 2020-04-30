@@ -31,7 +31,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=slave"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.6"
 
   name        = "subnets"
   application = "clouddrove"
@@ -62,7 +62,7 @@ module "ssh" {
 }
 
 module "kms_key" {
-    source      = "git::https://github.com/aashishgoyal246/terraform-aws-kms.git?ref=slave"
+    source      = "git::https://github.com/clouddrove/terraform-aws-kms.git?ref=tags/0.12.5"
     
     name        = "kms"
     application = "clouddrove"
@@ -113,31 +113,30 @@ module "eks-cluster" {
   allowed_security_groups_cluster = []
   allowed_security_groups_workers = []
   additional_security_group_ids   = [module.ssh.security_group_ids]
-  endpoint_private_access         = false
+  endpoint_private_access         = true
   endpoint_public_access          = true
-  public_access_cidrs             = ["0.0.0.0/0"]
+  public_access_cidrs             = ["49.36.129.154/32"]
   resources                       = ["secrets"]
 
   ## EKS Fargate
-  fargate_enabled   = false    
+  fargate_enabled   = true     
   cluster_namespace = "kube-system"
 
   ## Node-Group
   node_group_enabled           = true
-  number_of_node_groups        = 2
+  number_of_node_groups        = 1
   desired_size                 = 2
   node_group_instance_types    = ["t3.medium"]
   
   ## Ec2
-  autoscaling_policies_enabled = false
+  autoscaling_policies_enabled = true
   key_name                     = module.keypair.name
   image_id                     = "ami-0ceab0713d94f9276"
   instance_type                = "t3.small"
   max_size                     = 3
   min_size                     = 1
   volume_size                  = 20
-  kms_key_arn                  = module.kms_key.key_arn
-
+  
   ## Spot
   spot_enabled  = true
   spot_max_size = 3
@@ -149,8 +148,9 @@ module "eks-cluster" {
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
-  apply_config_map_aws_auth = false
+  apply_config_map_aws_auth = true
   kubernetes_version        = "1.15"
+  kms_key_arn               = module.kms_key.key_arn
 
   ## Schedule
   scheduler_down = "0 19 * * MON-FRI"
@@ -175,7 +175,7 @@ module "eks-cluster" {
 
   ## EBS Encryption
   ebs_encryption = true
-
+  
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }

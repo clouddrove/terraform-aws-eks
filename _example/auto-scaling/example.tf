@@ -31,7 +31,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=slave"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.6"
 
   name        = "subnets"
   application = "clouddrove"
@@ -62,7 +62,7 @@ module "ssh" {
 }
 
 module "kms_key" {
-    source      = "git::https://github.com/aashishgoyal246/terraform-aws-kms.git?ref=slave"
+    source      = "git::https://github.com/clouddrove/terraform-aws-kms.git?ref=tags/0.12.5"
     
     name        = "kms"
     application = "clouddrove"
@@ -118,16 +118,6 @@ module "eks-cluster" {
   public_access_cidrs             = ["0.0.0.0/0"]
   resources                       = ["secrets"]
 
-  ## EKS Fargate
-  fargate_enabled   = false     
-  cluster_namespace = "kube-system"
-
-  ## Node-Group
-  node_group_enabled           = false
-  number_of_node_groups        = 1
-  desired_size                 = 2
-  node_group_instance_types    = ["t3.medium"]
-  
   ## Ec2
   autoscaling_policies_enabled = true  
   key_name                     = module.keypair.name
@@ -135,8 +125,8 @@ module "eks-cluster" {
   instance_type                = "t3.small"
   max_size                     = 3
   min_size                     = 1
+  desired_size                 = 2
   volume_size                  = 20
-  kms_key_arn                  = module.kms_key.key_arn
 
   ## Spot
   spot_enabled  = true
@@ -151,6 +141,7 @@ module "eks-cluster" {
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
   kubernetes_version        = "1.15"
+  kms_key_arn               = module.kms_key.key_arn
 
   ## Schedule
   scheduler_down = "0 19 * * MON-FRI"

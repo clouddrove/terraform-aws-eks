@@ -1,7 +1,6 @@
 ## Managed By : CloudDrove
 ## Copyright @ CloudDrove. All Right Reserved.
 
-
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
 module "eks_cluster" {
