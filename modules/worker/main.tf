@@ -48,7 +48,7 @@ module "node_group_labels" {
   managedby   = var.managedby
   delimiter   = var.delimiter
   tags        = local.node_group_tags
-  attributes  = compact(concat(var.attributes, ["workers"]))
+  attributes  = compact(concat(var.attributes, ["nodes"]))
   label_order = var.label_order
 }
 
@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
   count = var.enabled && var.node_group_enabled ? 1 : 0
 
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "autoscaling:DescribeAutoScalingGroups",
       "autoscaling:DescribeAutoScalingInstances",
@@ -89,11 +89,11 @@ data "aws_iam_policy_document" "aws_eks_fargate_policy" {
   count = var.enabled && var.fargate_enabled ? 1 : 0
 
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["eks-fargate-pods.amazonaws.com"]
     }
   }
@@ -140,6 +140,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_fargate_pod_execution_role
 }
 
 resource "aws_iam_policy" "ecr" {
+  count  = var.enabled ? 1 : 0
   name   = format("%s-ecr-policy", module.labels.id)
   policy = data.aws_iam_policy_document.ecr.json
 }
@@ -158,7 +159,7 @@ data "aws_iam_policy_document" "ecr" {
 resource "aws_iam_role_policy_attachment" "test-attach" {
   count      = var.enabled ? 1 : 0
   role       = join("", aws_iam_role.default.*.name)
-  policy_arn = aws_iam_policy.ecr.arn
+  policy_arn = join("", aws_iam_policy.ecr.*.arn)
 }
 
 #Module      : IAM ROLE POLICY ATTACHMENT CNI
@@ -290,22 +291,23 @@ resource "aws_eks_node_group" "default" {
   node_role_arn   = join("", aws_iam_role.default.*.arn)
   subnet_ids      = var.subnet_ids
   ami_type        = var.ami_type
-  disk_size       = var.volume_size 
+  disk_size       = var.volume_size
   instance_types  = var.node_group_instance_types
   labels          = var.kubernetes_labels
   release_version = var.ami_release_version
   version         = var.kubernetes_version
 
   tags = module.node_group_labels.tags
-  
+
   scaling_config {
     desired_size = var.desired_size
     max_size     = var.max_size
     min_size     = var.min_size
   }
-  
+
   remote_access {
-    ec2_ssh_key = var.key_name
+    ec2_ssh_key               = var.key_name
+    source_security_group_ids = var.node_security_group_ids
   }
 
   depends_on = [

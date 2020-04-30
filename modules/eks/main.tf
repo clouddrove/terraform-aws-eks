@@ -41,7 +41,7 @@ resource "aws_iam_role" "default" {
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
   count      = var.enabled ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.default[0].name
+  role       = join("", aws_iam_role.default.*.name)
 }
 
 #Module      : IAM ROLE POLICY ATTACHMENT SERVICE

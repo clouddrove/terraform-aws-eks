@@ -517,19 +517,25 @@ variable "schedule_enabled" {
 variable "spot_schedule_enabled" {
   type        = bool
   default     = false
-  description = "AutoScaling Schedule resource for spot"
+  description = "AutoScaling Schedule resource for spot."
 }
 
 variable "node_group_enabled" {
   type        = bool
   default     = false
-  description = "Enabling or disabling the node group"
+  description = "Enabling or disabling the node group."
+}
+
+variable "node_security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
 
 variable "ami_type" {
   type        = string
   default     = "AL2_x86_64"
-  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"  
+  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"
 }
 
 variable "desired_size" {

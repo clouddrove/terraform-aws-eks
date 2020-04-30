@@ -91,6 +91,7 @@ module "eks_workers" {
   allowed_cidr_blocks                    = var.allowed_cidr_blocks_workers
   enabled                                = var.enabled
   key_name                               = var.key_name
+  node_security_group_ids                = var.node_security_group_ids
   autoscaling_policies_enabled           = var.autoscaling_policies_enabled
   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
