@@ -54,7 +54,6 @@ variable "enabled" {
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources."
 }
 
-
 variable "image_id" {
   type        = string
   default     = ""
@@ -69,6 +68,7 @@ variable "instance_initiated_shutdown_behavior" {
 
 variable "instance_type" {
   type        = string
+  default     = ""
   description = "Instance type to launch."
 }
 
@@ -116,17 +116,19 @@ variable "block_device_mappings" {
 
 variable "max_size" {
   type        = number
+  default     = 3
   description = "The maximum size of the autoscale group."
 }
 
 variable "min_size" {
   type        = number
+  default     = 1
   description = "The minimum size of the autoscale group."
 }
 
-
 variable "subnet_ids" {
   type        = list(string)
+  default     = []
   description = "A list of subnet IDs to launch resources in."
 }
 
@@ -334,7 +336,7 @@ variable "ebs_encryption" {
   description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
 }
 
-variable "kms_key" {
+variable "kms_key_arn" {
   type        = string
   default     = ""
   description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."
@@ -381,7 +383,6 @@ variable "scheduler_down" {
   type        = string
   default     = "0 19 * * MON-FRI" # 21:00  CET
   description = "What is the recurrency for scaling up operations ?"
-
 }
 
 variable "scheduler_up" {

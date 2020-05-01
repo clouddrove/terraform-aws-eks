@@ -50,12 +50,14 @@ variable "enabled" {
 
 variable "vpc_id" {
   type        = string
+  default     = ""
   description = "VPC ID for the EKS cluster."
 }
 
 variable "subnet_ids" {
-  description = "A list of subnet IDs to launch the cluster in."
   type        = list(string)
+  default     = []
+  description = "A list of subnet IDs to launch the cluster in."
 }
 
 variable "allowed_security_groups" {
@@ -72,10 +74,13 @@ variable "allowed_cidr_blocks" {
 
 variable "workers_security_group_ids" {
   type        = list(string)
+  default     = []
   description = "Security Group IDs of the worker nodes."
 }
 
 variable "workers_security_group_count" {
+  type        = number
+  default     = 0
   description = "Count of the worker Security Groups. Needed to prevent Terraform error `count can't be computed`."
 }
 
@@ -101,4 +106,22 @@ variable "enabled_cluster_log_types" {
   type        = list(string)
   default     = []
   description = "A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]."
+}
+
+variable "public_access_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
+}
+
+variable "resources" {
+  type        = list(string)
+  default     = []
+  description = "List of strings with resources to be encrypted. Valid values: secrets"
+}
+
+variable "kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "The ARN of the KMS Key"
 }

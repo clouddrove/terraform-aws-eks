@@ -115,11 +115,13 @@ variable "health_check_type" {
 }
 
 variable "max_size" {
-  default     = 1
+  type        = number
+  default     = 3
   description = "The maximum size of the AutoScaling Group."
 }
 
 variable "min_size" {
+  type        = number
   default     = 1
   description = "The minimum size of the AutoScaling Group."
 }
@@ -138,7 +140,7 @@ variable "associate_public_ip_address" {
 
 variable "autoscaling_policies_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."
 }
 
@@ -224,12 +226,6 @@ variable "ebs_encryption" {
   type        = bool
   default     = false
   description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
-}
-
-variable "kms_key" {
-  type        = string
-  default     = ""
-  description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."
 }
 
 variable "scheduler_down" {
@@ -318,7 +314,6 @@ variable "spot_instance_type" {
   description = "Sport instance type to launch."
 }
 
-
 variable "spot_max_size" {
   type        = number
   default     = 5
@@ -352,11 +347,12 @@ variable "node_group_enabled" {
 variable "ami_type" {
   type        = string
   default     = "AL2_x86_64"
-  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"  
+  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"
 }
 
 variable "desired_size" {
   type        = number
+  default     = 2
   description = "Desired number of worker nodes"
 }
 
@@ -374,6 +370,48 @@ variable "kubernetes_labels" {
 
 variable "node_group_instance_types" {
   type        = list
-  default     = ["t3.medium"]
+  default     = []
   description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
+}
+
+variable "public_access_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
+}
+
+variable "resources" {
+  type        = list(string)
+  default     = []
+  description = "List of strings with resources to be encrypted. Valid values: secrets"
+}
+
+variable "fargate_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether fargate profile is enabled or not"
+}
+
+variable "cluster_namespace" {
+  type        = string
+  default     = ""
+  description = "Kubernetes namespace for selection"
+}
+
+variable "number_of_node_groups" {
+  type        = number
+  default     = 1
+  description = "Number of node groups"
+}
+
+variable "kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "The ARN of the KMS Key"
+}
+
+variable "node_security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }

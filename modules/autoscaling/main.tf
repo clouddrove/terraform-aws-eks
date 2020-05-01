@@ -29,7 +29,7 @@ resource "aws_launch_template" "on_demand" {
     ebs {
       volume_size = var.volume_size
       encrypted   = var.ebs_encryption
-      kms_key_id  = var.kms_key
+      kms_key_id  = var.kms_key_arn
       volume_type = var.volume_type
     }
   }
@@ -82,7 +82,7 @@ resource "aws_launch_template" "spot" {
     ebs {
       volume_size = var.volume_size
       encrypted   = var.ebs_encryption
-      kms_key_id  = var.kms_key
+      kms_key_id  = var.kms_key_arn
       volume_type = var.volume_type
     }
   }

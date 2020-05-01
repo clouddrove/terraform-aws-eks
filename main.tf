@@ -1,7 +1,6 @@
 ## Managed By : CloudDrove
 ## Copyright @ CloudDrove. All Right Reserved.
 
-
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
 module "eks_cluster" {
@@ -24,6 +23,9 @@ module "eks_cluster" {
   workers_security_group_count = 1
   allowed_cidr_blocks          = var.allowed_cidr_blocks_cluster
   enabled_cluster_log_types    = var.enabled_cluster_log_types
+  public_access_cidrs          = var.public_access_cidrs
+  kms_key_arn                  = var.kms_key_arn
+  resources                    = var.resources
 }
 
 #Module      : EKS Worker
@@ -45,12 +47,15 @@ module "eks_workers" {
   min_size                               = var.min_size
   max_size                               = var.max_size
   node_group_enabled                     = var.node_group_enabled
+  number_of_node_groups                  = var.number_of_node_groups
   ami_type                               = var.ami_type
   ami_release_version                    = var.ami_release_version
   desired_size                           = var.desired_size
   kubernetes_labels                      = var.kubernetes_labels
   kubernetes_version                     = var.kubernetes_version
   node_group_instance_types              = var.node_group_instance_types
+  fargate_enabled                        = var.fargate_enabled
+  cluster_namespace                      = var.cluster_namespace
   spot_max_size                          = var.spot_max_size
   spot_min_size                          = var.spot_min_size
   spot_enabled                           = var.spot_enabled
@@ -69,7 +74,7 @@ module "eks_workers" {
   max_price                              = var.max_price
   volume_size                            = var.volume_size
   ebs_encryption                         = var.ebs_encryption
-  kms_key                                = var.kms_key
+  kms_key_arn                            = var.kms_key_arn
   volume_type                            = var.volume_type
   spot_instance_type                     = var.spot_instance_type
   wait_for_capacity_timeout              = var.wait_for_capacity_timeout
@@ -85,6 +90,7 @@ module "eks_workers" {
   allowed_cidr_blocks                    = var.allowed_cidr_blocks_workers
   enabled                                = var.enabled
   key_name                               = var.key_name
+  node_security_group_ids                = var.node_security_group_ids
   autoscaling_policies_enabled           = var.autoscaling_policies_enabled
   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent

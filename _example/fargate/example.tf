@@ -17,7 +17,7 @@ module "keypair" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.4"
+  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.5"
 
   name        = "vpc"
   application = "clouddrove"
@@ -29,7 +29,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.4"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.6"
 
   name        = "subnets"
   application = "clouddrove"
@@ -47,7 +47,7 @@ module "subnets" {
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.3"
+  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.4"
 
   name        = "ssh"
   application = "clouddrove"
@@ -55,12 +55,46 @@ module "ssh" {
   label_order = ["environment", "application", "name"]
 
   vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["49.36.133.46/32", module.vpc.vpc_cidr_block]
+  allowed_ip    = ["49.36.129.154/32", module.vpc.vpc_cidr_block]
   allowed_ports = [22]
 }
 
+module "kms_key" {
+    source      = "git::https://github.com/clouddrove/terraform-aws-kms.git?ref=tags/0.12.5"
+    
+    name        = "kms"
+    application = "clouddrove"
+    environment = "test"
+    label_order = ["environment", "application", "name"]
+    enabled     = true
+    
+    description              = "KMS key for eks"
+    alias                    = "alias/eks"
+    key_usage                = "ENCRYPT_DECRYPT"
+    customer_master_key_spec = "SYMMETRIC_DEFAULT"
+    deletion_window_in_days  = 7
+    is_enabled               = true
+    enable_key_rotation      = false
+    policy                   = data.aws_iam_policy_document.default.json
+}
+
+data "aws_iam_policy_document" "default" {
+  version = "2012-10-17"
+  
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+}
+
 module "eks-cluster" {
-  source = "../"
+  source = "../../"
 
   ## Tags
   name        = "eks"
@@ -68,7 +102,6 @@ module "eks-cluster" {
   environment = "test"
   label_order = ["environment", "application", "name"]
   enabled     = true
-
 
   ## Network
   vpc_id                          = module.vpc.vpc_id
@@ -79,61 +112,17 @@ module "eks-cluster" {
   additional_security_group_ids   = [module.ssh.security_group_ids]
   endpoint_private_access         = false
   endpoint_public_access          = true
+  public_access_cidrs             = ["0.0.0.0/0"]
+  resources                       = ["secrets"]
 
-  ## Node-Group
-
-  # autoscaling_policies_enabled = false      # uncomment this when only using node-group
-  node_group_enabled           = true
-  desired_size                 = 1
-  node_group_instance_types    = ["t3.medium"]
-  
-  ## Ec2
-  key_name                     = module.keypair.name
-  image_id                     = "ami-0dd0a16a2bd0784b8"
-  instance_type                = "t3.small"
-  max_size                     = 3
-  min_size                     = 1
-  volume_size                  = 20
-
-  ## Spot
-  spot_enabled  = true
-  spot_max_size = 3
-  spot_min_size = 1
-
-  max_price                   = "0.20"
-  spot_instance_type          = "m5.large"
-  associate_public_ip_address = true
+  ## EKS Fargate
+  fargate_enabled   = true     
+  cluster_namespace = "kube-system"
 
   ## Cluster
-  wait_for_capacity_timeout = "15m"
-  apply_config_map_aws_auth = true      # comment this when only using node-group
-  kubernetes_version        = "1.14"
-
-  ## Schedule
-  scheduler_down = "0 19 * * MON-FRI"
-  scheduler_up   = "0 6 * * MON-FRI"
-
-  schedule_enabled   = true
-  min_size_scaledown = 0
-  max_size_scaledown = 1
-  scale_up_desired   = 2
-  scale_down_desired = 1
-
-  spot_schedule_enabled   = true
-  spot_min_size_scaledown = 0
-  spot_max_size_scaledown = 1
-  spot_scale_up_desired   = 2
-  spot_scale_down_desired = 1
-
-
-  ## Health Checks
-  cpu_utilization_high_threshold_percent = 80
-  cpu_utilization_low_threshold_percent  = 20
-  health_check_type                      = "EC2"
-
-  ## EBS Encryption
-  ebs_encryption = false
-
+  kubernetes_version = "1.15"
+  kms_key_arn        = module.kms_key.key_arn
+  
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }

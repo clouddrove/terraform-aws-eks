@@ -41,7 +41,7 @@ resource "aws_iam_role" "default" {
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
   count      = var.enabled ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.default[0].name
+  role       = join("", aws_iam_role.default.*.name)
 }
 
 #Module      : IAM ROLE POLICY ATTACHMENT SERVICE
@@ -134,6 +134,14 @@ resource "aws_eks_cluster" "default" {
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.endpoint_private_access
     endpoint_public_access  = var.endpoint_public_access
+    public_access_cidrs     = var.public_access_cidrs
+  }
+
+  encryption_config {
+    provider {
+      key_arn = var.kms_key_arn
+    }
+    resources = var.resources
   }
 
   depends_on = [

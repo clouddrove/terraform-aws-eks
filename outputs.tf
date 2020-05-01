@@ -138,6 +138,16 @@ output "eks_node_group_status" {
   description = "Status of the EKS Node Group"
 }
 
+output "eks_fargate_arn" {
+  value       = module.eks_workers.eks_fargate_arn
+  description = "Amazon Resource Name (ARN) of the EKS Fargate Profile."
+}
+
+output "eks_fargate_id" {
+  value       = module.eks_workers.eks_fargate_id
+  description = "EKS Cluster name and EKS Fargate Profile name separated by a colon (:)."
+}
+
 output "tags" {
   value       = module.eks_cluster.tags
   description = "A mapping of tags to assign to the resource."

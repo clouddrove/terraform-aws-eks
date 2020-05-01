@@ -56,16 +56,19 @@ variable "enabled" {
 
 variable "cluster_name" {
   type        = string
+  default     = ""
   description = "The name of the EKS cluster."
 }
 
 variable "cluster_endpoint" {
   type        = string
+  default     = ""
   description = "EKS cluster endpoint."
 }
 
 variable "cluster_certificate_authority_data" {
   type        = string
+  default     = ""
   description = "The base64 encoded certificate data required to communicate with the cluster."
 }
 
@@ -77,11 +80,13 @@ variable "cluster_security_group_ingress_enabled" {
 
 variable "cluster_security_group_id" {
   type        = string
+  default     = ""
   description = "Security Group ID of the EKS cluster."
 }
 
 variable "vpc_id" {
   type        = string
+  default     = ""
   description = "VPC ID for the EKS cluster."
 }
 
@@ -128,6 +133,7 @@ variable "image_id" {
 
 variable "instance_type" {
   type        = string
+  default     = ""
   description = "Instance type to launch."
 }
 
@@ -169,11 +175,13 @@ variable "disable_api_termination" {
 
 variable "max_size" {
   type        = number
+  default     = 3
   description = "The maximum size of the autoscale group."
 }
 
 variable "min_size" {
   type        = number
+  default     = 1
   description = "The minimum size of the autoscale group."
 }
 
@@ -238,7 +246,6 @@ variable "metrics_granularity" {
 
 variable "enabled_metrics" {
   type = list(string)
-
   default     = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
   description = "A list of metrics to collect. The allowed values are `GroupMinSize`, `GroupMaxSize`, `GroupDesiredCapacity`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupTerminatingInstances`, `GroupTotalInstances`."
 }
@@ -403,7 +410,7 @@ variable "ebs_encryption" {
   description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
 }
 
-variable "kms_key" {
+variable "kms_key_arn" {
   type        = string
   default     = ""
   description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."
@@ -434,7 +441,6 @@ variable "spot_instance_type" {
   description = "Sport instance type to launch."
 }
 
-
 variable "spot_max_size" {
   type        = number
   default     = 5
@@ -451,7 +457,6 @@ variable "scheduler_down" {
   type        = string
   default     = "0 19 * * MON-FRI" # 21:00  CET
   description = "What is the recurrency for scaling up operations ?"
-
 }
 
 variable "scheduler_up" {
@@ -517,23 +522,36 @@ variable "schedule_enabled" {
 variable "spot_schedule_enabled" {
   type        = bool
   default     = false
-  description = "AutoScaling Schedule resource for spot"
+  description = "AutoScaling Schedule resource for spot."
 }
 
 variable "node_group_enabled" {
   type        = bool
   default     = false
-  description = "Enabling or disabling the node group"
+  description = "Enabling or disabling the node group."
+}
+
+variable "node_security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
 
 variable "ami_type" {
   type        = string
   default     = "AL2_x86_64"
-  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"  
+  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"
+}
+
+variable "desired_size" {
+  type        = number
+  default     = 2
+  description = "Desired number of worker nodes"
 }
 
 variable "ami_release_version" {
   type        = string
+  default     = ""
   description = "AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version"
 }
 
@@ -541,11 +559,6 @@ variable "kubernetes_version" {
   type        = string
   default     = ""
   description = "Kubernetes version. Defaults to EKS Cluster Kubernetes version. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-variable "desired_size" {
-  type        = number
-  description = "Desired number of worker nodes"
 }
 
 variable "kubernetes_labels" {
@@ -556,5 +569,24 @@ variable "kubernetes_labels" {
 
 variable "node_group_instance_types" {
   type        = list
+  default     = []
   description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
+}
+
+variable "fargate_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether fargate profile is enabled or not"
+}
+
+variable "cluster_namespace" {
+  type        = string
+  default     = ""
+  description = "Kubernetes namespace for selection"
+}
+
+variable "number_of_node_groups" {
+  type        = number
+  default     = 1
+  description = "Number of node groups"
 }
