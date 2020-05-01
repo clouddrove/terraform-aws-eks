@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 locals {
   tags = {
       "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
@@ -88,7 +86,7 @@ data "aws_iam_policy_document" "default" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = ["*"]
     }
     actions   = ["kms:*"]
     resources = ["*"]
