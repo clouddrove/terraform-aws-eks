@@ -56,16 +56,19 @@ variable "enabled" {
 
 variable "cluster_name" {
   type        = string
+  default     = ""
   description = "The name of the EKS cluster."
 }
 
 variable "cluster_endpoint" {
   type        = string
+  default     = ""
   description = "EKS cluster endpoint."
 }
 
 variable "cluster_certificate_authority_data" {
   type        = string
+  default     = ""
   description = "The base64 encoded certificate data required to communicate with the cluster."
 }
 
@@ -77,11 +80,13 @@ variable "cluster_security_group_ingress_enabled" {
 
 variable "cluster_security_group_id" {
   type        = string
+  default     = ""
   description = "Security Group ID of the EKS cluster."
 }
 
 variable "vpc_id" {
   type        = string
+  default     = ""
   description = "VPC ID for the EKS cluster."
 }
 
@@ -128,6 +133,7 @@ variable "image_id" {
 
 variable "instance_type" {
   type        = string
+  default     = ""
   description = "Instance type to launch."
 }
 
@@ -169,11 +175,13 @@ variable "disable_api_termination" {
 
 variable "max_size" {
   type        = number
+  default     = 3
   description = "The maximum size of the autoscale group."
 }
 
 variable "min_size" {
   type        = number
+  default     = 1
   description = "The minimum size of the autoscale group."
 }
 
@@ -238,7 +246,6 @@ variable "metrics_granularity" {
 
 variable "enabled_metrics" {
   type = list(string)
-
   default     = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
   description = "A list of metrics to collect. The allowed values are `GroupMinSize`, `GroupMaxSize`, `GroupDesiredCapacity`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupTerminatingInstances`, `GroupTotalInstances`."
 }
@@ -434,7 +441,6 @@ variable "spot_instance_type" {
   description = "Sport instance type to launch."
 }
 
-
 variable "spot_max_size" {
   type        = number
   default     = 5
@@ -451,7 +457,6 @@ variable "scheduler_down" {
   type        = string
   default     = "0 19 * * MON-FRI" # 21:00  CET
   description = "What is the recurrency for scaling up operations ?"
-
 }
 
 variable "scheduler_up" {
@@ -540,6 +545,7 @@ variable "ami_type" {
 
 variable "desired_size" {
   type        = number
+  default     = 2
   description = "Desired number of worker nodes"
 }
 

@@ -105,7 +105,6 @@ module "eks-cluster" {
   label_order = ["environment", "application", "name"]
   enabled     = true
 
-
   ## Network
   vpc_id                          = module.vpc.vpc_id
   eks_subnet_ids                  = module.subnets.public_subnet_id
@@ -120,7 +119,7 @@ module "eks-cluster" {
 
   ## Node-Group
   node_group_enabled           = true
-  number_of_node_groups        = 2
+  number_of_node_groups        = 1
   node_group_instance_types    = ["t3.medium"]
   key_name                     = module.keypair.name
   node_security_group_ids      = []

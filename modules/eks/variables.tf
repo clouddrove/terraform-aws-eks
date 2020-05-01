@@ -50,11 +50,13 @@ variable "enabled" {
 
 variable "vpc_id" {
   type        = string
+  default     = ""
   description = "VPC ID for the EKS cluster."
 }
 
 variable "subnet_ids" {
   type        = list(string)
+  default     = []
   description = "A list of subnet IDs to launch the cluster in."
 }
 
@@ -72,10 +74,13 @@ variable "allowed_cidr_blocks" {
 
 variable "workers_security_group_ids" {
   type        = list(string)
+  default     = []
   description = "Security Group IDs of the worker nodes."
 }
 
 variable "workers_security_group_count" {
+  type        = number
+  default     = 0
   description = "Count of the worker Security Groups. Needed to prevent Terraform error `count can't be computed`."
 }
 

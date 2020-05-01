@@ -54,7 +54,6 @@ variable "enabled" {
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources."
 }
 
-
 variable "image_id" {
   type        = string
   default     = ""
@@ -69,6 +68,7 @@ variable "instance_initiated_shutdown_behavior" {
 
 variable "instance_type" {
   type        = string
+  default     = ""
   description = "Instance type to launch."
 }
 
@@ -116,17 +116,19 @@ variable "block_device_mappings" {
 
 variable "max_size" {
   type        = number
+  default     = 3
   description = "The maximum size of the autoscale group."
 }
 
 variable "min_size" {
   type        = number
+  default     = 1
   description = "The minimum size of the autoscale group."
 }
 
-
 variable "subnet_ids" {
   type        = list(string)
+  default     = []
   description = "A list of subnet IDs to launch resources in."
 }
 
@@ -381,7 +383,6 @@ variable "scheduler_down" {
   type        = string
   default     = "0 19 * * MON-FRI" # 21:00  CET
   description = "What is the recurrency for scaling up operations ?"
-
 }
 
 variable "scheduler_up" {
