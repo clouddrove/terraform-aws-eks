@@ -75,6 +75,7 @@ module "eks-cluster" {
   additional_security_group_ids   = [module.ssh.security_group_ids]
   endpoint_private_access         = false
   endpoint_public_access          = true
+  public_access_cidrs             = ["51.79.69.69/32"]
 
   ## Ec2
   key_name      = module.keypair.name

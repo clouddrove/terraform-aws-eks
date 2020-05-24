@@ -342,3 +342,9 @@ variable "spot_schedule_enabled" {
   default     = false
   description = "AutoScaling Schedule resource for spot"
 }
+
+variable "public_access_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
+}

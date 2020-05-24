@@ -102,3 +102,9 @@ variable "enabled_cluster_log_types" {
   default     = []
   description = "A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]."
 }
+
+variable "public_access_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
+}

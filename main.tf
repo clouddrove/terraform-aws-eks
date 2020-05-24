@@ -23,6 +23,7 @@ module "eks_cluster" {
   workers_security_group_ids   = [module.eks_workers.security_group_id]
   workers_security_group_count = 1
   allowed_cidr_blocks          = var.allowed_cidr_blocks_cluster
+  public_access_cidrs          = var.public_access_cidrs
   enabled_cluster_log_types    = var.enabled_cluster_log_types
 }
 
