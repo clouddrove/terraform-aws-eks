@@ -245,7 +245,7 @@ variable "metrics_granularity" {
 }
 
 variable "enabled_metrics" {
-  type = list(string)
+  type        = list(string)
   default     = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
   description = "A list of metrics to collect. The allowed values are `GroupMinSize`, `GroupMaxSize`, `GroupDesiredCapacity`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupTerminatingInstances`, `GroupTotalInstances`."
 }
@@ -280,7 +280,7 @@ variable "service_linked_role_arn" {
   description = "The ARN of the service-linked role that the ASG will use to call other AWS services."
 }
 
-variable "autoscaling_policies_enabled" {
+variable "on_demand_enabled" {
   type        = bool
   default     = true
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."

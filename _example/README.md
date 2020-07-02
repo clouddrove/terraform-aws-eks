@@ -6,7 +6,7 @@ This below README tells about the configuration to do after deploying terraform 
 
 A. As I have used `kube-system` namespace in `example.tf` file -
 
-Line Number - 186 - `cluster_namespace = "kube-system"`, so basically I am only using Fargate for my nodes and pods that are deployed on those nodes this means that `CoreDNS` deployment will also be on Fargate. 
+Line Number - 186 - `cluster_namespace = "kube-system"`, so basically I am only using Fargate for my nodes and pods that are deployed on those nodes this means that `CoreDNS` deployment will also be on Fargate.
 
 B. By default, CoreDNS is configured to run on Amazon EC2 infrastructure on Amazon EKS clusters. If you want to only run your pods on Fargate in your cluster, you need to modify the CoreDNS deployment to remove the `eks.amazonaws.com/compute-type : ec2` annotation.
 
@@ -69,7 +69,7 @@ The configuration becomes -
         - --skip-nodes-with-system-pods=false
 ```
 
-2. In line number `141` in the above file replace `v1.14.7` to `v1.15.6`.
+2. In line number `141` in the above file replace `v1.14.7` to `v1.16.6`.
 
 The Github Repository link for reference - [Github Link](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/aws)
 
@@ -115,7 +115,7 @@ The configuration becomes -
         - --skip-nodes-with-system-pods=false
 ```
 
-2. In line number `141` in the above file replace `v1.14.7` to `v1.15.6`.
+2. In line number `141` in the above file replace `v1.14.7` to `v1.16.6`.
 
 The Github Repository link for reference - [Github Link](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/aws)
 
@@ -168,7 +168,7 @@ The configuration becomes -
         - --skip-nodes-with-system-pods=false
 ```
 
-B. In line number `141` in the above file replace `v1.14.7` to `v1.15.6`.
+B. In line number `141` in the above file replace `v1.14.7` to `v1.16.6`.
 
 The Github Repository link for reference - [Github Link](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/aws)
 

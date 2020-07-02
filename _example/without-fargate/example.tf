@@ -1,7 +1,7 @@
 locals {
   tags = {
-      "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
-    }
+    "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
+  }
 }
 
 provider "aws" {
@@ -38,11 +38,11 @@ module "subnets" {
   tags        = local.tags
   enabled     = true
 
-  nat_gateway_enabled = true      
+  nat_gateway_enabled = true
   availability_zones  = ["eu-west-1a", "eu-west-1b"]
   vpc_id              = module.vpc.vpc_id
   cidr_block          = module.vpc.vpc_cidr_block
-  type                = "public-private"      
+  type                = "public-private"
   igw_id              = module.vpc.igw_id
 }
 
@@ -60,27 +60,27 @@ module "ssh" {
 }
 
 module "kms_key" {
-    source      = "git::https://github.com/clouddrove/terraform-aws-kms.git?ref=tags/0.12.5"
-    
-    name        = "kms"
-    application = "clouddrove"
-    environment = "test"
-    label_order = ["environment", "application", "name"]
-    enabled     = true
-    
-    description              = "KMS key for eks"
-    alias                    = "alias/eks"
-    key_usage                = "ENCRYPT_DECRYPT"
-    customer_master_key_spec = "SYMMETRIC_DEFAULT"
-    deletion_window_in_days  = 7
-    is_enabled               = true
-    enable_key_rotation      = false
-    policy                   = data.aws_iam_policy_document.default.json
+  source = "git::https://github.com/clouddrove/terraform-aws-kms.git?ref=tags/0.12.5"
+
+  name        = "kms"
+  application = "clouddrove"
+  environment = "test"
+  label_order = ["environment", "application", "name"]
+  enabled     = true
+
+  description              = "KMS key for eks"
+  alias                    = "alias/eks"
+  key_usage                = "ENCRYPT_DECRYPT"
+  customer_master_key_spec = "SYMMETRIC_DEFAULT"
+  deletion_window_in_days  = 7
+  is_enabled               = true
+  enable_key_rotation      = false
+  policy                   = data.aws_iam_policy_document.default.json
 }
 
 data "aws_iam_policy_document" "default" {
   version = "2012-10-17"
-  
+
   statement {
     sid    = "Enable IAM User Permissions"
     effect = "Allow"
@@ -116,20 +116,20 @@ module "eks-cluster" {
   resources                       = ["secrets"]
 
   ## Node-Group
-  node_group_enabled           = true
-  number_of_node_groups        = 1
-  desired_size                 = 2
-  node_group_instance_types    = ["t3.medium"]
-  node_security_group_ids      = []
-  
+  node_group_enabled        = true
+  number_of_node_groups     = 1
+  desired_size              = 2
+  node_group_instance_types = ["t3.medium"]
+  node_security_group_ids   = []
+
   ## Ec2
-  autoscaling_policies_enabled = true
-  key_name                     = module.keypair.name
-  image_id                     = "ami-0ceab0713d94f9276"
-  instance_type                = "t3.small"
-  max_size                     = 3
-  min_size                     = 1
-  volume_size                  = 20
+  on_demand_enabled = true
+  key_name          = module.keypair.name
+  image_id          = "ami-0ceab0713d94f9276"
+  instance_type     = "t3.small"
+  max_size          = 3
+  min_size          = 1
+  volume_size       = 20
 
   ## Spot
   spot_enabled  = true
@@ -143,7 +143,7 @@ module "eks-cluster" {
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
-  kubernetes_version        = "1.15"
+  kubernetes_version        = "1.16"
   kms_key_arn               = module.kms_key.key_arn
 
   ## Schedule
@@ -169,7 +169,7 @@ module "eks-cluster" {
 
   ## EBS Encryption
   ebs_encryption = true
- 
+
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }

@@ -22,7 +22,7 @@ locals {
       "k8s.io/cluster-autoscaler/enabled" = "${var.node_group_enabled}"
     }
   )
-  enabled                       = var.enabled && var.autoscaling_policies_enabled ? true : false
+  enabled                       = var.enabled ? true : false
   use_existing_instance_profile = var.aws_iam_instance_profile_name != "" ? true : false
 }
 
@@ -181,7 +181,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
 #Module      : IAM INSTANCE PROFILE
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
-  count = var.enabled && local.use_existing_instance_profile || var.autoscaling_policies_enabled ? 1 : 0
+  count = var.enabled && local.use_existing_instance_profile || var.on_demand_enabled ? 1 : 0
   name  = format("%s-instance-profile", module.labels.id)
   role  = join("", aws_iam_role.default.*.name)
 }
@@ -389,7 +389,7 @@ module "autoscale_group" {
   wait_for_capacity_timeout               = var.wait_for_capacity_timeout
   protect_from_scale_in                   = var.protect_from_scale_in
   service_linked_role_arn                 = var.service_linked_role_arn
-  autoscaling_policies_enabled            = var.autoscaling_policies_enabled
+  on_demand_enabled                       = var.on_demand_enabled
   scale_up_cooldown_seconds               = var.scale_up_cooldown_seconds
   scale_up_scaling_adjustment             = var.scale_up_scaling_adjustment
   scale_up_adjustment_type                = var.scale_up_adjustment_type

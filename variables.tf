@@ -138,7 +138,7 @@ variable "associate_public_ip_address" {
   description = "Associate a public IP address with the worker nodes in the VPC."
 }
 
-variable "autoscaling_policies_enabled" {
+variable "on_demand_enabled" {
   type        = bool
   default     = false
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."
