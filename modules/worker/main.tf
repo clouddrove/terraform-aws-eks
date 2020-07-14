@@ -368,7 +368,6 @@ module "autoscale_group" {
   max_price                               = var.max_price
   volume_size                             = var.volume_size
   ebs_encryption                          = var.ebs_encryption
-  kms_key_arn                             = var.kms_key_arn
   volume_type                             = var.volume_type
   spot_instance_type                      = var.spot_instance_type
   associate_public_ip_address             = var.associate_public_ip_address

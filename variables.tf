@@ -380,12 +380,6 @@ variable "public_access_cidrs" {
   description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
 }
 
-variable "resources" {
-  type        = list(string)
-  default     = []
-  description = "List of strings with resources to be encrypted. Valid values: secrets"
-}
-
 variable "fargate_enabled" {
   type        = bool
   default     = false
@@ -404,11 +398,6 @@ variable "number_of_node_groups" {
   description = "Number of node groups"
 }
 
-variable "kms_key_arn" {
-  type        = string
-  default     = ""
-  description = "The ARN of the KMS Key"
-}
 
 variable "node_security_group_ids" {
   type        = list(string)

@@ -113,15 +113,3 @@ variable "public_access_cidrs" {
   default     = []
   description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
 }
-
-variable "resources" {
-  type        = list(string)
-  default     = []
-  description = "List of strings with resources to be encrypted. Valid values: secrets"
-}
-
-variable "kms_key_arn" {
-  type        = string
-  default     = ""
-  description = "The ARN of the KMS Key"
-}

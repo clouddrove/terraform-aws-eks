@@ -137,12 +137,6 @@ resource "aws_eks_cluster" "default" {
     public_access_cidrs     = var.public_access_cidrs
   }
 
-  encryption_config {
-    provider {
-      key_arn = var.kms_key_arn
-    }
-    resources = var.resources
-  }
 
   depends_on = [
     aws_iam_role_policy_attachment.amazon_eks_cluster_policy,

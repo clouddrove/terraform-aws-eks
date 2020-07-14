@@ -24,8 +24,7 @@ module "eks_cluster" {
   allowed_cidr_blocks          = var.allowed_cidr_blocks_cluster
   enabled_cluster_log_types    = var.enabled_cluster_log_types
   public_access_cidrs          = var.public_access_cidrs
-  kms_key_arn                  = var.kms_key_arn
-  resources                    = var.resources
+
 }
 
 #Module      : EKS Worker
@@ -74,7 +73,6 @@ module "eks_workers" {
   max_price                              = var.max_price
   volume_size                            = var.volume_size
   ebs_encryption                         = var.ebs_encryption
-  kms_key_arn                            = var.kms_key_arn
   volume_type                            = var.volume_type
   spot_instance_type                     = var.spot_instance_type
   wait_for_capacity_timeout              = var.wait_for_capacity_timeout
