@@ -344,6 +344,25 @@ variable "node_group_enabled" {
   description = "Enabling or disabling the node group"
 }
 
+
+variable "node_group_desired_size" {
+  type        = number
+  default     = 2
+  description = "Desired number of worker node groups"
+}
+
+variable "node_group_max_size" {
+  type        = number
+  default     = 3
+  description = "The maximum size of the autoscale node group."
+}
+
+variable "node_group_min_size" {
+  type        = number
+  default     = 1
+  description = "The minimum size of the autoscale node group."
+}
+
 variable "ami_type" {
   type        = string
   default     = "AL2_x86_64"

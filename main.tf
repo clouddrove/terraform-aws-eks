@@ -46,6 +46,9 @@ module "eks_workers" {
   health_check_type                      = var.health_check_type
   min_size                               = var.min_size
   max_size                               = var.max_size
+  node_group_desired_size                = var.node_group_desired_size
+  node_group_max_size                    = var.node_group_max_size
+  node_group_min_size                    = var.node_group_min_size
   node_group_enabled                     = var.node_group_enabled
   number_of_node_groups                  = var.number_of_node_groups
   ami_type                               = var.ami_type

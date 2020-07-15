@@ -121,9 +121,9 @@ module "eks-cluster" {
   node_group_instance_types = ["t3.medium"]
   key_name                  = module.keypair.name
   node_security_group_ids   = []
-  max_size                  = 3
-  desired_size              = 2
-  min_size                  = 1
+  node_group_max_size       = 3
+  node_group_desired_size   = 2
+  node_group_min_size       = 1
   volume_size               = 20
 
   ## Cluster

@@ -549,6 +549,24 @@ variable "desired_size" {
   description = "Desired number of worker nodes"
 }
 
+variable "node_group_desired_size" {
+  type        = number
+  default     = 2
+  description = "Desired number of worker node groups"
+}
+
+variable "node_group_max_size" {
+  type        = number
+  default     = 3
+  description = "The maximum size of the autoscale node group."
+}
+
+variable "node_group_min_size" {
+  type        = number
+  default     = 1
+  description = "The minimum size of the autoscale node group."
+}
+
 variable "ami_release_version" {
   type        = string
   default     = ""

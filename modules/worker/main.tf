@@ -300,9 +300,9 @@ resource "aws_eks_node_group" "default" {
   tags = module.node_group_labels.tags
 
   scaling_config {
-    desired_size = var.desired_size
-    max_size     = var.max_size
-    min_size     = var.min_size
+    desired_size = var.node_group_desired_size
+    max_size     = var.node_group_max_size
+    min_size     = var.node_group_min_size
   }
 
   remote_access {
