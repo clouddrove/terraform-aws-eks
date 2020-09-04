@@ -59,25 +59,6 @@ module "ssh" {
   allowed_ports = [22]
 }
 
-module "kms_key" {
-  source = "git::https://github.com/clouddrove/terraform-aws-kms.git?ref=tags/0.12.5"
-
-  name        = "kms"
-  application = "clouddrove"
-  environment = "test"
-  label_order = ["environment", "application", "name"]
-  enabled     = true
-
-  description              = "KMS key for eks"
-  alias                    = "alias/eks"
-  key_usage                = "ENCRYPT_DECRYPT"
-  customer_master_key_spec = "SYMMETRIC_DEFAULT"
-  deletion_window_in_days  = 7
-  is_enabled               = true
-  enable_key_rotation      = false
-  policy                   = data.aws_iam_policy_document.default.json
-}
-
 data "aws_iam_policy_document" "default" {
   version = "2012-10-17"
 
@@ -104,17 +85,16 @@ module "eks-cluster" {
   enabled     = true
 
   ## Network
-  vpc_id                          = module.vpc.vpc_id
-  eks_subnet_ids                  = module.subnets.public_subnet_id
-  worker_subnet_ids               = module.subnets.private_subnet_id
-  allowed_security_groups_cluster = []
-  allowed_security_groups_workers = []
-  additional_security_group_ids   = [module.ssh.security_group_ids]
-  endpoint_private_access         = false
-  endpoint_public_access          = true
-  public_access_cidrs             = ["0.0.0.0/0"]
-  resources                       = ["secrets"]
-
+  vpc_id                              = module.vpc.vpc_id
+  eks_subnet_ids                      = module.subnets.public_subnet_id
+  worker_subnet_ids                   = module.subnets.private_subnet_id
+  allowed_security_groups_cluster     = []
+  allowed_security_groups_workers     = []
+  additional_security_group_ids       = [module.ssh.security_group_ids]
+  endpoint_private_access             = false
+  endpoint_public_access              = true
+  public_access_cidrs                 = ["0.0.0.0/0"]
+  cluster_encryption_config_resources = ["secrets"]
   ## Ec2
   on_demand_enabled = false
   key_name          = module.keypair.name
@@ -136,8 +116,20 @@ module "eks-cluster" {
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
-  kubernetes_version        = "1.16"
-  kms_key_arn               = module.kms_key.key_arn
+  kubernetes_version        = "1.17"
+  map_additional_iam_users = [
+    {
+      userarn  = "arn:aws:iam::924144197303:user/rishabh@clouddrove.com"
+      username = "rishabh@clouddrove.com"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::924144197303:user/nikita@clouddrove.com"
+      username = "nikita@clouddrove.com"
+      groups   = ["system:masters"]
+    }
+
+  ]
 
   ## Schedule
   scheduler_down = "0 19 * * MON-FRI"

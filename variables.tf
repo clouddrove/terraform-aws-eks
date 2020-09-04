@@ -182,7 +182,7 @@ variable "worker_subnet_ids" {
 
 variable "apply_config_map_aws_auth" {
   type        = bool
-  default     = false
+  default     = true
   description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster."
 }
 
@@ -338,30 +338,6 @@ variable "spot_schedule_enabled" {
   description = "AutoScaling Schedule resource for spot"
 }
 
-variable "node_group_enabled" {
-  type        = bool
-  default     = false
-  description = "Enabling or disabling the node group"
-}
-
-
-variable "node_group_desired_size" {
-  type        = number
-  default     = 2
-  description = "Desired number of worker node groups"
-}
-
-variable "node_group_max_size" {
-  type        = number
-  default     = 3
-  description = "The maximum size of the autoscale node group."
-}
-
-variable "node_group_min_size" {
-  type        = number
-  default     = 1
-  description = "The minimum size of the autoscale node group."
-}
 
 variable "ami_type" {
   type        = string
@@ -387,22 +363,10 @@ variable "kubernetes_labels" {
   description = "Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed"
 }
 
-variable "node_group_instance_types" {
-  type        = list
-  default     = []
-  description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
-}
-
 variable "public_access_cidrs" {
   type        = list(string)
   default     = []
   description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
-}
-
-variable "resources" {
-  type        = list(string)
-  default     = []
-  description = "List of strings with resources to be encrypted. Valid values: secrets"
 }
 
 variable "fargate_enabled" {
@@ -417,17 +381,108 @@ variable "cluster_namespace" {
   description = "Kubernetes namespace for selection"
 }
 
-variable "number_of_node_groups" {
-  type        = number
-  default     = 1
-  description = "Number of node groups"
-}
 
 variable "kms_key_arn" {
   type        = string
   default     = ""
   description = "The ARN of the KMS Key"
 }
+
+
+variable "cluster_encryption_config_resources" {
+  type        = list
+  default     = ["secrets"]
+  description = "Cluster Encryption Config Resources to encrypt, e.g. ['secrets']"
+}
+
+variable "cluster_encryption_config_enabled" {
+  type        = bool
+  default     = false
+  description = "Set to `true` to enable Cluster Encryption Configuration"
+}
+
+variable "cluster_log_retention_period" {
+  type        = number
+  default     = 0
+  description = "Number of days to retain cluster logs. Requires `enabled_cluster_log_types` to be set. See https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html."
+}
+
+variable "cluster_encryption_config_kms_key_enable_key_rotation" {
+  type        = bool
+  default     = true
+  description = "Cluster Encryption Config KMS Key Resource argument - enable kms key rotation"
+}
+
+variable "cluster_encryption_config_kms_key_deletion_window_in_days" {
+  type        = number
+  default     = 10
+  description = "Cluster Encryption Config KMS Key Resource argument - key deletion windows in days post destruction"
+}
+
+variable "cluster_encryption_config_kms_key_policy" {
+  type        = string
+  default     = null
+  description = "Cluster Encryption Config KMS Key Resource argument - key policy"
+}
+
+variable "oidc_provider_enabled" {
+  type        = bool
+  default     = false
+  description = "Create an IAM OIDC identity provider for the cluster, then you can create IAM roles to associate with a service account in the cluster, instead of using kiam or kube2iam. For more information, see https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html"
+}
+
+variable "wait_for_cluster_command" {
+  type        = string
+  default     = "curl --silent --fail --retry 60 --retry-delay 5 --retry-connrefused --insecure --output /dev/null $ENDPOINT/healthz"
+  description = "`local-exec` command to execute to determine if the EKS cluster is healthy. Cluster endpoint are available as environment variable `ENDPOINT`"
+}
+
+variable "local_exec_interpreter" {
+  type        = list(string)
+  default     = ["/bin/sh", "-c"]
+  description = "shell to use for local_exec"
+}
+
+variable "map_additional_iam_users" {
+  description = "Additional IAM users to add to `config-map-aws-auth` ConfigMap"
+
+  type = list(object({
+    userarn  = string
+    username = string
+    groups   = list(string)
+  }))
+
+  default = []
+}
+
+
+variable "map_additional_iam_roles" {
+  description = "Additional IAM roles to add to `config-map-aws-auth` ConfigMap"
+
+  type = list(object({
+    rolearn  = string
+    username = string
+    groups   = list(string)
+  }))
+
+  default = []
+}
+
+
+
+variable "map_additional_aws_accounts" {
+  description = "Additional AWS account numbers to add to `config-map-aws-auth` ConfigMap"
+  type        = list(string)
+  default     = []
+}
+
+
+variable "kubernetes_config_map_ignore_role_changes" {
+  type        = bool
+  default     = true
+  description = "Set to `true` to ignore IAM role changes in the Kubernetes Auth ConfigMap"
+}
+
 
 variable "node_security_group_ids" {
   type        = list(string)

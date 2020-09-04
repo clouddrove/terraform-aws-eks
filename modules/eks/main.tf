@@ -1,6 +1,12 @@
 ## Managed By : CloudDrove
 ## Copyright @ CloudDrove. All Right Reserved.
 
+locals {
+  cluster_encryption_config = {
+    resources        = var.cluster_encryption_config_resources
+    provider_key_arn = var.enabled && var.cluster_encryption_config_enabled && var.kms_key_arn == "" ? join("", aws_kms_key.cluster.*.arn) : var.kms_key_arn
+  }
+}
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
@@ -28,19 +34,42 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+data "aws_partition" "current" {
+  count = var.enabled ? 1 : 0
+}
+
+
+resource "aws_cloudwatch_log_group" "default" {
+  count             = var.enabled && length(var.enabled_cluster_log_types) > 0 ? 1 : 0
+  name              = "/aws/eks/${module.labels.id}/cluster"
+  retention_in_days = var.cluster_log_retention_period
+  tags              = module.labels.tags
+}
+
+
+resource "aws_kms_key" "cluster" {
+  count                   = var.enabled && var.cluster_encryption_config_enabled && var.kms_key_arn == "" ? 1 : 0
+  description             = "EKS Cluster ${module.labels.id} Encryption Config KMS Key"
+  enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
+  deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days
+  policy                  = var.cluster_encryption_config_kms_key_policy
+  tags                    = module.labels.tags
+}
+
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "default" {
   count              = var.enabled ? 1 : 0
   name               = module.labels.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
+  tags               = module.labels.tags
 }
 
 #Module      : IAM ROLE POLICY ATTACHMENT CLUSTER
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
   count      = var.enabled ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSClusterPolicy", join("", data.aws_partition.current.*.partition))
   role       = join("", aws_iam_role.default.*.name)
 }
 
@@ -48,8 +77,36 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
   count      = var.enabled ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSServicePolicy", join("", data.aws_partition.current.*.partition))
   role       = join("", aws_iam_role.default.*.name)
+}
+
+
+# AmazonEKSClusterPolicy managed policy doesn't contain all necessary permissions to create
+# ELB service-linked role required during LB provisioning by Kubernetes.
+# Because of that, on a new AWS account (where load balancers have not been provisioned yet, `nginx-ingress` fails to provision a load balancer
+
+data "aws_iam_policy_document" "cluster_elb_service_role" {
+  count = var.enabled ? 1 : 0
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeAccountAttributes",
+      "ec2:DescribeAddresses",
+      "ec2:DescribeInternetGateways",
+      "elasticloadbalancing:SetIpAddressType",
+      "elasticloadbalancing:SetSubnets"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "cluster_elb_service_role" {
+  count  = var.enabled ? 1 : 0
+  name   = module.labels.id
+  role   = join("", aws_iam_role.default.*.name)
+  policy = join("", data.aws_iam_policy_document.cluster_elb_service_role.*.json)
 }
 
 #Module      : SECURITY GROUP
@@ -137,42 +194,42 @@ resource "aws_eks_cluster" "default" {
     public_access_cidrs     = var.public_access_cidrs
   }
 
-  encryption_config {
-    provider {
-      key_arn = var.kms_key_arn
+  dynamic "encryption_config" {
+    for_each = var.cluster_encryption_config_enabled ? [local.cluster_encryption_config] : []
+    content {
+      resources = lookup(encryption_config.value, "resources")
+      provider {
+        key_arn = lookup(encryption_config.value, "provider_key_arn")
+      }
     }
-    resources = var.resources
   }
+
 
   depends_on = [
     aws_iam_role_policy_attachment.amazon_eks_cluster_policy,
     aws_iam_role_policy_attachment.amazon_eks_service_policy,
+    aws_cloudwatch_log_group.default
+
   ]
 }
 
-locals {
-  certificate_authority_data_list = coalescelist(
-    aws_eks_cluster.default.*.certificate_authority,
-    [
-      [
-        {
-          "data" = ""
-        },
-      ],
-    ],
-  )
-  certificate_authority_data_list_internal = local.certificate_authority_data_list[0]
-  certificate_authority_data_map           = local.certificate_authority_data_list_internal[0]
-  certificate_authority_data               = local.certificate_authority_data_map["data"]
-}
 
-data "template_file" "kubeconfig" {
-  count    = var.enabled ? 1 : 0
-  template = file("${path.module}/kubeconfig.tpl")
+# Enabling IAM Roles for Service Accounts in Kubernetes cluster
+#
+# From official docs:
+# The IAM roles for service accounts feature is available on new Amazon EKS Kubernetes version 1.14 clusters,
+# and clusters that were updated to versions 1.14 or 1.13 on or after September 3rd, 2019.
+#
+# https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
+# https://medium.com/@marcincuber/amazon-eks-with-oidc-provider-iam-roles-for-kubernetes-services-accounts-59015d15cb0c
+#
+resource "aws_iam_openid_connect_provider" "default" {
+  count = (var.enabled && var.oidc_provider_enabled) ? 1 : 0
+  url   = join("", aws_eks_cluster.default.*.identity.0.oidc.0.issuer)
 
-  vars = {
-    server                     = join("", aws_eks_cluster.default.*.endpoint)
-    certificate_authority_data = local.certificate_authority_data
-    cluster_name               = module.labels.id
-  }
+  client_id_list = ["sts.amazonaws.com"]
+
+  # it's thumbprint won't change for many years
+  # https://github.com/terraform-providers/terraform-provider-aws/issues/10104
+  thumbprint_list = ["9e99a48a9960b14926bb7f3b02e22da2b0ab7280"]
 }

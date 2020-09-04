@@ -1,13 +1,3 @@
-output "kubeconfig" {
-  value       = module.eks_cluster.kubeconfig
-  description = "`kubeconfig` configuration to connect to the cluster using `kubectl`. https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html#configuring-kubectl-for-eks."
-}
-
-output "config_map_aws_auth" {
-  value       = module.eks_workers.config_map_aws_auth
-  description = "Kubernetes ConfigMap configuration to allow the worker nodes to join the EKS cluster. https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html#required-kubernetes-configuration-to-join-worker-nodes."
-}
-
 output "eks_cluster_security_group_id" {
   value       = module.eks_cluster.security_group_id
   description = "ID of the EKS cluster Security Group."
@@ -118,26 +108,6 @@ output "workers_security_group_name" {
   description = "Name of the worker nodes Security Group."
 }
 
-output "eks_node_group_id" {
-  value       = module.eks_workers.eks_node_group_id
-  description = "EKS Cluster name and EKS Node Group name separated by a colon"
-}
-
-output "eks_node_group_arn" {
-  value       = module.eks_workers.eks_node_group_arn
-  description = "Amazon Resource Name (ARN) of the EKS Node Group"
-}
-
-output "eks_node_group_resources" {
-  value       = module.eks_workers.eks_node_group_resources
-  description = "List of objects containing information about underlying resources of the EKS Node Group"
-}
-
-output "eks_node_group_status" {
-  value       = module.eks_workers.eks_node_group_status
-  description = "Status of the EKS Node Group"
-}
-
 output "eks_fargate_arn" {
   value       = module.eks_workers.eks_fargate_arn
   description = "Amazon Resource Name (ARN) of the EKS Fargate Profile."
@@ -151,4 +121,14 @@ output "eks_fargate_id" {
 output "tags" {
   value       = module.eks_cluster.tags
   description = "A mapping of tags to assign to the resource."
+}
+
+output "kubernetes_config_map_id" {
+  description = "ID of `aws-auth` Kubernetes ConfigMap"
+  value       = module.eks_cluster.kubernetes_config_map_id
+}
+
+output "iam_role_arn" {
+  value       = join("", aws_iam_role.default.*.arn)
+  description = "ARN of the worker nodes IAM role."
 }

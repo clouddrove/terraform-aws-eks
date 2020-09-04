@@ -4,28 +4,41 @@
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
 module "eks_cluster" {
-  source                       = "./modules/eks"
-  enabled                      = var.enabled
-  name                         = var.name
-  application                  = var.application
-  environment                  = var.environment
-  managedby                    = var.managedby
-  attributes                   = var.attributes
-  label_order                  = var.label_order
-  tags                         = var.tags
-  vpc_id                       = var.vpc_id
-  subnet_ids                   = var.eks_subnet_ids
-  endpoint_private_access      = var.endpoint_private_access
-  endpoint_public_access       = var.endpoint_public_access
-  kubernetes_version           = var.kubernetes_version
-  allowed_security_groups      = var.allowed_security_groups_cluster
-  workers_security_group_ids   = [module.eks_workers.security_group_id]
-  workers_security_group_count = 1
-  allowed_cidr_blocks          = var.allowed_cidr_blocks_cluster
-  enabled_cluster_log_types    = var.enabled_cluster_log_types
-  public_access_cidrs          = var.public_access_cidrs
-  kms_key_arn                  = var.kms_key_arn
-  resources                    = var.resources
+  source                                                    = "./modules/eks"
+  enabled                                                   = var.enabled
+  name                                                      = var.name
+  application                                               = var.application
+  environment                                               = var.environment
+  managedby                                                 = var.managedby
+  attributes                                                = var.attributes
+  label_order                                               = var.label_order
+  tags                                                      = var.tags
+  vpc_id                                                    = var.vpc_id
+  subnet_ids                                                = var.eks_subnet_ids
+  endpoint_private_access                                   = var.endpoint_private_access
+  endpoint_public_access                                    = var.endpoint_public_access
+  kubernetes_version                                        = var.kubernetes_version
+  allowed_security_groups                                   = var.allowed_security_groups_cluster
+  workers_security_group_ids                                = [module.eks_workers.security_group_id]
+  workers_security_group_count                              = 1
+  allowed_cidr_blocks                                       = var.allowed_cidr_blocks_cluster
+  enabled_cluster_log_types                                 = var.enabled_cluster_log_types
+  public_access_cidrs                                       = var.public_access_cidrs
+  kms_key_arn                                               = var.kms_key_arn
+  cluster_encryption_config_resources                       = var.cluster_encryption_config_resources
+  cluster_encryption_config_enabled                         = var.cluster_encryption_config_enabled
+  cluster_encryption_config_kms_key_enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
+  cluster_encryption_config_kms_key_deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days
+  cluster_encryption_config_kms_key_policy                  = var.cluster_encryption_config_kms_key_policy
+  apply_config_map_aws_auth                                 = var.apply_config_map_aws_auth
+  wait_for_cluster_command                                  = var.wait_for_cluster_command
+  local_exec_interpreter                                    = var.local_exec_interpreter
+  kubernetes_config_map_ignore_role_changes                 = var.kubernetes_config_map_ignore_role_changes
+  map_additional_iam_roles                                  = var.map_additional_iam_roles
+  map_additional_iam_users                                  = var.map_additional_iam_users
+  aws_iam_role_arn                                          = join("", aws_iam_role.default.*.arn)
+  oidc_provider_enabled                                     = var.oidc_provider_enabled
+
 }
 
 #Module      : EKS Worker
@@ -46,17 +59,11 @@ module "eks_workers" {
   health_check_type                      = var.health_check_type
   min_size                               = var.min_size
   max_size                               = var.max_size
-  node_group_desired_size                = var.node_group_desired_size
-  node_group_max_size                    = var.node_group_max_size
-  node_group_min_size                    = var.node_group_min_size
-  node_group_enabled                     = var.node_group_enabled
-  number_of_node_groups                  = var.number_of_node_groups
   ami_type                               = var.ami_type
   ami_release_version                    = var.ami_release_version
   desired_size                           = var.desired_size
   kubernetes_labels                      = var.kubernetes_labels
   kubernetes_version                     = var.kubernetes_version
-  node_group_instance_types              = var.node_group_instance_types
   fargate_enabled                        = var.fargate_enabled
   cluster_namespace                      = var.cluster_namespace
   spot_max_size                          = var.spot_max_size
@@ -93,6 +100,7 @@ module "eks_workers" {
   allowed_cidr_blocks                    = var.allowed_cidr_blocks_workers
   enabled                                = var.enabled
   key_name                               = var.key_name
+  iam_instance_profile_name              = join("", aws_iam_instance_profile.default.*.name)
   node_security_group_ids                = var.node_security_group_ids
   on_demand_enabled                      = var.on_demand_enabled
   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent

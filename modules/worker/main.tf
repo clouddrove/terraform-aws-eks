@@ -10,20 +10,8 @@ locals {
       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     }
   )
-  node_group_tags = merge(
-    var.tags,
-    {
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
-    },
-    {
-      "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
-    },
-    {
-      "k8s.io/cluster-autoscaler/enabled" = "${var.node_group_enabled}"
-    }
-  )
-  enabled                       = var.enabled ? true : false
-  use_existing_instance_profile = var.aws_iam_instance_profile_name != "" ? true : false
+
+  enabled = var.enabled ? true : false
 }
 
 #Module      : label
@@ -38,152 +26,6 @@ module "labels" {
   tags        = local.tags
   attributes  = compact(concat(var.attributes, ["workers"]))
   label_order = var.label_order
-}
-
-module "node_group_labels" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
-  name        = var.name
-  application = var.application
-  environment = var.environment
-  managedby   = var.managedby
-  delimiter   = var.delimiter
-  tags        = local.node_group_tags
-  attributes  = compact(concat(var.attributes, ["nodes"]))
-  label_order = var.label_order
-}
-
-data "aws_iam_policy_document" "assume_role" {
-  count = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-# Autoscaler policy for node group
-data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
-  count = var.enabled && var.node_group_enabled ? 1 : 0
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "autoscaling:DescribeAutoScalingGroups",
-      "autoscaling:DescribeAutoScalingInstances",
-      "autoscaling:DescribeLaunchConfigurations",
-      "autoscaling:DescribeTags",
-      "autoscaling:SetDesiredCapacity",
-      "autoscaling:TerminateInstanceInAutoScalingGroup"
-    ]
-    resources = ["*"]
-  }
-}
-
-# AWS EKS Fargate policy
-data "aws_iam_policy_document" "aws_eks_fargate_policy" {
-  count = var.enabled && var.fargate_enabled ? 1 : 0
-
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["eks-fargate-pods.amazonaws.com"]
-    }
-  }
-}
-
-#Module      : IAM ROLE
-#Description : Provides an IAM role.
-resource "aws_iam_role" "default" {
-  count              = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  name               = module.labels.id
-  assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
-}
-
-resource "aws_iam_role" "fargate_role" {
-  count              = var.enabled && var.fargate_enabled ? 1 : 0
-  name               = format("%s-fargate-role", module.labels.id)
-  assume_role_policy = join("", data.aws_iam_policy_document.aws_eks_fargate_policy.*.json)
-}
-
-#Module      : IAM ROLE POLICY ATTACHMENT NODE
-#Description : Attaches a Managed IAM Policy to an IAM role.
-resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
-  count      = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = join("", aws_iam_role.default.*.name)
-}
-
-resource "aws_iam_policy" "amazon_eks_node_group_autoscaler_policy" {
-  count  = var.enabled && var.node_group_enabled ? 1 : 0
-  name   = format("%s-node-group-policy", module.labels.id)
-  policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
-}
-
-resource "aws_iam_role_policy_attachment" "amazon_eks_node_group_autoscaler_policy" {
-  count      = var.enabled && var.node_group_enabled ? 1 : 0
-  policy_arn = join("", aws_iam_policy.amazon_eks_node_group_autoscaler_policy.*.arn)
-  role       = join("", aws_iam_role.default.*.name)
-}
-
-resource "aws_iam_role_policy_attachment" "amazon_eks_fargate_pod_execution_role_policy" {
-  count      = var.enabled && var.fargate_enabled ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-  role       = join("", aws_iam_role.fargate_role.*.name)
-}
-
-resource "aws_iam_policy" "ecr" {
-  count  = var.enabled ? 1 : 0
-  name   = format("%s-ecr-policy", module.labels.id)
-  policy = data.aws_iam_policy_document.ecr.json
-}
-
-data "aws_iam_policy_document" "ecr" {
-  statement {
-    actions = [
-      "ecr:*",
-      "cloudtrail:LookupEvents"
-    ]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "test-attach" {
-  count      = var.enabled ? 1 : 0
-  role       = join("", aws_iam_role.default.*.name)
-  policy_arn = join("", aws_iam_policy.ecr.*.arn)
-}
-
-#Module      : IAM ROLE POLICY ATTACHMENT CNI
-#Description : Attaches a Managed IAM Policy to an IAM role.
-resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
-  count      = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = join("", aws_iam_role.default.*.name)
-}
-
-#Module      : IAM ROLE POLICY ATTACHMENT EC2 CONTAINER REGISTRY READ ONLY
-#Description : Attaches a Managed IAM Policy to an IAM role.
-resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
-  count      = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = join("", aws_iam_role.default.*.name)
-}
-
-#Module      : IAM INSTANCE PROFILE
-#Description : Provides an IAM instance profile.
-resource "aws_iam_instance_profile" "default" {
-  count = var.enabled && local.use_existing_instance_profile || var.on_demand_enabled ? 1 : 0
-  name  = format("%s-instance-profile", module.labels.id)
-  role  = join("", aws_iam_role.default.*.name)
 }
 
 #Module      : SECURITY GROUP
@@ -266,61 +108,6 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   type              = "ingress"
 }
 
-#Module      : EKS Fargate
-#Descirption : Enabling fargate for AWS EKS
-resource "aws_eks_fargate_profile" "default" {
-  count                  = var.enabled && var.fargate_enabled ? 1 : 0
-  cluster_name           = var.cluster_name
-  fargate_profile_name   = format("%s-fargate-eks", module.labels.id)
-  pod_execution_role_arn = join("", aws_iam_role.fargate_role.*.arn)
-  subnet_ids             = var.subnet_ids
-  tags                   = module.labels.tags
-
-  selector {
-    namespace = var.cluster_namespace
-    labels    = var.kubernetes_labels
-  }
-}
-
-#Module:     : NODE GROUP
-#Description : Creating a node group for eks cluster
-resource "aws_eks_node_group" "default" {
-  count           = var.enabled && var.node_group_enabled ? var.number_of_node_groups : 0
-  cluster_name    = var.cluster_name
-  node_group_name = format("%s-node-group-${count.index + 1}", module.node_group_labels.id)
-  node_role_arn   = join("", aws_iam_role.default.*.arn)
-  subnet_ids      = var.subnet_ids
-  ami_type        = var.ami_type
-  disk_size       = var.volume_size
-  instance_types  = var.node_group_instance_types
-  labels          = var.kubernetes_labels
-  release_version = var.ami_release_version
-  version         = var.kubernetes_version
-
-  tags = module.node_group_labels.tags
-
-  scaling_config {
-    desired_size = var.node_group_desired_size
-    max_size     = var.node_group_max_size
-    min_size     = var.node_group_min_size
-  }
-
-  remote_access {
-    ec2_ssh_key               = var.key_name
-    source_security_group_ids = var.node_security_group_ids
-  }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
-    aws_iam_role_policy_attachment.amazon_eks_node_group_autoscaler_policy,
-    aws_iam_role_policy_attachment.amazon_eks_cni_policy,
-    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only
-  ]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
 
 module "autoscale_group" {
   source = "../autoscaling"
@@ -334,7 +121,7 @@ module "autoscale_group" {
   label_order = var.label_order
 
   image_id                  = var.image_id
-  iam_instance_profile_name = local.use_existing_instance_profile == false ? join("", aws_iam_instance_profile.default.*.name) : var.aws_iam_instance_profile_name
+  iam_instance_profile_name = var.iam_instance_profile_name
   security_group_ids = compact(
     concat(
       [
@@ -417,19 +204,5 @@ data "template_file" "userdata" {
     certificate_authority_data = var.cluster_certificate_authority_data
     cluster_name               = var.cluster_name
     bootstrap_extra_args       = var.bootstrap_extra_args
-  }
-}
-
-data "aws_iam_instance_profile" "default" {
-  count = var.enabled && local.use_existing_instance_profile ? 1 : 0
-  name  = var.aws_iam_instance_profile_name
-}
-
-data "template_file" "config_map_aws_auth" {
-  count    = local.enabled ? 1 : 0
-  template = file("${path.module}/config_map_aws_auth.tpl")
-
-  vars = {
-    aws_iam_role_arn = local.use_existing_instance_profile ? join("", data.aws_iam_instance_profile.default.*.role_arn) : join("", aws_iam_role.default.*.arn)
   }
 }

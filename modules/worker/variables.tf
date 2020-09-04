@@ -525,12 +525,6 @@ variable "spot_schedule_enabled" {
   description = "AutoScaling Schedule resource for spot."
 }
 
-variable "node_group_enabled" {
-  type        = bool
-  default     = false
-  description = "Enabling or disabling the node group."
-}
-
 variable "node_security_group_ids" {
   type        = list(string)
   default     = []
@@ -547,24 +541,6 @@ variable "desired_size" {
   type        = number
   default     = 2
   description = "Desired number of worker nodes"
-}
-
-variable "node_group_desired_size" {
-  type        = number
-  default     = 2
-  description = "Desired number of worker node groups"
-}
-
-variable "node_group_max_size" {
-  type        = number
-  default     = 3
-  description = "The maximum size of the autoscale node group."
-}
-
-variable "node_group_min_size" {
-  type        = number
-  default     = 1
-  description = "The minimum size of the autoscale node group."
 }
 
 variable "ami_release_version" {
@@ -585,26 +561,19 @@ variable "kubernetes_labels" {
   description = "Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed"
 }
 
-variable "node_group_instance_types" {
-  type        = list
-  default     = []
-  description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
-}
-
 variable "fargate_enabled" {
   type        = bool
   default     = false
   description = "Whether fargate profile is enabled or not"
 }
-
 variable "cluster_namespace" {
   type        = string
   default     = ""
   description = "Kubernetes namespace for selection"
 }
 
-variable "number_of_node_groups" {
-  type        = number
-  default     = 1
-  description = "Number of node groups"
+variable "iam_instance_profile_name" {
+  type        = string
+  default     = ""
+  description = "The Name of instance profile"
 }
