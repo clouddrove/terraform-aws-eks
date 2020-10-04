@@ -134,7 +134,8 @@ module "node_groups" {
 #   cluster_namespace                      = var.cluster_namespace
   max_size                          = var.max_size
   min_size                          = var.min_size
-  desired_size                      = var.desired_size                         
+  desired_size                      = var.desired_size
+  node_groups                       = var.node_groups
 #   enabled                           = var.spot_enabled
 #   spot_scale_down_desired                = var.spot_scale_down_desired
 #   spot_scale_up_desired                  = var.spot_scale_up_desired
