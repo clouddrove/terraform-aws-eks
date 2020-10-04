@@ -34,3 +34,9 @@ variable "aws_iam_role_arn" {
   description = "ARN of EKS iam user"
 
 }
+variable "subnet_ids" {
+  type  = list
+  default = []
+  description = "subnet_ids"
+  }
+
