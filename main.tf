@@ -160,7 +160,7 @@ module "node_groups" {
 #   additional_security_group_ids          = var.additional_security_group_ids
 #   use_existing_security_group            = var.use_existing_security_group
 #   workers_security_group_id              = var.workers_security_group_id
-#   cluster_name                           = module.eks_cluster.eks_cluster_id
+   cluster_name                           = module.eks_cluster.eks_cluster_id
 #   cluster_endpoint                       = module.eks_cluster.eks_cluster_endpoint
 #   cluster_certificate_authority_data     = module.eks_cluster.eks_cluster_certificate_authority_data
 #   cluster_security_group_id              = module.eks_cluster.security_group_id
