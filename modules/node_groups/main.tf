@@ -6,7 +6,7 @@ locals {
     }
   )
 
-  enabled = var.enabled ? true : false
+#   enabled = var.enabled ? true : false
 }
 
 #Module      : label
