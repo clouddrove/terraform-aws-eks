@@ -167,7 +167,7 @@ module "node_groups" {
 #   allowed_security_groups                = var.allowed_security_groups_workers
 #   allowed_cidr_blocks                    = var.allowed_cidr_blocks_workers
 #   enabled                                = var.enabled
-  key_name                               = var.key_name
+#   key_name                               = var.key_name
 #   iam_instance_profile_name              = join("", aws_iam_instance_profile.default.*.name)
 #   node_security_group_ids                = var.node_security_group_ids
 #   on_demand_enabled                      = var.on_demand_enabled
