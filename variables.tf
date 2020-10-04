@@ -79,8 +79,8 @@ variable "use_existing_security_group" {
 }
 
 variable "additional_security_group_ids" {
-  #type        = list(string)
-  default     = ""
+  type        = list(string)
+  default     = []
   description = "Additional list of security groups that will be attached to the autoscaling group."
 }
 
