@@ -90,8 +90,8 @@ variable "cluster_name" {
 }
 
 variable "workers_security_group_id" {
-  type        = string
-  default     = ""
+  type        = list
+  default     = []
   description = "The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created."
 }
 
