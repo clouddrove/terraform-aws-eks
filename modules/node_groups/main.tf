@@ -27,7 +27,7 @@ module "labels" {
 
 resource "aws_eks_node_group" "node_group" {
 count             = "${length(var.node_groups)}"
-  cluster_name  =  module.labels.name
+  cluster_name  =  module.labels.id
   node_group_name = "${element(var.node_groups,count.index)}"
   node_role_arn = var.aws_iam_role_arn  
   subnet_ids    = var.subnet_ids
