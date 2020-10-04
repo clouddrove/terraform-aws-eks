@@ -19,7 +19,7 @@ module "labels" {
   managedby   = var.managedby
   delimiter   = var.delimiter
   tags        = local.tags
-  attributes  = compact(concat(var.attributes, ["node_group"]))
+  attributes  = compact(concat(var.attributes, ["cluster"]))
   label_order = var.label_order
 }
 
