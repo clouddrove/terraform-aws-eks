@@ -173,4 +173,6 @@ module "node_groups" {
 #   on_demand_enabled                      = var.on_demand_enabled
 #   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent
 #   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
+ aws_iam_role_arn                                          = join("", aws_iam_role.default.*.arn)
+
 }
