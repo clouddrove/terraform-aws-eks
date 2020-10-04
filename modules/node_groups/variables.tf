@@ -82,3 +82,10 @@ variable "delimiter" {
   default     = "-"
   description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
 }
+
+variable "cluster_name" {
+  type        = string
+  default     = ""
+  description = "The name of the EKS cluster."
+}
+
