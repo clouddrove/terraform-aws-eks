@@ -119,7 +119,7 @@ module "node_groups" {
   attributes                             = var.attributes
   tags                                   = var.tags
 #   image_id                               = var.image_id
-#   instance_type                          = var.instance_type
+   instance_types                          = var.instance_type
 #   vpc_id                                 = var.vpc_id
   subnet_ids                             = var.worker_subnet_ids
 #   health_check_type                      = var.health_check_type
@@ -127,7 +127,7 @@ module "node_groups" {
 #   max_size                               = var.max_size
 #   ami_type                               = var.ami_type
 #   ami_release_version                    = var.ami_release_version
-#   desired_size                           = var.desired_size
+   disk_size                               = var.disk_size
 #   kubernetes_labels                      = var.kubernetes_labels
 #   kubernetes_version                     = var.kubernetes_version
 #   fargate_enabled                        = var.fargate_enabled
@@ -159,7 +159,7 @@ module "node_groups" {
 #   associate_public_ip_address            = var.associate_public_ip_address
 #   additional_security_group_ids          = var.additional_security_group_ids
 #   use_existing_security_group            = var.use_existing_security_group
-#   workers_security_group_id              = var.workers_security_group_id
+    workers_security_group_id              = var.workers_security_group_id
    cluster_name                           = module.eks_cluster.eks_cluster_id
 #   cluster_endpoint                       = module.eks_cluster.eks_cluster_endpoint
 #   cluster_certificate_authority_data     = module.eks_cluster.eks_cluster_certificate_authority_data
@@ -167,7 +167,7 @@ module "node_groups" {
 #   allowed_security_groups                = var.allowed_security_groups_workers
 #   allowed_cidr_blocks                    = var.allowed_cidr_blocks_workers
 #   enabled                                = var.enabled
-#   key_name                               = var.key_name
+   key_name                               = var.key_name
 #   iam_instance_profile_name              = join("", aws_iam_instance_profile.default.*.name)
 #   node_security_group_ids                = var.node_security_group_ids
 #   on_demand_enabled                      = var.on_demand_enabled
