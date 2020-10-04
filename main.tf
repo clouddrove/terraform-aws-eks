@@ -119,7 +119,7 @@ module "node_groups" {
   attributes                             = var.attributes
   tags                                   = var.tags
 #   image_id                               = var.image_id
-   instance_types                          = var.ng_instance_type
+   instance_types                          = [var.ng_instance_type]
 #   vpc_id                                 = var.vpc_id
   subnet_ids                             = var.worker_subnet_ids
 #   health_check_type                      = var.health_check_type
