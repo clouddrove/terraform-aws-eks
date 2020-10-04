@@ -489,3 +489,28 @@ variable "node_security_group_ids" {
   default     = []
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
+################################################# Node Group ###########
+
+variable "node_groups" {
+  type        = list(string)
+  default     = []
+  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
+}
+
+variable "min_size" {
+  type        = list(string)
+  default     = []
+  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
+}
+variable "max_size" {
+  type        = list(string)
+  default     = []
+  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
+}
+
+variable "desired_size" {
+  type        = list(string)
+  default     = []
+  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
+}
+
