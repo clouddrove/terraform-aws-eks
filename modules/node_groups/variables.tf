@@ -89,3 +89,39 @@ variable "cluster_name" {
   description = "The name of the EKS cluster."
 }
 
+variable "workers_security_group_id" {
+  type        = string
+  default     = ""
+  description = "The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created."
+}
+
+variable "allowed_cidr_blocks" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks to be allowed to connect to the worker nodes."
+}
+
+variable "instance_initiated_shutdown_behavior" {
+  type        = string
+  default     = "terminate"
+  description = "Shutdown behavior for the instances. Can be `stop` or `terminate`."
+}
+
+variable "image_id" {
+  type        = string
+  default     = ""
+  description = "EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images."
+}
+
+variable "instance_type" {
+  type        = string
+  default     = ""
+  description = "Instance type to launch."
+}
+
+variable "key_name" {
+  type        = string
+  default     = ""
+  description = "SSH key name that should be used for the instance."
+}
+
