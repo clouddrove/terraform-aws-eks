@@ -514,3 +514,15 @@ variable "ng_desired_size" {
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
 
+variable "ng_instance_type" {
+  type        = list(string)
+  default     = []
+  description = "Instance type to launch."
+}
+
+variable "ng_disk_size" {
+  type        = list(string)
+  default     = []
+  description = "Instance type to launch."
+}
+
