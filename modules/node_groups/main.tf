@@ -33,7 +33,6 @@ count             = "${length(var.node_groups)}"
   subnet_ids    = var.subnet_ids
   disk_size    = "${element(var.disk_size,count.index)}"
   instance_types  = "${element(var.instance_types,count.index)}"
-  ami_type        = "${element(var.ami_type,count.index)}"
 
   remote_access {
       ec2_ssh_key               = var.key_name
