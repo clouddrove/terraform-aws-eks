@@ -31,7 +31,14 @@ count             = "${length(var.node_groups)}"
   node_group_name = "${element(var.node_groups,count.index)}"
   node_role_arn = var.aws_iam_role_arn  
   subnet_ids    = var.subnet_ids
+  disk_size    = "${element(var.disk_size,count.index)}"
+  instance_types  = "${element(var.instance_types,count.index)}"
+  ami_type        = "${element(var.ami_type,count.index)}"
 
+  remote_access {
+      ec2_ssh_key               = var.key_name
+      source_security_group_ids = var.workers_security_group_id
+    }
   scaling_config {
     desired_size = "${element(var.desired_size,count.index)}"
     max_size     = "${element(var.max_size,count.index)}"
