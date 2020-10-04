@@ -497,18 +497,18 @@ variable "node_groups" {
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
 
-variable "min_size" {
+variable "ng_min_size" {
   type        = list(string)
   default     = []
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
-variable "max_size" {
+variable "ng_max_size" {
   type        = list(string)
   default     = []
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
 
-variable "desired_size" {
+variable "ng_desired_size" {
   type        = list(string)
   default     = []
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
