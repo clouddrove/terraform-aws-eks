@@ -119,7 +119,7 @@ module "node_groups" {
   attributes                             = var.attributes
   tags                                   = var.tags
 #   image_id                               = var.image_id
-   instance_types                          = var.instance_type
+   instance_types                          = var.ng_instance_type
 #   vpc_id                                 = var.vpc_id
   subnet_ids                             = var.worker_subnet_ids
 #   health_check_type                      = var.health_check_type
@@ -127,7 +127,7 @@ module "node_groups" {
 #   max_size                               = var.max_size
 #   ami_type                               = var.ami_type
 #   ami_release_version                    = var.ami_release_version
-   disk_size                               = var.disk_size
+   disk_size                               = var.ng_disk_size
 #   kubernetes_labels                      = var.kubernetes_labels
 #   kubernetes_version                     = var.kubernetes_version
 #   fargate_enabled                        = var.fargate_enabled
