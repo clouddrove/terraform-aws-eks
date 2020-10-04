@@ -112,12 +112,12 @@ module "eks_workers" {
 module "node_groups" {
   source                                 = "./modules/node_groups"
   name                                   = var.name
-#   application                            = var.application
-#   environment                            = var.environment
-#   managedby                              = var.managedby
-#   label_order                            = var.label_order
-#   attributes                             = var.attributes
-#   tags                                   = var.tags
+  application                            = var.application
+  environment                            = var.environment
+  managedby                              = var.managedby
+  label_order                            = var.label_order
+  attributes                             = var.attributes
+  tags                                   = var.tags
 #   image_id                               = var.image_id
 #   instance_type                          = var.instance_type
 #   vpc_id                                 = var.vpc_id
