@@ -132,9 +132,9 @@ module "node_groups" {
 #   kubernetes_version                     = var.kubernetes_version
 #   fargate_enabled                        = var.fargate_enabled
 #   cluster_namespace                      = var.cluster_namespace
-  max_size                          = var.max_size
-  min_size                          = var.min_size
-  desired_size                      = var.desired_size
+  max_size                          = var.ng_max_size
+  min_size                          = var.ng_min_size
+  desired_size                      = var.ng_desired_size
   node_groups                       = var.node_groups
 #   enabled                           = var.spot_enabled
 #   spot_scale_down_desired                = var.spot_scale_down_desired
