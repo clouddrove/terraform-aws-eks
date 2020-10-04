@@ -37,5 +37,7 @@ count             = "${length(var.node_groups)}"
     max_size     = "${element(var.max_size,count.index)}"
     min_size     = "${element(var.min_size,count.index)}"
   }
+    
+    tags        = module.labels.tags
   
   }
