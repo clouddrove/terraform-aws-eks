@@ -45,30 +45,30 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
   role       = join("", aws_iam_role.default.*.name)
 }
 
-resource "aws_iam_policy" "amazon_eks_node_group_autoscaler_policy" {
-  count  = var.enabled ? 1 : 0
-  name   = format("%s-node-group-policy", module.labels.id)
-  policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
-}
+# resource "aws_iam_policy" "amazon_eks_node_group_autoscaler_policy" {
+#   count  = var.enabled ? 1 : 0
+#   name   = format("%s-node-group-policy", module.labels.id)
+#   policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
+# }
 
-resource "aws_iam_role_policy_attachment" "amazon_eks_node_group_autoscaler_policy" {
-  count      = var.enabled ? 1 : 0
-  policy_arn = join("", aws_iam_policy.amazon_eks_node_group_autoscaler_policy.*.arn)
-  role       = join("", aws_iam_role.default.*.name)
-}
+# resource "aws_iam_role_policy_attachment" "amazon_eks_node_group_autoscaler_policy" {
+#   count      = var.enabled ? 1 : 0
+#   policy_arn = join("", aws_iam_policy.amazon_eks_node_group_autoscaler_policy.*.arn)
+#   role       = join("", aws_iam_role.default.*.name)
+# }
 
-resource "aws_iam_policy" "amazon_eks_worker_node_autoscaler_policy" {
-  count  = local.enabled ? 1 : 0
-  name   = "${module.labels.id}-autoscaler"
-  path   = "/"
-  policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
-}
+# resource "aws_iam_policy" "amazon_eks_worker_node_autoscaler_policy" {
+#   count  = local.enabled ? 1 : 0
+#   name   = "${module.labels.id}-autoscaler"
+#   path   = "/"
+#   policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
+# }
 
-resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_autoscaler_policy" {
-  count      = local.enabled ? 1 : 0
-  policy_arn = join("", aws_iam_policy.amazon_eks_worker_node_autoscaler_policy.*.arn)
-  role       = join("", aws_iam_role.default.*.name)
-}
+# resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_autoscaler_policy" {
+#   count      = local.enabled ? 1 : 0
+#   policy_arn = join("", aws_iam_policy.amazon_eks_worker_node_autoscaler_policy.*.arn)
+#   role       = join("", aws_iam_role.default.*.name)
+# }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
   count      = local.enabled ? 1 : 0
@@ -91,47 +91,47 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 # Autoscaler policy for node group
-data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
-  count = var.enabled ? 1 : 0
+# data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
+#   count = var.enabled ? 1 : 0
 
-  statement {
-    effect = "Allow"
-    actions = [
-      "autoscaling:DescribeAutoScalingGroups",
-      "autoscaling:DescribeAutoScalingInstances",
-      "autoscaling:DescribeLaunchConfigurations",
-      "autoscaling:DescribeTags",
-      "autoscaling:SetDesiredCapacity",
-      "autoscaling:TerminateInstanceInAutoScalingGroup",
-      "autoscaling:TerminateInstanceInAutoScalingGroup",
-      "ec2:DescribeLaunchTemplateVersions"
-    ]
-    resources = ["*"]
-  }
-}
+#   statement {
+#     effect = "Allow"
+#     actions = [
+#       "autoscaling:DescribeAutoScalingGroups",
+#       "autoscaling:DescribeAutoScalingInstances",
+#       "autoscaling:DescribeLaunchConfigurations",
+#       "autoscaling:DescribeTags",
+#       "autoscaling:SetDesiredCapacity",
+#       "autoscaling:TerminateInstanceInAutoScalingGroup",
+#       "autoscaling:TerminateInstanceInAutoScalingGroup",
+#       "ec2:DescribeLaunchTemplateVersions"
+#     ]
+#     resources = ["*"]
+#   }
+# }
 
-resource "aws_iam_policy" "ecr" {
-  count  = var.enabled ? 1 : 0
-  name   = format("%s-ecr-policy", module.labels.id)
-  policy = data.aws_iam_policy_document.ecr.json
-}
+# resource "aws_iam_policy" "ecr" {
+#   count  = var.enabled ? 1 : 0
+#   name   = format("%s-ecr-policy", module.labels.id)
+#   policy = data.aws_iam_policy_document.ecr.json
+# }
 
-data "aws_iam_policy_document" "ecr" {
-  statement {
-    actions = [
-      "ecr:*",
-      "cloudtrail:LookupEvents"
-    ]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-}
+# data "aws_iam_policy_document" "ecr" {
+#   statement {
+#     actions = [
+#       "ecr:*",
+#       "cloudtrail:LookupEvents"
+#     ]
+#     effect    = "Allow"
+#     resources = ["*"]
+#   }
+# }
 
-resource "aws_iam_role_policy_attachment" "ecr" {
-  count      = var.enabled ? 1 : 0
-  role       = join("", aws_iam_role.default.*.name)
-  policy_arn = join("", aws_iam_policy.ecr.*.arn)
-}
+# resource "aws_iam_role_policy_attachment" "ecr" {
+#   count      = var.enabled ? 1 : 0
+#   role       = join("", aws_iam_role.default.*.name)
+#   policy_arn = join("", aws_iam_policy.ecr.*.arn)
+# }
 
 #Module      : IAM INSTANCE PROFILE
 #Description : Provides an IAM instance profile.
