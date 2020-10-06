@@ -184,6 +184,7 @@ resource "aws_eks_cluster" "default" {
   version                   = var.kubernetes_version
   enabled_cluster_log_types = var.enabled_cluster_log_types
   tags                      = module.labels.tags
+  manage_aws_auth = false
 
 
   vpc_config {
