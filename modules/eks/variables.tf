@@ -189,7 +189,7 @@ variable "local_exec_interpreter" {
 
 variable "kubernetes_config_map_ignore_role_changes" {
   type        = bool
-  default     = true
+  default     = false
   description = "Set to `true` to ignore IAM role changes in the Kubernetes Auth ConfigMap"
 }
 
