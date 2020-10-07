@@ -123,10 +123,6 @@ output "tags" {
   description = "A mapping of tags to assign to the resource."
 }
 
-output "kubernetes_config_map_id" {
-  description = "ID of `aws-auth` Kubernetes ConfigMap"
-  value       = module.eks_cluster.kubernetes_config_map_id
-}
 
 output "iam_role_arn" {
   value       = join("", aws_iam_role.default.*.arn)
