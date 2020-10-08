@@ -105,7 +105,7 @@ module "eks-cluster" {
   volume_size       = 20
 
   ## Spot
-  spot_enabled  = true
+  spot_enabled  = false
   spot_max_size = 3
   spot_min_size = 1
 
@@ -119,11 +119,6 @@ module "eks-cluster" {
   kubernetes_version        = "1.17"
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::924144197303:user/rishabh@clouddrove.com"
-      username = "rishabh@clouddrove.com"
-      groups   = ["system:masters"]
-    },
-    {
       userarn  = "arn:aws:iam::924144197303:user/nikita@clouddrove.com"
       username = "nikita@clouddrove.com"
       groups   = ["system:masters"]
@@ -135,13 +130,13 @@ module "eks-cluster" {
   scheduler_down = "0 19 * * MON-FRI"
   scheduler_up   = "0 6 * * MON-FRI"
 
-  schedule_enabled   = true
+  schedule_enabled   = false
   min_size_scaledown = 0
   max_size_scaledown = 1
   scale_up_desired   = 2
   scale_down_desired = 1
 
-  spot_schedule_enabled   = true
+  spot_schedule_enabled   = false
   spot_min_size_scaledown = 0
   spot_max_size_scaledown = 1
   spot_scale_up_desired   = 2
@@ -154,6 +149,13 @@ module "eks-cluster" {
 
   ## EBS Encryption
   ebs_encryption = true
+
+  node_groups      = ["node1", "node2"]
+  ng_desired_size  = ["1", "1"]
+  ng_max_size      = ["1", "1"]
+  ng_min_size      = ["1", "1"]
+  ng_disk_size     = ["10", "10"]
+  ng_instance_type = ["t3.medium"]
 
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
