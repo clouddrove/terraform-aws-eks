@@ -362,20 +362,20 @@ variable "max_price" {
 }
 
 variable "spot_instance_type" {
-  type        = string
-  default     = "t2.medium"
+  type        = list
+  default     = []
   description = "Sport instance type to launch."
 }
 
 variable "spot_max_size" {
-  type        = number
-  default     = "1"
+  type        = list
+  default     = []
   description = "The maximum size of the spot autoscale group."
 }
 
 variable "spot_min_size" {
-  type        = number
-  default     = "1"
+  type        = list
+  default     = []
   description = "The minimum size of the spot autoscale group."
 }
 
@@ -404,14 +404,14 @@ variable "max_size_scaledown" {
 }
 
 variable "spot_min_size_scaledown" {
-  type        = number
-  default     = 0
+  type        = list
+  default     = []
   description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 variable "spot_max_size_scaledown" {
-  type        = number
-  default     = 1
+  type        = list
+  default     = []
   description = "The maximum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
@@ -422,8 +422,8 @@ variable "scale_down_desired" {
 }
 
 variable "spot_scale_down_desired" {
-  type        = number
-  default     = 0
+  type        = list
+  default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
@@ -434,8 +434,8 @@ variable "scale_up_desired" {
 }
 
 variable "spot_scale_up_desired" {
-  type        = number
-  default     = 0
+  type        = list
+  default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
@@ -449,4 +449,10 @@ variable "spot_schedule_enabled" {
   type        = bool
   default     = false
   description = "AutoScaling Schedule resource for spot"
+}
+
+variable "spot_groups" {
+  type        = list
+  default     = ["node1"]
+  description = "Name  (e.g. `app` or `cluster`)."
 }

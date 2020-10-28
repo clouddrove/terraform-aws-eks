@@ -41,6 +41,28 @@ module "eks_cluster" {
 
 }
 
+
+data "aws_ami" "image_id" {
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${var.kubernetes_version}*"]
+  }
+
+  most_recent = true
+
+  #Owner ID of AWS EKS team
+  owners = ["602401143452"]
+}
+
+resource "aws_ami_copy" "image_id" {
+  name              = "${data.aws_ami.image_id.name}-encrypted"
+  description       = "Encrypted version of EKS worker AMI"
+  source_ami_id     = data.aws_ami.image_id.id
+  source_ami_region = "eu-west-1"
+  encrypted         = true
+  tags = module.labels.tags
+}
+
 #Module      : EKS Worker
 #Description : Manages an EKS Autoscaling.
 module "eks_workers" {
@@ -52,7 +74,7 @@ module "eks_workers" {
   label_order                            = var.label_order
   attributes                             = var.attributes
   tags                                   = var.tags
-  image_id                               = var.image_id
+  image_id                               = aws_ami_copy.image_id.id
   instance_type                          = var.instance_type
   vpc_id                                 = var.vpc_id
   subnet_ids                             = var.worker_subnet_ids

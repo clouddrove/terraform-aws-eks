@@ -74,7 +74,7 @@ resource "aws_launch_template" "on_demand" {
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
 resource "aws_launch_template" "spot" {
-  count = var.enabled && var.spot_enabled ? 1 : 0
+  count = var.enabled && var.spot_enabled ? length(var.spot_instance_type) : 0
 
   name_prefix = format("%s%s-spot", module.labels.id, var.delimiter)
   block_device_mappings {
@@ -88,7 +88,7 @@ resource "aws_launch_template" "spot" {
   }
   image_id                             = var.image_id
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
-  instance_type                        = var.spot_instance_type
+  instance_type                        =  element(var.spot_instance_type,count.index)
   key_name                             = var.key_name
   user_data                            = var.user_data_base64
 
@@ -192,12 +192,12 @@ resource "aws_autoscaling_group" "on_demand" {
 #Module      : AUTOSCALING GROUP
 #Description : Provides an AutoScaling Group resource.
 resource "aws_autoscaling_group" "spot" {
-  count = var.enabled && var.spot_enabled ? 1 : 0
+  count = var.enabled && var.spot_enabled ? length(var.spot_instance_type) : 0
 
   name_prefix               = format("%s%sspot%s", module.labels.id, var.delimiter, var.delimiter)
   vpc_zone_identifier       = var.subnet_ids
-  max_size                  = var.spot_max_size
-  min_size                  = var.spot_min_size
+  max_size                  = element(var.spot_max_size ,count.index)
+  min_size                  = element(var.spot_min_size ,count.index)
   load_balancers            = var.load_balancers
   health_check_grace_period = var.health_check_grace_period
   health_check_type         = var.health_check_type
@@ -214,8 +214,8 @@ resource "aws_autoscaling_group" "spot" {
   service_linked_role_arn   = var.service_linked_role_arn
 
   launch_template {
-    id      = join("", aws_launch_template.spot.*.id)
-    version = join("", aws_launch_template.spot.*.latest_version)
+    id      = element( aws_launch_template.spot.*.id, count.index)
+    version = element(aws_launch_template.spot.*.latest_version, count.index)
   }
 
   tags = flatten([

@@ -26,7 +26,7 @@ resource "aws_autoscaling_policy" "scale_up_spot" {
   adjustment_type        = var.scale_up_adjustment_type
   policy_type            = var.scale_up_policy_type
   cooldown               = var.scale_up_cooldown_seconds
-  autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
+  autoscaling_group_name = element( aws_autoscaling_group.spot.*.name, count.index)
 
 }
 
@@ -51,7 +51,7 @@ resource "aws_autoscaling_policy" "scale_down_spot" {
   adjustment_type        = var.scale_down_adjustment_type
   policy_type            = var.scale_down_policy_type
   cooldown               = var.scale_down_cooldown_seconds
-  autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
+  autoscaling_group_name = element( aws_autoscaling_group.spot.*.name, count.index)
 }
 
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
@@ -92,7 +92,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high_spot" {
   tags                = module.labels.tags
 
   dimensions = {
-    AutoScalingGroupName = join("", aws_autoscaling_group.spot.*.name)
+    AutoScalingGroupName = element( aws_autoscaling_group.spot.*.name, count.index)
   }
 
   alarm_description = format("Scale up if CPU utilization is above%s for %s seconds", var.cpu_utilization_high_threshold_percent, var.cpu_utilization_high_period_seconds)
@@ -136,7 +136,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low_spot" {
   tags                = module.labels.tags
 
   dimensions = {
-    AutoScalingGroupName = join("", aws_autoscaling_group.spot.*.name)
+    AutoScalingGroupName = element( aws_autoscaling_group.spot.*.name, count.index)
   }
 
   alarm_description = format("Scale down if CPU utilization is above%s for %s seconds", var.cpu_utilization_high_threshold_percent, var.cpu_utilization_high_period_seconds)
@@ -171,11 +171,11 @@ resource "aws_autoscaling_schedule" "scaleup" {
 #Description : Provides an AutoScaling Schedule resource.
 resource "aws_autoscaling_schedule" "spot_scaledown" {
   count                  = local.autoscaling_enabled_spot_schedule ? 1 : 0
-  autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
+  autoscaling_group_name = element( aws_autoscaling_group.spot.*.name, count.index)
   scheduled_action_name  = format("spot-%s-scheduler-down", module.labels.id)
-  min_size               = var.spot_min_size_scaledown
-  max_size               = var.spot_max_size_scaledown
-  desired_capacity       = var.spot_scale_down_desired
+  min_size               = element(var.spot_min_size_scaledown  ,count.index)
+  max_size               = element(var.spot_max_size_scaledown ,count.index)
+  desired_capacity       = element(var.spot_scale_down_desired ,count.index)
   recurrence             = var.scheduler_down
 }
 
@@ -183,10 +183,10 @@ resource "aws_autoscaling_schedule" "spot_scaledown" {
 #Description : Provides an AutoScaling Schedule resource.
 resource "aws_autoscaling_schedule" "spot_scaleup" {
   count                  = local.autoscaling_enabled_spot_schedule ? 1 : 0
-  autoscaling_group_name = join("", aws_autoscaling_group.spot.*.name)
+  autoscaling_group_name = element( aws_autoscaling_group.spot.*.name, count.index)
   scheduled_action_name  = format("spot-%s-scheduler-up", module.labels.id)
-  max_size               = var.spot_max_size
-  min_size               = var.spot_min_size
-  desired_capacity       = var.spot_scale_up_desired
+  max_size               = element(var.spot_max_size ,count.index)
+  min_size               = element(var.spot_min_size ,count.index)
+  desired_capacity       = element(var.spot_scale_up_desired ,count.index)
   recurrence             = var.scheduler_up
 }
