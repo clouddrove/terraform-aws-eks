@@ -98,7 +98,7 @@ This module has a few dependencies:
 | image_id | The EC2 image ID to launch. | string | `` | no |
 | instance_initiated_shutdown_behavior | Shutdown behavior for the instances. Can be `stop` or `terminate`. | string | `terminate` | no |
 | instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate). | string | `terminate` | no |
-| instance_type | Instance type to launch. | string | - | yes |
+| ondemand_instance_type | Instance type to launch. | string | - | yes |
 | key_name | The SSH key name that should be used for the instance. | string | `` | no |
 | kms_key | AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set. | string | `` | no |
 | label_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |

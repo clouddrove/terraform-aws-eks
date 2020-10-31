@@ -38,18 +38,17 @@ module "labels" {
 }
 
 
-
 #Module:     : NODE GROUP
 #Description : Creating a node group for eks cluster
 resource "aws_eks_node_group" "default" {
-  count           = var.enabled && var.node_group_enabled ? length(var.node_groups) : 0
+  count           = var.node_group_enabled ? length(var.node_group_name) : 0
   cluster_name    = var.cluster_name
-  node_group_name = module.labels.id
+  node_group_name = element(var.node_group_name, count.index)
   node_role_arn   = var.node_role_arn
   subnet_ids      = var.subnet_ids
   ami_type        = var.ami_type
-  disk_size       = var.volume_size
-  instance_types  = element(var.node_group_instance_types,count.index)
+  disk_size       = var.node_group_volume_size
+  instance_types  = [element(var.node_group_instance_types, count.index)]
   labels          = var.kubernetes_labels
   release_version = var.ami_release_version
   version         = var.kubernetes_version
@@ -57,9 +56,9 @@ resource "aws_eks_node_group" "default" {
   tags = module.labels.tags
 
   scaling_config {
-    desired_size = element(var.node_group_desired_size,count.index)
-    max_size     = element(var.node_group_max_size,count.index)
-    min_size     = element(var.node_group_min_size,count.index)
+    desired_size = element(var.node_group_desired_size, count.index)
+    max_size     = element(var.node_group_max_size, count.index)
+    min_size     = element(var.node_group_min_size, count.index)
   }
 
 

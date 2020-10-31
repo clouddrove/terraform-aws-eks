@@ -95,23 +95,56 @@ module "eks-cluster" {
   endpoint_public_access              = true
   public_access_cidrs                 = ["0.0.0.0/0"]
   cluster_encryption_config_resources = ["secrets"]
-  ## Ec2
-  on_demand_enabled = false
-  key_name          = module.keypair.name
-#  image_id          = "ami-0ceab0713d94f9276"
-  instance_type     = "t3.small"
-  max_size          = 3
-  min_size          = 1
-  volume_size       = 20
+  associate_public_ip_address         = false
+  key_name                            = module.keypair.name
+  ## volume_size
+  volume_size = 20
+
+  ## ondemand
+  ondemand_enabled = true
+  ondemand_instance_type     = ["t3.small", "t3.medium", "t3.small"]
+  ondemand_max_size          = [1, 0, 0]
+  ondemand_min_size          = [1, 0, 0]
+  ondemand_desired_capacity  = [1, 0, 0]
+
+  ondemand_schedule_enabled  = true
+  ondemand_schedule_max_size_scaleup   = [0, 0, 0]
+  ondemand_schedule_desired_scaleup    = [0, 0, 0]
+  ondemand_schedule_min_size_scaleup   = [0, 0, 0]
+  ondemand_schedule_min_size_scaledown = [0, 0, 0]
+  ondemand_schedule_max_size_scaledown = [0, 0, 0]
+  ondemand_schedule_desired_scale_down = [0, 0, 0]
+
 
   ## Spot
-  spot_enabled  = true
-  spot_max_size = [2,5,2]
-  spot_min_size = [1,1,1]
+  spot_enabled          = true
+  spot_instance_type    = ["t3.small", "t3.medium", "t3.small"]
+  spot_max_size         = [1, 0, 0]
+  spot_min_size         = [1, 0, 0]
+  spot_desired_capacity = [1, 0, 0]
+  max_price             = ["0.20", "0.20", "0.20"]
 
-  max_price                   = "0.20"
-  spot_instance_type          = ["t3.small","t3.medium","t3.small"]
-  associate_public_ip_address = true
+  spot_schedule_enabled            = true
+  spot_schedule_min_size_scaledown = [0, 0, 0]
+  spot_schedule_max_size_scaledown = [0, 0, 0]
+  spot_schedule_desired_scale_down = [0, 0, 0]
+  spot_schedule_desired_scaleup    = [0, 0, 0]
+  spot_schedule_max_size_scaleup   = [0, 0, 0]
+  spot_schedule_min_size_scaleup   = [0, 0, 0]
+
+  ## Schedule time
+  scheduler_down = "0 19 * * MON-FRI" #diffrent
+  scheduler_up   = "0 6 * * MON-FRI"
+
+  #node_group
+  node_group_enabled              = true
+  node_group_name                 = ["tools","api"]
+  node_group_instance_types       = ["t3.small","t3.medium"]
+  node_group_min_size             = [1,1]
+  node_group_desired_size         = [1,1]
+  node_group_max_size             = [2,2]
+  node_group_volume_size          = 20
+  before_cluster_joining_userdata = ""
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
@@ -131,21 +164,6 @@ module "eks-cluster" {
 
   ]
 
-  ## Schedule
-  scheduler_down = "0 19 * * MON-FRI"
-  scheduler_up   = "0 6 * * MON-FRI"
-
-  schedule_enabled   = true
-  min_size_scaledown = 0
-  max_size_scaledown = 1
-  scale_up_desired   = 2
-  scale_down_desired = 1
-
-  spot_schedule_enabled   = false
-//  spot_min_size_scaledown = 0
-//  spot_max_size_scaledown = 1
-//  spot_scale_up_desired   = 2
-//  spot_scale_down_desired = 1
 
   ## Health Checks
   cpu_utilization_high_threshold_percent = 80

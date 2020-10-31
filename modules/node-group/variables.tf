@@ -97,20 +97,20 @@ variable "ami_type" {
 }
 
 variable "node_group_desired_size" {
-  type        = number
-  default     = 2
+  type        = list
+  default     = []
   description = "Desired number of worker node groups"
 }
 
 variable "node_group_max_size" {
-  type        = number
-  default     = 3
+  type        = list
+  default     = []
   description = "The maximum size of the autoscale node group."
 }
 
 variable "node_group_min_size" {
-  type        = number
-  default     = 1
+  type        = list
+  default     = []
   description = "The minimum size of the autoscale node group."
 }
 
@@ -145,7 +145,7 @@ variable "kubernetes_labels" {
 }
 
 variable "node_group_instance_types" {
-  type        = list(string)
+  type        = list
   default     = []
   description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
 }
@@ -170,8 +170,8 @@ variable "node_group_volume_size" {
 }
 
 variable "node_group_name" {
-  type        = string
-  default     = ""
+  type        = list
+  default     = []
   description = "Name of node group"
 }
 

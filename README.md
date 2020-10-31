@@ -106,7 +106,7 @@ endpoint_public_access          = true
 ## Ec2
 key_name      = module.keypair.name
 image_id      = "ami-0dd0a16a2bd0784b8"
-instance_type = "t3.small"
+ondemand_instance_type = "t3.small"
 max_size      = 3
 min_size      = 1
 volume_size   = 20
@@ -130,14 +130,14 @@ scheduler_down          = "0 19 * * MON-FRI"
 scheduler_up            = "0 6 * * MON-FRI"
 
 schedule_enabled        = true
-min_size_scaledown      = 0
-max_size_scaledown      = 1
+schedule_min_size_scaledown      = 0
+schedule_max_size_scaledown      = 1
 scale_up_desired        = 2
 scale_down_desired      = 1
 
 spot_schedule_enabled   = true
-spot_min_size_scaledown = 0
-spot_max_size_scaledown = 1
+schedule_spot_min_size_scaledown = 0
+schedule_spot_max_size_scaledown = 1
 spot_scale_up_desired   = 2
 spot_scale_down_desired = 1
 
@@ -191,7 +191,7 @@ enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager
 | health_check_type | Controls how health checking is done. Valid values are `EC2` or `ELB`. | string | `EC2` | no |
 | image_id | EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images. | string | `` | no |
 | instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate). | string | `terminate` | no |
-| instance_type | Instance type to launch. | string | `t2.nano` | no |
+| ondemand_instance_type | Instance type to launch. | string | `t2.nano` | no |
 | key_name | SSH key name that should be used for the instance. | string | `` | no |
 | kms_key_arn | The ARN of the KMS Key | string | `` | no |
 | kubernetes_labels | Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed | map | `<map>` | no |
@@ -200,15 +200,15 @@ enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager
 | managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | string | `anmol@clouddrove.com` | no |
 | max_price | The maximum hourly price you're willing to pay for the Spot Instances. | string | `` | no |
 | max_size | The maximum size of the AutoScaling Group. | number | `3` | no |
-| max_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
+| schedule_max_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
 | min_size | The minimum size of the AutoScaling Group. | number | `1` | no |
-| min_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
+| schedule_min_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
 | name | Name  (e.g. `app` or `cluster`). | string | `` | no |
 | node_group_enabled | Enabling or disabling the node group | bool | `false` | no |
 | node_group_instance_types | Set of instance types associated with the EKS Node Group. Defaults to ["t3.medium"]. Terraform will only perform drift detection if a configuration value is provided | list | `<list>` | no |
 | node_security_group_ids | Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes. | list(string) | `<list>` | no |
 | number_of_node_groups | Number of node groups | number | `1` | no |
-| on_demand_enabled | Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling. | bool | `false` | no |
+| ondemand_enabled | Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling. | bool | `false` | no |
 | public_access_cidrs | The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`] | list(string) | `<list>` | no |
 | resources | List of strings with resources to be encrypted. Valid values: secrets | list(string) | `<list>` | no |
 | scale_down_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
@@ -219,9 +219,9 @@ enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager
 | spot_enabled | Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances. | bool | `false` | no |
 | spot_instance_type | Sport instance type to launch. | string | `t2.medium` | no |
 | spot_max_size | The maximum size of the spot autoscale group. | number | `5` | no |
-| spot_max_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
+| schedule_spot_max_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
 | spot_min_size | The minimum size of the spot autoscale group. | number | `2` | no |
-| spot_min_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
+| schedule_spot_min_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
 | spot_scale_down_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
 | spot_scale_up_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
 | spot_schedule_enabled | AutoScaling Schedule resource for spot | bool | `false` | no |

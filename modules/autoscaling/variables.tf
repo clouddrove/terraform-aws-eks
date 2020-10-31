@@ -66,9 +66,9 @@ variable "instance_initiated_shutdown_behavior" {
   description = "Shutdown behavior for the instances. Can be `stop` or `terminate`."
 }
 
-variable "instance_type" {
-  type        = string
-  default     = ""
+variable "ondemand_instance_type" {
+  type        = list
+  default     = []
   description = "Instance type to launch."
 }
 
@@ -115,16 +115,61 @@ variable "block_device_mappings" {
 }
 
 variable "max_size" {
-  type        = number
-  default     = 3
+  type        = list
+  default     = []
   description = "The maximum size of the autoscale group."
 }
 
 variable "min_size" {
-  type        = number
-  default     = 1
+  type        = list
+  default     = []
   description = "The minimum size of the autoscale group."
 }
+
+variable "schedule_desired_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule desired size of the autoscale group."
+}
+
+variable "schedule_max_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule maximum size of the autoscale group."
+}
+
+variable "schedule_min_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule minimum size of the autoscale group."
+}
+
+variable "schedule_spot_desired_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule desired size of the autoscale group."
+}
+
+variable "schedule_spot_max_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule maximum size of the autoscale group."
+}
+
+variable "schedule_spot_min_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule minimum size of the autoscale group."
+}
+
+
+variable "desired_capacity" {
+  type        = list
+  default     = []
+  description = "The desired size of the autoscale group."
+}
+
+
 
 variable "subnet_ids" {
   type        = list(string)
@@ -217,7 +262,7 @@ variable "service_linked_role_arn" {
   description = "The ARN of the service-linked role that the ASG will use to call other AWS services."
 }
 
-variable "on_demand_enabled" {
+variable "ondemand_enabled" {
   type        = bool
   default     = true
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."
@@ -356,8 +401,8 @@ variable "instance_interruption_behavior" {
 }
 
 variable "max_price" {
-  type        = string
-  default     = ""
+  type        = list
+  default     = []
   description = "The maximum hourly price you're willing to pay for the Spot Instances."
 }
 
@@ -391,37 +436,37 @@ variable "scheduler_up" {
   description = "What is the recurrency for scaling down operations ?"
 }
 
-variable "min_size_scaledown" {
-  type        = number
-  default     = 0
+variable "schedule_min_size_scaledown" {
+  type        = list
+  default     = []
   description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
-variable "max_size_scaledown" {
-  type        = number
-  default     = 1
+variable "schedule_max_size_scaledown" {
+  type        = list
+  default     = []
   description = "The maximum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
-variable "spot_min_size_scaledown" {
+variable "schedule_spot_min_size_scaledown" {
   type        = list
   default     = []
   description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
-variable "spot_max_size_scaledown" {
+variable "schedule_spot_max_size_scaledown" {
   type        = list
   default     = []
   description = "The maximum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
-variable "scale_down_desired" {
-  type        = number
-  default     = 0
+variable "schedule_desired_scale_down" {
+  type        = list
+  default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
-variable "spot_scale_down_desired" {
+variable "schedule_desired_spot_scale_down" {
   type        = list
   default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
@@ -438,6 +483,14 @@ variable "spot_scale_up_desired" {
   default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
+
+
+variable "spot_desired_capacity" {
+  type        = list
+  default     = []
+  description = " The number of Amazon EC2 instances that should be running in the group."
+}
+
 
 variable "schedule_enabled" {
   type        = bool

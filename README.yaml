@@ -72,7 +72,7 @@ usage : |-
   ## Ec2
   key_name      = module.keypair.name
   image_id      = "ami-0dd0a16a2bd0784b8"
-  instance_type = "t3.small"
+  ondemand_instance_type = "t3.small"
   max_size      = 3
   min_size      = 1
   volume_size   = 20
@@ -96,14 +96,14 @@ usage : |-
   scheduler_up            = "0 6 * * MON-FRI"
 
   schedule_enabled        = true
-  min_size_scaledown      = 0
-  max_size_scaledown      = 1
+  schedule_min_size_scaledown      = 0
+  schedule_max_size_scaledown      = 1
   scale_up_desired        = 2
   scale_down_desired      = 1
 
   spot_schedule_enabled   = true
-  spot_min_size_scaledown = 0
-  spot_max_size_scaledown = 1
+  schedule_spot_min_size_scaledown = 0
+  schedule_spot_max_size_scaledown = 1
   spot_scale_up_desired   = 2
   spot_scale_down_desired = 1
 

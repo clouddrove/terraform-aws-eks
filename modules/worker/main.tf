@@ -127,31 +127,42 @@ module "autoscale_group" {
       [
         var.use_existing_security_group == false ? join("", aws_security_group.default.*.id) : var.workers_security_group_id
       ],
-      var.additional_security_group_ids
+      var.additional_security_group_ids,
+      var.eks_cluster_managed_security_group_id
     )
   )
   user_data_base64 = base64encode(join("", data.template_file.userdata.*.rendered))
   tags             = module.labels.tags
 
-  instance_type                           = var.instance_type
-  subnet_ids                              = var.subnet_ids
-  min_size                                = var.min_size
-  max_size                                = var.max_size
-  spot_max_size                           = var.spot_max_size
-  spot_min_size                           = var.spot_min_size
-  spot_enabled                            = var.spot_enabled
-  scheduler_down                          = var.scheduler_down
-  scheduler_up                            = var.scheduler_up
-  min_size_scaledown                      = var.min_size_scaledown
-  max_size_scaledown                      = var.max_size_scaledown
-  spot_min_size_scaledown                 = var.spot_min_size_scaledown
-  spot_max_size_scaledown                 = var.spot_max_size_scaledown
+  ondemand_instance_type                          = var.ondemand_instance_type
+  subnet_ids                      = var.subnet_ids
+  min_size                        = var.min_size
+  max_size                        = var.max_size
+  desired_capacity                = var.desired_capacity
+  spot_max_size                   = var.spot_max_size
+  spot_min_size                   = var.spot_min_size
+  spot_desired_capacity           = var.spot_desired_capacity
+  spot_enabled                    = var.spot_enabled
+  scheduler_down                  = var.scheduler_down
+  scheduler_up                    = var.scheduler_up
+  schedule_min_size_scaledown     = var.schedule_min_size_scaledown
+  schedule_max_size_scaledown     = var.schedule_max_size_scaledown
+  schedule_max_size_scaleup       = var.schedule_max_size_scaleup
+  schedule_desired_scaleup        = var.schedule_desired_scaleup
+  schedule_min_size_scaleup       = var.schedule_min_size_scaleup
+  schedule_spot_desired_scaleup   = var.schedule_spot_desired_scaleup
+  schedule_spot_max_size_scaleup = var.schedule_spot_max_size_scaleup
+  schedule_spot_min_size_scaleup  = var.schedule_spot_min_size_scaleup
+
+
+  schedule_spot_min_size_scaledown        = var.schedule_spot_min_size_scaledown
+  schedule_spot_max_size_scaledown        = var.schedule_spot_max_size_scaledown
   schedule_enabled                        = var.schedule_enabled
   spot_schedule_enabled                   = var.spot_schedule_enabled
-  spot_scale_down_desired                 = var.spot_scale_down_desired
+  schedule_desired_spot_scale_down        = var.schedule_desired_spot_scale_down
   spot_scale_up_desired                   = var.spot_scale_up_desired
   scale_up_desired                        = var.scale_up_desired
-  scale_down_desired                      = var.scale_down_desired
+  schedule_desired_scale_down             = var.schedule_desired_scale_down
   max_price                               = var.max_price
   volume_size                             = var.volume_size
   ebs_encryption                          = var.ebs_encryption
@@ -176,7 +187,7 @@ module "autoscale_group" {
   wait_for_capacity_timeout               = var.wait_for_capacity_timeout
   protect_from_scale_in                   = var.protect_from_scale_in
   service_linked_role_arn                 = var.service_linked_role_arn
-  on_demand_enabled                       = var.on_demand_enabled
+  ondemand_enabled                       = var.ondemand_enabled
   scale_up_cooldown_seconds               = var.scale_up_cooldown_seconds
   scale_up_scaling_adjustment             = var.scale_up_scaling_adjustment
   scale_up_adjustment_type                = var.scale_up_adjustment_type
