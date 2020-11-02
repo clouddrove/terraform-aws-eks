@@ -97,17 +97,18 @@ module "eks-cluster" {
   cluster_encryption_config_resources = ["secrets"]
   associate_public_ip_address         = false
   key_name                            = module.keypair.name
+
   ## volume_size
   volume_size = 20
 
   ## ondemand
-  ondemand_enabled = true
-  ondemand_instance_type     = ["t3.small", "t3.medium", "t3.small"]
-  ondemand_max_size          = [1, 0, 0]
-  ondemand_min_size          = [1, 0, 0]
-  ondemand_desired_capacity  = [1, 0, 0]
+  ondemand_enabled          = true
+  ondemand_instance_type    = ["t3.small", "t3.medium", "t3.small"]
+  ondemand_max_size         = [1, 0, 0]
+  ondemand_min_size         = [1, 0, 0]
+  ondemand_desired_capacity = [1, 0, 0]
 
-  ondemand_schedule_enabled  = true
+  ondemand_schedule_enabled            = true
   ondemand_schedule_max_size_scaleup   = [0, 0, 0]
   ondemand_schedule_desired_scaleup    = [0, 0, 0]
   ondemand_schedule_min_size_scaleup   = [0, 0, 0]
@@ -138,11 +139,11 @@ module "eks-cluster" {
 
   #node_group
   node_group_enabled              = true
-  node_group_name                 = ["tools","api"]
-  node_group_instance_types       = ["t3.small","t3.medium"]
-  node_group_min_size             = [1,1]
-  node_group_desired_size         = [1,1]
-  node_group_max_size             = [2,2]
+  node_group_name                 = ["tools", "api"]
+  node_group_instance_types       = ["t3.small", "t3.medium"]
+  node_group_min_size             = [1, 1]
+  node_group_desired_size         = [1, 1]
+  node_group_max_size             = [2, 2]
   node_group_volume_size          = 20
   before_cluster_joining_userdata = ""
 
