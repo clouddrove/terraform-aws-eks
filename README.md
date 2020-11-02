@@ -7,14 +7,14 @@
     Terraform AWS EKS
 </h1>
 
-<p align="center" style="font-size: 1.2rem;">
+<p align="center" style="font-size: 1.2rem;"> 
     Terraform module will be created Autoscaling, Workers, EKS.
      </p>
 
 <p align="center">
 
 <a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v0.12-green" alt="Terraform">
+  <img src="https://img.shields.io/badge/Terraform-v0.13-green" alt="Terraform">
 </a>
 <a href="LICENSE.md">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
@@ -38,7 +38,7 @@
 <hr>
 
 
-We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure.
+We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure. 
 
 This module is basically combination of [Terraform open source](https://www.terraform.io/) and includes automatation tests and examples. It also helps to create and improve your infrastructure with minimalistic code instead of maintaining the whole infrastructure code yourself.
 
@@ -49,7 +49,7 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 
 ## Prerequisites
 
-This module has a few dependencies:
+This module has a few dependencies: 
 
 - [Terraform 0.12](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - [Go](https://golang.org/doc/install)
@@ -160,121 +160,11 @@ enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager
 
 
 
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| additional_security_group_ids | Additional list of security groups that will be attached to the autoscaling group. | list(string) | `<list>` | no |
-| allowed_cidr_blocks_cluster | List of CIDR blocks to be allowed to connect to the EKS cluster. | list(string) | `<list>` | no |
-| allowed_cidr_blocks_workers | List of CIDR blocks to be allowed to connect to the worker nodes. | list(string) | `<list>` | no |
-| allowed_security_groups_cluster | List of Security Group IDs to be allowed to connect to the EKS cluster. | list(string) | `<list>` | no |
-| allowed_security_groups_workers | List of Security Group IDs to be allowed to connect to the worker nodes. | list(string) | `<list>` | no |
-| ami_release_version | AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version | string | `` | no |
-| ami_type | Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided | string | `AL2_x86_64` | no |
-| application | Application (e.g. `cd` or `clouddrove`). | string | `` | no |
-| apply_config_map_aws_auth | Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster. | bool | `false` | no |
-| associate_public_ip_address | Associate a public IP address with the worker nodes in the VPC. | bool | `true` | no |
-| attributes | Additional attributes (e.g. `1`). | list | `<list>` | no |
-| cluster_namespace | Kubernetes namespace for selection | string | `` | no |
-| cpu_utilization_high_threshold_percent | Worker nodes AutoScaling Group CPU utilization high threshold percent. | number | `80` | no |
-| cpu_utilization_low_threshold_percent | Worker nodes AutoScaling Group CPU utilization low threshold percent. | number | `20` | no |
-| delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | string | `-` | no |
-| desired_size | Desired number of worker nodes | number | `2` | no |
-| ebs_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id. | bool | `false` | no |
-| eks_subnet_ids | A list of subnet IDs to launch resources in EKS. | list(string) | `<list>` | no |
-| enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | bool | `true` | no |
-| enabled_cluster_log_types | A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]. | list(string) | `<list>` | no |
-| endpoint_private_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false. | bool | `false` | no |
-| endpoint_public_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true. | bool | `true` | no |
-| environment | Environment (e.g. `prod`, `dev`, `staging`). | string | `` | no |
-| fargate_enabled | Whether fargate profile is enabled or not | bool | `false` | no |
-| health_check_type | Controls how health checking is done. Valid values are `EC2` or `ELB`. | string | `EC2` | no |
-| image_id | EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images. | string | `` | no |
-| instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Can be hibernate, stop, or terminate. (Default: terminate). | string | `terminate` | no |
-| ondemand_instance_type | Instance type to launch. | string | `t2.nano` | no |
-| key_name | SSH key name that should be used for the instance. | string | `` | no |
-| kms_key_arn | The ARN of the KMS Key | string | `` | no |
-| kubernetes_labels | Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed | map | `<map>` | no |
-| kubernetes_version | Desired Kubernetes master version. If you do not specify a value, the latest available version is used. | string | `` | no |
-| label_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |
-| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | string | `anmol@clouddrove.com` | no |
-| max_price | The maximum hourly price you're willing to pay for the Spot Instances. | string | `` | no |
-| max_size | The maximum size of the AutoScaling Group. | number | `3` | no |
-| schedule_max_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
-| min_size | The minimum size of the AutoScaling Group. | number | `1` | no |
-| schedule_min_size_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
-| name | Name  (e.g. `app` or `cluster`). | string | `` | no |
-| node_group_enabled | Enabling or disabling the node group | bool | `false` | no |
-| node_group_instance_types | Set of instance types associated with the EKS Node Group. Defaults to ["t3.medium"]. Terraform will only perform drift detection if a configuration value is provided | list | `<list>` | no |
-| node_security_group_ids | Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes. | list(string) | `<list>` | no |
-| number_of_node_groups | Number of node groups | number | `1` | no |
-| ondemand_enabled | Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling. | bool | `false` | no |
-| public_access_cidrs | The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`] | list(string) | `<list>` | no |
-| resources | List of strings with resources to be encrypted. Valid values: secrets | list(string) | `<list>` | no |
-| scale_down_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
-| scale_up_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
-| schedule_enabled | AutoScaling Schedule resource | bool | `false` | no |
-| scheduler_down | What is the recurrency for scaling up operations ? | string | `0 19 * * MON-FRI` | no |
-| scheduler_up | What is the recurrency for scaling down operations ? | string | `0 6 * * MON-FRI` | no |
-| spot_enabled | Whether to create the spot instance. Set to `false` to prevent the module from creating any  spot instances. | bool | `false` | no |
-| spot_instance_type | Sport instance type to launch. | string | `t2.medium` | no |
-| spot_max_size | The maximum size of the spot autoscale group. | number | `5` | no |
-| schedule_spot_max_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
-| spot_min_size | The minimum size of the spot autoscale group. | number | `2` | no |
-| schedule_spot_min_size_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | number | `1` | no |
-| spot_scale_down_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
-| spot_scale_up_desired | The number of Amazon EC2 instances that should be running in the group. | number | `1` | no |
-| spot_schedule_enabled | AutoScaling Schedule resource for spot | bool | `false` | no |
-| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
-| use_existing_security_group | If set to `true`, will use variable `workers_security_group_id` to run EKS workers using an existing security group that was created outside of this module, workaround for errors like `count cannot be computed`. | bool | `false` | no |
-| volume_size | The size of ebs volume. | number | `20` | no |
-| volume_type | The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`). | string | `standard` | no |
-| vpc_id | VPC ID for the EKS cluster. | string | `` | no |
-| wait_for_capacity_timeout | A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. Setting this to '0' causes Terraform to skip all Capacity Waiting behavior. | string | `15m` | no |
-| worker_subnet_ids | A list of subnet IDs to launch resources in workers. | list(string) | `<list>` | no |
-| workers_security_group_id | The name of the existing security group that will be used in autoscaling group for EKS workers. If empty, a new security group will be created. | string | `` | no |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| config_map_aws_auth | Kubernetes ConfigMap configuration to allow the worker nodes to join the EKS cluster. https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html#required-kubernetes-configuration-to-join-worker-nodes. |
-| eks_cluster_arn | The Amazon Resource Name (ARN) of the cluster. |
-| eks_cluster_certificate_authority_data | The base64 encoded certificate data required to communicate with the cluster. |
-| eks_cluster_endpoint | The endpoint for the Kubernetes API server. |
-| eks_cluster_id | The name of the cluster. |
-| eks_cluster_security_group_arn | ARN of the EKS cluster Security Group. |
-| eks_cluster_security_group_id | ID of the EKS cluster Security Group. |
-| eks_cluster_security_group_name | Name of the EKS cluster Security Group. |
-| eks_cluster_version | The Kubernetes server version of the cluster. |
-| eks_fargate_arn | Amazon Resource Name (ARN) of the EKS Fargate Profile. |
-| eks_fargate_id | EKS Cluster name and EKS Fargate Profile name separated by a colon (:). |
-| eks_node_group_arn | Amazon Resource Name (ARN) of the EKS Node Group |
-| eks_node_group_id | EKS Cluster name and EKS Node Group name separated by a colon |
-| eks_node_group_resources | List of objects containing information about underlying resources of the EKS Node Group |
-| eks_node_group_status | Status of the EKS Node Group |
-| kubeconfig | `kubeconfig` configuration to connect to the cluster using `kubectl`. https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html#configuring-kubectl-for-eks. |
-| tags | A mapping of tags to assign to the resource. |
-| workers_autoscaling_group_arn | ARN of the AutoScaling Group. |
-| workers_autoscaling_group_default_cooldown | Time between a scaling activity and the succeeding scaling activity. |
-| workers_autoscaling_group_desired_capacity | The number of Amazon EC2 instances that should be running in the group. |
-| workers_autoscaling_group_health_check_grace_period | Time after instance comes into service before checking health. |
-| workers_autoscaling_group_health_check_type | `EC2` or `ELB`. Controls how health checking is done. |
-| workers_autoscaling_group_id | The AutoScaling Group ID. |
-| workers_autoscaling_group_max_size | The maximum size of the AutoScaling Group. |
-| workers_autoscaling_group_min_size | The minimum size of the AutoScaling Group. |
-| workers_autoscaling_group_name | The AutoScaling Group name. |
-| workers_launch_template_arn | ARN of the launch template. |
-| workers_launch_template_id | ID of the launch template. |
-| workers_security_group_arn | ARN of the worker nodes Security Group. |
-| workers_security_group_id | ID of the worker nodes Security Group. |
-| workers_security_group_name | Name of the worker nodes Security Group. |
-
 
 
 
 ## Testing
-In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system.
+In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system. 
 
 You need to run the following command in the testing folder:
 ```hcl
@@ -283,7 +173,7 @@ You need to run the following command in the testing folder:
 
 
 
-## Feedback
+## Feedback 
 If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-eks/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
 If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-eks)!
