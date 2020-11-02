@@ -174,6 +174,7 @@ module "node_group" {
     aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
     aws_iam_role_policy_attachment.amazon_eks_node_group_autoscaler_policy,
     aws_iam_role_policy_attachment.amazon_eks_cni_policy,
-    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only
+    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only,
+    module.eks_cluster.eks_cluster_certificate_authority_data
   ]
 }
