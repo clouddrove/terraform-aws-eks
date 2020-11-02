@@ -539,6 +539,7 @@ variable "node_security_group_ids" {
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
 
+
 #node_group
 
 variable "node_group_enabled" {

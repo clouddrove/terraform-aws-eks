@@ -503,9 +503,3 @@ variable "spot_schedule_enabled" {
   default     = false
   description = "AutoScaling Schedule resource for spot"
 }
-
-variable "spot_groups" {
-  type        = list
-  default     = ["node1"]
-  description = "Name  (e.g. `app` or `cluster`)."
-}
