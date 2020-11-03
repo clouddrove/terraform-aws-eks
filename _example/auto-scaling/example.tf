@@ -108,7 +108,7 @@ module "eks-cluster" {
   ondemand_min_size         = [1, 0, 0]
   ondemand_desired_capacity = [1, 0, 0]
 
-  ondemand_schedule_enabled            = true
+  ondemand_schedule_enabled            = false
   ondemand_schedule_max_size_scaleup   = [0, 0, 0]
   ondemand_schedule_desired_scaleup    = [0, 0, 0]
   ondemand_schedule_min_size_scaleup   = [0, 0, 0]
@@ -134,11 +134,11 @@ module "eks-cluster" {
   spot_schedule_min_size_scaleup   = [0, 0, 0]
 
   ## Schedule time
-  scheduler_down = "0 19 * * MON-FRI" #diffrent
+  scheduler_down = "0 19 * * MON-FRI"
   scheduler_up   = "0 6 * * MON-FRI"
 
   #node_group
-  node_group_enabled              = true
+  node_group_enabled              = false
   node_group_name                 = ["tools", "api"]
   node_group_instance_types       = ["t3.small", "t3.medium"]
   node_group_min_size             = [1, 1]
