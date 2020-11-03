@@ -48,6 +48,11 @@ output "tags" {
   description = "A mapping of tags to assign to the resource."
 }
 
+output "cluster_security_group_id" {
+  value       = join("", aws_eks_cluster.default.*.vpc_config.0.cluster_security_group_id)
+  description = "The cluster security group that was created by Amazon EKS for the cluster."
+}
+
 output "kubernetes_config_map_id" {
   description = "ID of `aws-auth` Kubernetes ConfigMap"
   value       = var.kubernetes_config_map_ignore_role_changes ? join("", kubernetes_config_map.aws_auth_ignore_changes.*.id) : join("", kubernetes_config_map.aws_auth.*.id)

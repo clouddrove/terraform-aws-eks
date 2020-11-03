@@ -9,4 +9,3 @@ resource "local_file" "kubeconfig" {
   content  = module.eks_cluster.kubeconfig
   filename = local.kubeconfig_filename
 }
-

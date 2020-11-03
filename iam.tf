@@ -136,7 +136,7 @@ resource "aws_iam_role_policy_attachment" "ecr" {
 #Module      : IAM INSTANCE PROFILE
 #Description : Provides an IAM instance profile.
 resource "aws_iam_instance_profile" "default" {
-  count = var.enabled || var.on_demand_enabled ? 1 : 0
+  count = var.enabled || var.ondemand_enabled ? 1 : 0
   name  = format("%s-instance-profile", module.labels.id)
   role  = join("", aws_iam_role.default.*.name)
 }

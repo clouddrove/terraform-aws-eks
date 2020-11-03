@@ -102,9 +102,9 @@ variable "image_id" {
   description = "EC2 image ID to launch. If not provided, the module will lookup the most recent EKS AMI. See https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html for more details on EKS-optimized images."
 }
 
-variable "instance_type" {
-  type        = string
-  default     = "t2.nano"
+variable "ondemand_instance_type" {
+  type        = list
+  default     = []
   description = "Instance type to launch."
 }
 
@@ -114,16 +114,22 @@ variable "health_check_type" {
   description = "Controls how health checking is done. Valid values are `EC2` or `ELB`."
 }
 
-variable "max_size" {
-  type        = number
-  default     = 3
-  description = "The maximum size of the AutoScaling Group."
+variable "ondemand_max_size" {
+  type        = list
+  default     = []
+  description = "The maximum size of the autoscale group."
 }
 
-variable "min_size" {
-  type        = number
-  default     = 1
-  description = "The minimum size of the AutoScaling Group."
+variable "ondemand_min_size" {
+  type        = list
+  default     = []
+  description = "The minimum size of the autoscale group."
+}
+
+variable "ondemand_desired_capacity" {
+  type        = list
+  default     = []
+  description = "The desired size of the autoscale group."
 }
 
 variable "wait_for_capacity_timeout" {
@@ -138,7 +144,7 @@ variable "associate_public_ip_address" {
   description = "Associate a public IP address with the worker nodes in the VPC."
 }
 
-variable "on_demand_enabled" {
+variable "ondemand_enabled" {
   type        = bool
   default     = false
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."
@@ -241,51 +247,88 @@ variable "scheduler_up" {
   description = "What is the recurrency for scaling down operations ?"
 }
 
-variable "min_size_scaledown" {
-  type        = number
-  default     = 1
+variable "ondemand_schedule_min_size_scaledown" {
+  type        = list
+  default     = []
   description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
-variable "max_size_scaledown" {
-  type        = number
-  default     = 1
-  description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+variable "ondemand_schedule_max_size_scaledown" {
+  type        = list
+  default     = []
+  description = "The maximum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
-variable "spot_min_size_scaledown" {
-  type        = number
-  default     = 1
-  description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
-}
 
-variable "spot_max_size_scaledown" {
-  type        = number
-  default     = 1
-  description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
-}
-
-variable "scale_down_desired" {
-  type        = number
-  default     = 1
+variable "ondemand_schedule_desired_scale_down" {
+  type        = list
+  default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
-variable "spot_scale_down_desired" {
-  type        = number
-  default     = 1
-  description = " The number of Amazon EC2 instances that should be running in the group."
+variable "ondemand_schedule_desired_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule desired size of the autoscale group."
 }
 
-variable "scale_up_desired" {
+variable "ondemand_schedule_max_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule maximum size of the autoscale group."
+}
+
+variable "ondemand_schedule_min_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule minimum size of the autoscale group."
+}
+
+variable "spot_schedule_desired_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule desired size of the autoscale group."
+}
+
+variable "spot_schedule_max_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule maximum size of the autoscale group."
+}
+
+variable "spot_schedule_min_size_scaleup" {
+  type        = list
+  default     = []
+  description = "The schedule minimum size of the autoscale group."
+}
+
+
+variable "spot_schedule_desired_scale_down" {
+  type        = list
+  default     = []
+  description = " The number of Amazon EC2 instances that should be running in the group."
+}
+variable "spot_schedule_min_size_scaledown" {
+  type        = list
+  default     = []
+  description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+}
+
+variable "spot_schedule_max_size_scaledown" {
+  type        = list
+  default     = []
+  description = "The maximum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
+}
+
+variable "ondemand_scale_up_desired" {
   type        = number
   default     = 1
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
 variable "spot_scale_up_desired" {
-  type        = number
-  default     = 1
+  type        = list
+  default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
@@ -303,30 +346,36 @@ variable "instance_interruption_behavior" {
 }
 
 variable "max_price" {
-  type        = string
-  default     = ""
+  type        = list
+  default     = []
   description = "The maximum hourly price you're willing to pay for the Spot Instances."
 }
 
 variable "spot_instance_type" {
-  type        = string
-  default     = "t2.medium"
+  type        = list
+  default     = []
   description = "Sport instance type to launch."
 }
 
 variable "spot_max_size" {
-  type        = number
-  default     = 5
+  type        = list
+  default     = []
   description = "The maximum size of the spot autoscale group."
 }
 
 variable "spot_min_size" {
-  type        = number
-  default     = 2
+  type        = list
+  default     = []
   description = "The minimum size of the spot autoscale group."
 }
 
-variable "schedule_enabled" {
+variable "spot_desired_capacity" {
+  type        = list
+  default     = []
+  description = " The number of Amazon EC2 instances that should be running in the group."
+}
+
+variable "ondemand_schedule_enabled" {
   type        = bool
   default     = false
   description = "AutoScaling Schedule resource"
@@ -345,7 +394,7 @@ variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"
 }
 
-variable "desired_size" {
+variable "ondemand_desired_size" {
   type        = number
   default     = 2
   description = "Desired number of worker nodes"
@@ -489,40 +538,54 @@ variable "node_security_group_ids" {
   default     = []
   description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
 }
-################################################# Node Group ###########
 
-variable "node_groups" {
-  type        = list(string)
-  default     = []
-  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
+
+#node_group
+
+variable "node_group_enabled" {
+  type        = bool
+  default     = false
+  description = "Enabling or disabling the node group."
 }
 
-variable "ng_min_size" {
-  type        = list(string)
-  default     = []
-  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
-}
-variable "ng_max_size" {
-  type        = list(string)
-  default     = []
-  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
+variable "node_group_volume_size" {
+  type        = number
+  default     = 20
+  description = "Disk size in GiB for worker nodes. Defaults to 20. Terraform will only perform drift detection if a configuration value is provided"
 }
 
-variable "ng_desired_size" {
-  type        = list(string)
+variable "node_group_instance_types" {
+  type        = list
   default     = []
-  description = "Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes."
+  description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
 }
 
-variable "ng_instance_type" {
-  type        = list(string)
+variable "node_group_desired_size" {
+  type        = list
   default     = []
-  description = "Instance type to launch."
+  description = "Desired number of worker node groups"
 }
 
-variable "ng_disk_size" {
-  type        = list(string)
+variable "node_group_max_size" {
+  type        = list
   default     = []
-  description = "Instance type to launch."
+  description = "The maximum size of the autoscale node group."
 }
 
+variable "node_group_min_size" {
+  type        = list
+  default     = []
+  description = "The minimum size of the autoscale node group."
+}
+
+variable "before_cluster_joining_userdata" {
+  type        = string
+  default     = ""
+  description = "Additional commands to execute on each worker node before joining the EKS cluster (before executing the `bootstrap.sh` script). For more info, see https://kubedex.com/90-days-of-aws-eks-in-production"
+}
+
+variable "node_group_name" {
+  type        = list
+  default     = []
+  description = "Name of node group"
+}
