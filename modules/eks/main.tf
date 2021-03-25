@@ -1,6 +1,13 @@
 ## Managed By : CloudDrove
 ## Copyright @ CloudDrove. All Right Reserved.
 
+locals {
+  cluster_encryption_config = {
+    resources        = var.cluster_encryption_config_resources
+    provider_key_arn = var.enabled && var.cluster_encryption_config_enabled && var.kms_key_arn == "" ? join("", aws_kms_key.cluster.*.arn) : var.kms_key_arn
+  }
+}
+
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
@@ -26,6 +33,15 @@ data "aws_iam_policy_document" "assume_role" {
       identifiers = ["eks.amazonaws.com"]
     }
   }
+}
+
+resource "aws_kms_key" "cluster" {
+  count                   = var.enabled && var.cluster_encryption_config_enabled && var.kms_key_arn == "" ? 1 : 0
+  description             = "EKS Cluster ${module.labels.id} Encryption Config KMS Key"
+  enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
+  deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days
+  policy                  = var.cluster_encryption_config_kms_key_policy
+  tags                    = module.labels.tags
 }
 
 #Module      : IAM ROLE
@@ -136,6 +152,16 @@ resource "aws_eks_cluster" "default" {
     endpoint_public_access  = var.endpoint_public_access
     public_access_cidrs     = var.public_access_cidrs
 
+  }
+
+  dynamic "encryption_config" {
+    for_each = var.cluster_encryption_config_enabled ? [local.cluster_encryption_config] : []
+    content {
+      resources = lookup(encryption_config.value, "resources")
+      provider {
+        key_arn = lookup(encryption_config.value, "provider_key_arn")
+      }
+    }
   }
 
   depends_on = [

@@ -4,3 +4,4 @@
 # https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
 
 /etc/eks/bootstrap.sh --apiserver-endpoint '${cluster_endpoint}' --b64-cluster-ca '${certificate_authority_data}' ${bootstrap_extra_args} '${cluster_name}'
+yum install iscsi-initiator-utils -y

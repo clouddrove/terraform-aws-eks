@@ -348,3 +348,46 @@ variable "public_access_cidrs" {
   default     = []
   description = "The list of cidr blocks to access AWS EKS cluster endpoint. Default [`0.0.0.0/0`]"
 }
+
+variable "kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "The ARN of the KMS Key"
+}
+
+
+variable "cluster_encryption_config_resources" {
+  type        = list
+  default     = ["secrets"]
+  description = "Cluster Encryption Config Resources to encrypt, e.g. ['secrets']"
+}
+
+variable "cluster_encryption_config_enabled" {
+  type        = bool
+  default     = false
+  description = "Set to `true` to enable Cluster Encryption Configuration"
+}
+
+variable "cluster_log_retention_period" {
+  type        = number
+  default     = 0
+  description = "Number of days to retain cluster logs. Requires `enabled_cluster_log_types` to be set. See https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html."
+}
+
+variable "cluster_encryption_config_kms_key_enable_key_rotation" {
+  type        = bool
+  default     = true
+  description = "Cluster Encryption Config KMS Key Resource argument - enable kms key rotation"
+}
+
+variable "cluster_encryption_config_kms_key_deletion_window_in_days" {
+  type        = number
+  default     = 10
+  description = "Cluster Encryption Config KMS Key Resource argument - key deletion windows in days post destruction"
+}
+
+variable "cluster_encryption_config_kms_key_policy" {
+  type        = string
+  default     = null
+  description = "Cluster Encryption Config KMS Key Resource argument - key policy"
+}
