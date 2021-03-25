@@ -38,6 +38,7 @@ resource "aws_launch_template" "on_demand" {
   instance_type                        = var.instance_type
   key_name                             = var.key_name
   user_data                            = var.user_data_base64
+  ebs_optimized                        = true
 
   iam_instance_profile {
     name = var.iam_instance_profile_name
