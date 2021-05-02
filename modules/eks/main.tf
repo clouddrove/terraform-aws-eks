@@ -44,6 +44,9 @@ resource "aws_cloudwatch_log_group" "default" {
   name              = "/aws/eks/${module.labels.id}/cluster"
   retention_in_days = var.cluster_log_retention_period
   tags              = module.labels.tags
+  kms_key_id        = join("", aws_kms_key.cloudwatch_log.*.arn)
+
+  
 }
 
 
@@ -53,6 +56,14 @@ resource "aws_kms_key" "cluster" {
   enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
   deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days
   policy                  = var.cluster_encryption_config_kms_key_policy
+  tags                    = module.labels.tags
+}
+
+resource "aws_kms_key" "cloudwatch_log" {
+  count                   = var.enabled && var.cluster_encryption_config_enabled && var.kms_key_arn == "" ? 1 : 0
+  description             = "CloudWatch log group ${module.labels.id} Encryption Config KMS Key"
+  enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
+  deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days
   tags                    = module.labels.tags
 }
 
