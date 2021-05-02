@@ -192,3 +192,19 @@ variable "node_role_arn" {
   default     = ""
   description = "ARN of role profile."
 }
+
+variable "node_groups" {
+  description = "Node group configurations"
+  type = map(object({
+    node_group_name           = string
+    subnet_ids                = list(string)
+    ami_type                  = string
+    node_group_volume_size    = number
+    node_group_instance_types = list(string)
+    kubernetes_labels         = map(string)
+    kubernetes_version        = string
+    node_group_desired_size   = number
+    node_group_max_size       = number
+    node_group_min_size       = number 
+  }))
+}

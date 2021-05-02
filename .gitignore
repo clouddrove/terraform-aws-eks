@@ -7,3 +7,4 @@
 _example/.terraform.tfstate.lock.info
 backend.tf
 terraform.tfvars
+.terraform.lock.hcl

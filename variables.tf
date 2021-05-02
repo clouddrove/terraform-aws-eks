@@ -542,6 +542,22 @@ variable "node_security_group_ids" {
 
 #node_group
 
+variable "node_groups" {
+  description = "Node group configurations"
+  type = map(object({
+    node_group_name           = string
+    subnet_ids                = list(string)
+    ami_type                  = string
+    node_group_volume_size    = number
+    node_group_instance_types  = list(string)
+    kubernetes_labels         = map(string)
+    kubernetes_version        = string
+    node_group_desired_size   = number
+    node_group_max_size       = number
+    node_group_min_size       = number 
+  }))
+}
+
 variable "node_group_enabled" {
   type        = bool
   default     = false
