@@ -138,13 +138,8 @@ module "eks-cluster" {
      scheduler_up   = "0 6 * * MON-FRI"
 
      #node_group
+     node_groups                     = var.node_groups 
      node_group_enabled              = true
-     node_group_name                 = ["tools", "api"]
-     node_group_instance_types       = ["t3.small", "t3.medium"]
-     node_group_min_size             = [1, 1]
-     node_group_desired_size         = [1, 1]
-     node_group_max_size             = [2, 2]
-     node_group_volume_size          = 20
      before_cluster_joining_userdata = ""
 
      ## Cluster
@@ -224,7 +219,6 @@ module "eks-cluster" {
 | key\_name | SSH key name that should be used for the instance. | `string` | `""` | no |
 | kms\_key\_arn | The ARN of the KMS Key | `string` | `""` | no |
 | kubernetes\_config\_map\_ignore\_role\_changes | Set to `true` to ignore IAM role changes in the Kubernetes Auth ConfigMap | `bool` | `true` | no |
-| kubernetes\_labels | Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed | `map` | `{}` | no |
 | kubernetes\_version | Desired Kubernetes master version. If you do not specify a value, the latest available version is used. | `string` | `""` | no |
 | label\_order | Label order, e.g. `name`,`application`. | `list` | `[]` | no |
 | local\_exec\_interpreter | shell to use for local\_exec | `list(string)` | <pre>[<br>  "/bin/sh",<br>  "-c"<br>]</pre> | no |
@@ -234,13 +228,8 @@ module "eks-cluster" {
 | map\_additional\_iam\_users | Additional IAM users to add to `config-map-aws-auth` ConfigMap | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | max\_price | The maximum hourly price you're willing to pay for the Spot Instances. | `list` | `[]` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
-| node\_group\_desired\_size | Desired number of worker node groups | `list` | `[]` | no |
 | node\_group\_enabled | Enabling or disabling the node group. | `bool` | `false` | no |
-| node\_group\_instance\_types | Set of instance types associated with the EKS Node Group. Defaults to ["t3.medium"]. Terraform will only perform drift detection if a configuration value is provided | `list` | `[]` | no |
-| node\_group\_max\_size | The maximum size of the autoscale node group. | `list` | `[]` | no |
-| node\_group\_min\_size | The minimum size of the autoscale node group. | `list` | `[]` | no |
-| node\_group\_name | Name of node group | `list` | `[]` | no |
-| node\_group\_volume\_size | Disk size in GiB for worker nodes. Defaults to 20. Terraform will only perform drift detection if a configuration value is provided | `number` | `20` | no |
+| node\_groups | Node group configurations | `map(object)` |  <pre>map(object({<br>    node_group_name           = string<br>    subnet_ids                = list(string)<br>    ami_type                  = string<br>node_group_volume_size    = number<br>node_group_instance_types = list(string)<br>node_group_instance_types = list(string)<br>kubernetes_labels         = map(string)<br>kubernetes_version        = string<br>node_group_desired_size   = number<br>node_group_max_size       = number<br>node_group_min_size       = number <br>       }))</pre> | no |
 | node\_security\_group\_ids | Set of EC2 Security Group IDs to allow SSH access (port 22) from on the worker nodes. | `list(string)` | `[]` | no |
 | oidc\_provider\_enabled | Create an IAM OIDC identity provider for the cluster, then you can create IAM roles to associate with a service account in the cluster, instead of using kiam or kube2iam. For more information, see https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html | `bool` | `false` | no |
 | ondemand\_desired\_capacity | The desired size of the autoscale group. | `list` | `[]` | no |

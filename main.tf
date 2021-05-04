@@ -144,7 +144,6 @@ module "eks_workers" {
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
 }
 
-
 #Module      : EKS node_group
 #Description : Manages an EKS Autoscaling.
 module "node_group" {

@@ -549,13 +549,27 @@ variable "node_groups" {
     subnet_ids                = list(string)
     ami_type                  = string
     node_group_volume_size    = number
-    node_group_instance_types  = list(string)
+    node_group_instance_types = list(string)
     kubernetes_labels         = map(string)
     kubernetes_version        = string
     node_group_desired_size   = number
     node_group_max_size       = number
     node_group_min_size       = number 
   }))
+  default = {
+    tools = {
+      node_group_name           = "tools"
+      subnet_ids                = ["subnet-0314766e56d1eff14","subnet-051b8c18ce7c0c8ea","subnet-0a3ba212912cb4263"]
+      ami_type                  = "AL2_x86_64"
+      node_group_volume_size    = 20
+      node_group_instance_types = ["t3.small"]
+      kubernetes_labels         = {}
+      kubernetes_version        = "1.18" 
+      node_group_desired_size   = 1
+      node_group_max_size       = 2
+      node_group_min_size       = 1    
+    }
+  }
 }
 
 variable "node_group_enabled" {
@@ -564,44 +578,8 @@ variable "node_group_enabled" {
   description = "Enabling or disabling the node group."
 }
 
-variable "node_group_volume_size" {
-  type        = number
-  default     = 20
-  description = "Disk size in GiB for worker nodes. Defaults to 20. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-variable "node_group_instance_types" {
-  type        = list
-  default     = []
-  description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-variable "node_group_desired_size" {
-  type        = list
-  default     = []
-  description = "Desired number of worker node groups"
-}
-
-variable "node_group_max_size" {
-  type        = list
-  default     = []
-  description = "The maximum size of the autoscale node group."
-}
-
-variable "node_group_min_size" {
-  type        = list
-  default     = []
-  description = "The minimum size of the autoscale node group."
-}
-
 variable "before_cluster_joining_userdata" {
   type        = string
   default     = ""
   description = "Additional commands to execute on each worker node before joining the EKS cluster (before executing the `bootstrap.sh` script). For more info, see https://kubedex.com/90-days-of-aws-eks-in-production"
-}
-
-variable "node_group_name" {
-  type        = list
-  default     = []
-  description = "Name of node group"
 }
