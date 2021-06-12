@@ -148,8 +148,8 @@ module "eks-cluster" {
      kubernetes_version        = "1.18"
      map_additional_iam_users = [
        {
-         userarn  = "arn:aws:iam::924144197303:user/rishabh@clouddrove.com"
-         username = "rishabh@clouddrove.com"
+         userarn  = "arn:aws:iam::924144197303:user/anmol@clouddrove.com"
+         username = "anmol@clouddrove.com"
          groups   = ["system:masters"]
        },
        {
@@ -159,7 +159,6 @@ module "eks-cluster" {
        }
 
      ]
-
 
      ## Health Checks
      cpu_utilization_high_threshold_percent = 80
