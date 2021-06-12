@@ -60,7 +60,6 @@ variable "cluster_name" {
   description = "The name of the EKS cluster."
 }
 
-
 variable "aws_iam_instance_profile_name" {
   type        = string
   default     = ""
@@ -96,24 +95,6 @@ variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"
 }
 
-variable "node_group_desired_size" {
-  type        = list
-  default     = []
-  description = "Desired number of worker node groups"
-}
-
-variable "node_group_max_size" {
-  type        = list
-  default     = []
-  description = "The maximum size of the autoscale node group."
-}
-
-variable "node_group_min_size" {
-  type        = list
-  default     = []
-  description = "The minimum size of the autoscale node group."
-}
-
 variable "ami_release_version" {
   type        = string
   default     = ""
@@ -138,19 +119,6 @@ variable "kubernetes_version" {
   description = "Kubernetes version. Defaults to EKS Cluster Kubernetes version. Terraform will only perform drift detection if a configuration value is provided"
 }
 
-variable "kubernetes_labels" {
-  type        = map
-  default     = {}
-  description = "Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed"
-}
-
-variable "node_group_instance_types" {
-  type        = list
-  default     = []
-  description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-
 variable "cluster_namespace" {
   type        = string
   default     = ""
@@ -161,18 +129,6 @@ variable "enable_cluster_autoscaler" {
   type        = bool
   default     = false
   description = "Whether to enable node group to scale the Auto Scaling Group"
-}
-
-variable "node_group_volume_size" {
-  type        = number
-  default     = 20
-  description = "Disk size in GiB for worker nodes. Defaults to 20. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-variable "node_group_name" {
-  type        = list
-  default     = []
-  description = "Name of node group"
 }
 
 variable "module_depends_on" {
@@ -191,4 +147,20 @@ variable "node_role_arn" {
   type        = string
   default     = ""
   description = "ARN of role profile."
+}
+
+variable "node_groups" {
+  description = "Node group configurations"
+  type = map(object({
+    node_group_name           = string
+    subnet_ids                = list(string)
+    ami_type                  = string
+    node_group_volume_size    = number
+    node_group_instance_types = list(string)
+    kubernetes_labels         = map(string)
+    kubernetes_version        = string
+    node_group_desired_size   = number
+    node_group_max_size       = number
+    node_group_min_size       = number 
+  }))
 }

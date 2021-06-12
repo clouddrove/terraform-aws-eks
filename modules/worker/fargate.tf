@@ -4,6 +4,7 @@ resource "aws_iam_role" "fargate_role" {
   count              = var.enabled && var.fargate_enabled ? 1 : 0
   name               = format("%s-fargate-role", module.labels.id)
   assume_role_policy = join("", data.aws_iam_policy_document.aws_eks_fargate_policy.*.json)
+  tags               = module.labels.tags
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_fargate_pod_execution_role_policy" {

@@ -144,7 +144,6 @@ module "eks_workers" {
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
 }
 
-
 #Module      : EKS node_group
 #Description : Manages an EKS Autoscaling.
 module "node_group" {
@@ -152,22 +151,16 @@ module "node_group" {
 
   ## Tags
   name                            = var.name
+  node_groups                     = var.node_groups 
   application                     = var.application
   environment                     = var.environment
   managedby                       = var.managedby
   label_order                     = var.label_order
   node_group_enabled              = var.node_group_enabled
-  node_group_name                 = var.node_group_name
+  ami_release_version             = var.ami_release_version
   cluster_name                    = module.eks_cluster.eks_cluster_id
-  node_group_desired_size         = var.node_group_desired_size
-  node_group_max_size             = var.node_group_max_size
-  node_group_min_size             = var.node_group_min_size
-  subnet_ids                      = var.worker_subnet_ids
   key_name                        = var.key_name
-  kubernetes_version              = var.kubernetes_version
-  volume_size                     = var.node_group_volume_size
   node_security_group_ids         = var.additional_security_group_ids
-  node_group_instance_types       = var.node_group_instance_types
   before_cluster_joining_userdata = var.before_cluster_joining_userdata
   node_role_arn                   = join("", aws_iam_role.default.*.arn)
   module_depends_on = [
