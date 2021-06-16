@@ -38,6 +38,7 @@ resource "aws_launch_template" "on_demand" {
   instance_type                        = element(var.ondemand_instance_type, count.index)
   key_name                             = var.key_name
   user_data                            = var.user_data_base64
+  disable_api_termination              = var.disable_api_termination
 
   iam_instance_profile {
     name = var.iam_instance_profile_name

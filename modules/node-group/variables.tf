@@ -161,6 +161,32 @@ variable "node_groups" {
     kubernetes_version        = string
     node_group_desired_size   = number
     node_group_max_size       = number
-    node_group_min_size       = number 
+    node_group_min_size       = number
+    node_group_capacity_type  = string
+    node_group_volume_type    = string
   }))
+}
+
+variable "resources_to_tag" {
+  type        = list(string)
+  description = "List of auto-launched resource types to tag. Valid types are \"instance\", \"volume\", \"elastic-gpu\", \"spot-instances-request\"."
+  default     = []
+  validation {
+    condition = (
+      length(compact([for r in var.resources_to_tag : r if ! contains(["instance", "volume", "elastic-gpu", "spot-instances-request"], r)])) == 0
+    )
+    error_message = "Invalid resource type in `resources_to_tag`. Valid types are \"instance\", \"volume\", \"elastic-gpu\", \"spot-instances-request\"."
+  }
+}
+
+variable "ebs_encryption" {
+  type        = bool
+  default     = false
+  description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
+}
+
+variable "kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."
 }

@@ -173,4 +173,5 @@ module "node_group" {
   before_cluster_joining_userdata = ""
   node_role_arn                   = module.eks_cluster.iam_role_arn
   module_depends_on               = module.eks_cluster
+  node_group_capacity_type        = "ON_DEMAND"
 }

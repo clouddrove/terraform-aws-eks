@@ -139,6 +139,7 @@ module "autoscale_group" {
   min_size                        = var.min_size
   max_size                        = var.max_size
   desired_capacity                = var.desired_capacity
+  disable_api_termination         = var.disable_api_termination
   spot_max_size                   = var.spot_max_size
   spot_min_size                   = var.spot_min_size
   spot_desired_capacity           = var.spot_desired_capacity

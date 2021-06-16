@@ -134,7 +134,7 @@ variable "cluster_encryption_config_enabled" {
 
 variable "cluster_log_retention_period" {
   type        = number
-  default     = 0
+  default     = 30
   description = "Number of days to retain cluster logs. Requires `enabled_cluster_log_types` to be set. See https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html."
 }
 

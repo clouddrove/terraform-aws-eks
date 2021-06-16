@@ -97,7 +97,7 @@ module "eks_workers" {
   spot_min_size          = var.spot_min_size
   spot_desired_capacity  = var.spot_desired_capacity
   spot_enabled           = var.spot_enabled
-
+  disable_api_termination = var.disable_api_termination
 
   scheduler_down                         = var.scheduler_down
   scheduler_up                           = var.scheduler_up
@@ -163,6 +163,8 @@ module "node_group" {
   node_security_group_ids         = var.additional_security_group_ids
   before_cluster_joining_userdata = var.before_cluster_joining_userdata
   node_role_arn                   = join("", aws_iam_role.default.*.arn)
+  ebs_encryption                  = var.ebs_encryption
+  kms_key_arn                     = var.kms_key_arn
   module_depends_on = [
     aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
     aws_iam_role_policy_attachment.amazon_eks_node_group_autoscaler_policy,

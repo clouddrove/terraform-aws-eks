@@ -503,3 +503,9 @@ variable "spot_schedule_enabled" {
   default     = false
   description = "AutoScaling Schedule resource for spot"
 }
+
+variable "disable_api_termination" {
+  type        = bool
+  default     = false
+  description = "If `true`, enables EC2 Instance Termination Protection."
+}

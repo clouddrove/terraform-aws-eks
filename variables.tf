@@ -452,7 +452,7 @@ variable "cluster_encryption_config_enabled" {
 
 variable "cluster_log_retention_period" {
   type        = number
-  default     = 0
+  default     = 30
   description = "Number of days to retain cluster logs. Requires `enabled_cluster_log_types` to be set. See https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html."
 }
 
@@ -554,7 +554,10 @@ variable "node_groups" {
     kubernetes_version        = string
     node_group_desired_size   = number
     node_group_max_size       = number
-    node_group_min_size       = number 
+    node_group_min_size       = number
+    node_group_capacity_type  = string
+    node_group_volume_type    = string
+     
   }))
   default = {
     tools = {
@@ -568,6 +571,8 @@ variable "node_groups" {
       node_group_desired_size   = 1
       node_group_max_size       = 2
       node_group_min_size       = 1    
+      node_group_capacity_type  = "ON_DEMAND"
+      node_group_volume_type    = "gp2"
     }
   }
 }
@@ -582,4 +587,23 @@ variable "before_cluster_joining_userdata" {
   type        = string
   default     = ""
   description = "Additional commands to execute on each worker node before joining the EKS cluster (before executing the `bootstrap.sh` script). For more info, see https://kubedex.com/90-days-of-aws-eks-in-production"
+}
+
+variable "disable_api_termination" {
+  type        = bool
+  default     = false
+  description = "If `true`, enables EC2 Instance Termination Protection."
+}
+
+
+variable "resources_to_tag" {
+  type        = list(string)
+  description = "List of auto-launched resource types to tag. Valid types are \"instance\", \"volume\", \"elastic-gpu\", \"spot-instances-request\"."
+  default     = []
+  validation {
+    condition = (
+      length(compact([for r in var.resources_to_tag : r if ! contains(["instance", "volume", "elastic-gpu", "spot-instances-request"], r)])) == 0
+    )
+    error_message = "Invalid resource type in `resources_to_tag`. Valid types are \"instance\", \"volume\", \"elastic-gpu\", \"spot-instances-request\"."
+  }
 }
