@@ -10,14 +10,14 @@ data "aws_partition" "current" {
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
+
   name        = var.name
-  application = var.application
   environment = var.environment
   managedby   = var.managedby
-  delimiter   = var.delimiter
-  attributes  = compact(concat(var.attributes, ["iam"]))
   label_order = var.label_order
+  repository  = var.repository
 }
 
 #Module      : IAM ROLE
