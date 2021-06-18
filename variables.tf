@@ -30,6 +30,12 @@ variable "attributes" {
   description = "Additional attributes (e.g. `1`)."
 }
 
+variable "repository" {
+  type        = string
+  default     = "https://github.com/clouddrove/terraform-aws-eks"
+  description = "Terraform current module repo"
+}
+
 variable "tags" {
   type        = map
   default     = {}

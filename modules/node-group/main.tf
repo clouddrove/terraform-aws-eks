@@ -26,7 +26,9 @@ locals {
 }
 
 module "labels" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
+
   name        = var.name
   application = var.application
   environment = var.environment
@@ -67,9 +69,6 @@ resource "aws_eks_node_group" "default" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [scaling_config[0].desired_size]
-  }
   depends_on = [aws_launch_template.default]
 }
 
