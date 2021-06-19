@@ -30,11 +30,11 @@ module "labels" {
   version = "0.15.0"
 
   name        = var.name
-  application = var.application
+  repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
   delimiter   = var.delimiter
-  tags        = local.node_group_tags
+  extra_tags  = local.node_group_tags
   attributes  = compact(concat(var.attributes, ["node-group"]))
   label_order = var.label_order
 }
@@ -43,7 +43,7 @@ module "labels" {
 #Module:     : NODE GROUP
 #Description : Creating a node group for eks cluster
 resource "aws_eks_node_group" "default" {
-  for_each = var.node_groups
+  for_each        = var.node_groups
   cluster_name    = var.cluster_name
   node_group_name = each.value.node_group_name
   node_role_arn   = var.node_role_arn
@@ -52,7 +52,7 @@ resource "aws_eks_node_group" "default" {
   labels          = each.value.kubernetes_labels
   release_version = var.ami_release_version
   version         = each.value.kubernetes_version
-  tags = module.labels.tags
+  tags            = module.labels.tags
   capacity_type   = each.value.node_group_capacity_type
 
   scaling_config {
@@ -89,7 +89,7 @@ resource "aws_launch_template" "default" {
   name                   = each.value.node_group_name
   update_default_version = true
   image_id               = var.ami_release_version
-  key_name               =  var.key_name
+  key_name               = var.key_name
 
   dynamic "tag_specifications" {
     for_each = var.resources_to_tag

@@ -7,7 +7,6 @@ module "eks_cluster" {
   source                                                    = "./modules/eks"
   enabled                                                   = var.enabled
   name                                                      = var.name
-  application                                               = var.application
   environment                                               = var.environment
   managedby                                                 = var.managedby
   attributes                                                = var.attributes
@@ -70,33 +69,32 @@ resource "aws_ami_copy" "image_id" {
 #Module      : EKS Worker
 #Description : Manages an EKS Autoscaling.
 module "eks_workers" {
-  source                 = "./modules/worker"
-  name                   = var.name
-  application            = var.application
-  environment            = var.environment
-  managedby              = var.managedby
-  label_order            = var.label_order
-  attributes             = var.attributes
-  tags                   = var.tags
-  image_id               = join("", aws_ami_copy.image_id.*.id)
-  ondemand_instance_type = var.ondemand_instance_type
-  vpc_id                 = var.vpc_id
-  subnet_ids             = var.worker_subnet_ids
-  health_check_type      = var.health_check_type
-  min_size               = var.ondemand_min_size
-  max_size               = var.ondemand_max_size
-  ami_type               = var.ami_type
-  desired_capacity       = var.ondemand_desired_capacity
-  ami_release_version    = var.ami_release_version
-  desired_size           = var.ondemand_desired_size
-  kubernetes_labels      = var.kubernetes_labels
-  kubernetes_version     = var.kubernetes_version
-  fargate_enabled        = var.fargate_enabled
-  cluster_namespace      = var.cluster_namespace
-  spot_max_size          = var.spot_max_size
-  spot_min_size          = var.spot_min_size
-  spot_desired_capacity  = var.spot_desired_capacity
-  spot_enabled           = var.spot_enabled
+  source                  = "./modules/worker"
+  name                    = var.name
+  environment             = var.environment
+  managedby               = var.managedby
+  label_order             = var.label_order
+  attributes              = var.attributes
+  tags                    = var.tags
+  image_id                = join("", aws_ami_copy.image_id.*.id)
+  ondemand_instance_type  = var.ondemand_instance_type
+  vpc_id                  = var.vpc_id
+  subnet_ids              = var.worker_subnet_ids
+  health_check_type       = var.health_check_type
+  min_size                = var.ondemand_min_size
+  max_size                = var.ondemand_max_size
+  ami_type                = var.ami_type
+  desired_capacity        = var.ondemand_desired_capacity
+  ami_release_version     = var.ami_release_version
+  desired_size            = var.ondemand_desired_size
+  kubernetes_labels       = var.kubernetes_labels
+  kubernetes_version      = var.kubernetes_version
+  fargate_enabled         = var.fargate_enabled
+  cluster_namespace       = var.cluster_namespace
+  spot_max_size           = var.spot_max_size
+  spot_min_size           = var.spot_min_size
+  spot_desired_capacity   = var.spot_desired_capacity
+  spot_enabled            = var.spot_enabled
   disable_api_termination = var.disable_api_termination
 
   scheduler_down                         = var.scheduler_down
@@ -151,8 +149,7 @@ module "node_group" {
 
   ## Tags
   name                            = var.name
-  node_groups                     = var.node_groups 
-  application                     = var.application
+  node_groups                     = var.node_groups
   environment                     = var.environment
   managedby                       = var.managedby
   label_order                     = var.label_order

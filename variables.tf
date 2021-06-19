@@ -6,12 +6,6 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "application" {
-  type        = string
-  default     = ""
-  description = "Application (e.g. `cd` or `clouddrove`)."
-}
-
 variable "environment" {
   type        = string
   default     = ""
@@ -563,20 +557,20 @@ variable "node_groups" {
     node_group_min_size       = number
     node_group_capacity_type  = string
     node_group_volume_type    = string
-     
+
   }))
   default = {
     tools = {
       node_group_name           = "tools"
-      subnet_ids                = ["subnet-0314766e56d1eff14","subnet-051b8c18ce7c0c8ea","subnet-0a3ba212912cb4263"]
+      subnet_ids                = ["subnet-0314766e56d1eff14", "subnet-051b8c18ce7c0c8ea", "subnet-0a3ba212912cb4263"]
       ami_type                  = "AL2_x86_64"
       node_group_volume_size    = 20
       node_group_instance_types = ["t3.small"]
       kubernetes_labels         = {}
-      kubernetes_version        = "1.18" 
+      kubernetes_version        = "1.18"
       node_group_desired_size   = 1
       node_group_max_size       = 2
-      node_group_min_size       = 1    
+      node_group_min_size       = 1
       node_group_capacity_type  = "ON_DEMAND"
       node_group_volume_type    = "gp2"
     }

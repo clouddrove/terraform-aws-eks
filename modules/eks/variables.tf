@@ -6,10 +6,10 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "application" {
+variable "repository" {
   type        = string
-  default     = ""
-  description = "Application (e.g. `cd` or `clouddrove`)."
+  default     = "https://github.com/clouddrove/terraform-aws-eks"
+  description = "Terraform current module repo"
 }
 
 variable "environment" {

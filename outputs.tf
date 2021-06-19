@@ -134,7 +134,7 @@ output "iam_role_arn" {
 }
 
 output "eks_node_group_id" {
-  value       =  module.node_group.eks_node_group_id
+  value       = module.node_group.eks_node_group_id
   description = "EKS Cluster name and EKS Node Group name separated by a colon"
 }
 
@@ -144,11 +144,11 @@ output "eks_node_group_arn" {
 }
 
 output "eks_node_group_resources" {
-  value       =  module.node_group.eks_node_group_resources
+  value       = module.node_group.eks_node_group_resources
   description = "List of objects containing information about underlying resources of the EKS Node Group"
 }
 
 output "eks_node_group_status" {
-  value       =   module.node_group.eks_node_group_status
+  value       = module.node_group.eks_node_group_status
   description = "Status of the EKS Node Group"
 }

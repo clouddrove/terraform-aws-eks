@@ -14,7 +14,7 @@ module "labels" {
   version = "0.15.0"
 
   name        = var.name
-  application = var.application
+  repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
   attributes  = compact(concat(var.attributes, ["cluster"]))
@@ -92,7 +92,7 @@ resource "aws_cloudwatch_log_group" "default" {
   name              = "/aws/eks/${module.labels.id}/cluster"
   retention_in_days = var.cluster_log_retention_period
   tags              = module.labels.tags
-  kms_key_id        = join("", aws_kms_key.cloudwatch_log.*.arn) 
+  kms_key_id        = join("", aws_kms_key.cloudwatch_log.*.arn)
 }
 
 resource "aws_kms_key" "cluster" {

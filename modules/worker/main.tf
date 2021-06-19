@@ -21,11 +21,11 @@ module "labels" {
   version = "0.15.0"
 
   name        = var.name
-  application = var.application
+  repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
   delimiter   = var.delimiter
-  tags        = local.tags
+  extra_tags  = local.tags
   attributes  = compact(concat(var.attributes, ["workers"]))
   label_order = var.label_order
 }
@@ -116,7 +116,6 @@ module "autoscale_group" {
 
   enabled     = local.enabled
   name        = var.name
-  application = var.application
   environment = var.environment
   delimiter   = var.delimiter
   attributes  = var.attributes
@@ -136,26 +135,26 @@ module "autoscale_group" {
   user_data_base64 = base64encode(join("", data.template_file.userdata.*.rendered))
   tags             = module.labels.tags
 
-  ondemand_instance_type                          = var.ondemand_instance_type
-  subnet_ids                      = var.subnet_ids
-  min_size                        = var.min_size
-  max_size                        = var.max_size
-  desired_capacity                = var.desired_capacity
-  disable_api_termination         = var.disable_api_termination
-  spot_max_size                   = var.spot_max_size
-  spot_min_size                   = var.spot_min_size
-  spot_desired_capacity           = var.spot_desired_capacity
-  spot_enabled                    = var.spot_enabled
-  scheduler_down                  = var.scheduler_down
-  scheduler_up                    = var.scheduler_up
-  schedule_min_size_scaledown     = var.schedule_min_size_scaledown
-  schedule_max_size_scaledown     = var.schedule_max_size_scaledown
-  schedule_max_size_scaleup       = var.schedule_max_size_scaleup
-  schedule_desired_scaleup        = var.schedule_desired_scaleup
-  schedule_min_size_scaleup       = var.schedule_min_size_scaleup
-  schedule_spot_desired_scaleup   = var.schedule_spot_desired_scaleup
+  ondemand_instance_type         = var.ondemand_instance_type
+  subnet_ids                     = var.subnet_ids
+  min_size                       = var.min_size
+  max_size                       = var.max_size
+  desired_capacity               = var.desired_capacity
+  disable_api_termination        = var.disable_api_termination
+  spot_max_size                  = var.spot_max_size
+  spot_min_size                  = var.spot_min_size
+  spot_desired_capacity          = var.spot_desired_capacity
+  spot_enabled                   = var.spot_enabled
+  scheduler_down                 = var.scheduler_down
+  scheduler_up                   = var.scheduler_up
+  schedule_min_size_scaledown    = var.schedule_min_size_scaledown
+  schedule_max_size_scaledown    = var.schedule_max_size_scaledown
+  schedule_max_size_scaleup      = var.schedule_max_size_scaleup
+  schedule_desired_scaleup       = var.schedule_desired_scaleup
+  schedule_min_size_scaleup      = var.schedule_min_size_scaleup
+  schedule_spot_desired_scaleup  = var.schedule_spot_desired_scaleup
   schedule_spot_max_size_scaleup = var.schedule_spot_max_size_scaleup
-  schedule_spot_min_size_scaleup  = var.schedule_spot_min_size_scaleup
+  schedule_spot_min_size_scaleup = var.schedule_spot_min_size_scaleup
 
 
   schedule_spot_min_size_scaledown        = var.schedule_spot_min_size_scaledown
@@ -190,7 +189,7 @@ module "autoscale_group" {
   wait_for_capacity_timeout               = var.wait_for_capacity_timeout
   protect_from_scale_in                   = var.protect_from_scale_in
   service_linked_role_arn                 = var.service_linked_role_arn
-  ondemand_enabled                       = var.ondemand_enabled
+  ondemand_enabled                        = var.ondemand_enabled
   scale_up_cooldown_seconds               = var.scale_up_cooldown_seconds
   scale_up_scaling_adjustment             = var.scale_up_scaling_adjustment
   scale_up_adjustment_type                = var.scale_up_adjustment_type

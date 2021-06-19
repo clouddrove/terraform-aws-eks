@@ -6,16 +6,16 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "application" {
-  type        = string
-  default     = ""
-  description = "Application (e.g. `cd` or `clouddrove`)."
-}
-
 variable "environment" {
   type        = string
   default     = ""
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
+}
+
+variable "repository" {
+  type        = string
+  default     = "https://github.com/clouddrove/terraform-aws-eks"
+  description = "Terraform current module repo"
 }
 
 variable "label_order" {

@@ -1,6 +1,6 @@
 locals {
   tags = {
-    "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
+    "kubernetes.io/cluster//${module.eks-cluster.eks_cluster_id}" = "shared"
   }
 }
 
@@ -9,7 +9,7 @@ provider "aws" {
 }
 
 module "keypair" {
-  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.12.2"
+  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.15.0"
 
   key_path        = "~/.ssh/id_rsa.pub"
   key_name        = "main-key"
@@ -17,24 +17,22 @@ module "keypair" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.5"
+  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.15.0"
 
   name        = "vpc"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
   vpc_enabled = true
 
   cidr_block = "10.10.0.0/16"
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.6"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.15.0"
 
   name        = "subnets"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
   tags        = local.tags
   enabled     = true
 
@@ -42,36 +40,21 @@ module "subnets" {
   availability_zones  = ["eu-west-1a", "eu-west-1b"]
   vpc_id              = module.vpc.vpc_id
   cidr_block          = module.vpc.vpc_cidr_block
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   type                = "public-private"
   igw_id              = module.vpc.igw_id
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.4"
+  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.15.0"
 
   name        = "ssh"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["49.36.129.154/32", module.vpc.vpc_cidr_block]
   allowed_ports = [22]
-}
-
-data "aws_iam_policy_document" "default" {
-  version = "2012-10-17"
-
-  statement {
-    sid    = "Enable IAM User Permissions"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions   = ["kms:*"]
-    resources = ["*"]
-  }
 }
 
 module "eks-cluster" {
@@ -79,9 +62,8 @@ module "eks-cluster" {
 
   ## Tags
   name        = "eks"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
   enabled     = true
 
   ## Network
@@ -125,7 +107,7 @@ module "eks-cluster" {
   spot_desired_capacity = [1, 0, 0]
   max_price             = ["0.20", "0.20", "0.20"]
 
-  spot_schedule_enabled            = true
+  spot_schedule_enabled            = false
   spot_schedule_min_size_scaledown = [0, 0, 0]
   spot_schedule_max_size_scaledown = [0, 0, 0]
   spot_schedule_desired_scale_down = [0, 0, 0]
@@ -138,27 +120,30 @@ module "eks-cluster" {
   scheduler_up   = "0 6 * * MON-FRI"
 
   #node_group
-  node_group_enabled              = false
-  node_group_name                 = ["tools", "api"]
-  node_group_instance_types       = ["t3.small", "t3.medium"]
-  node_group_min_size             = [1, 1]
-  node_group_desired_size         = [1, 1]
-  node_group_max_size             = [2, 2]
-  node_group_volume_size          = 20
-  before_cluster_joining_userdata = ""
-  node_group_capacity_type        = "ON_DEMAND"
+  node_group_enabled = true
+  node_groups = {
+    tools = {
+      node_group_name           = "autoscale"
+      subnet_ids                = module.subnets.private_subnet_id
+      ami_type                  = "AL2_x86_64"
+      node_group_volume_size    = 100
+      node_group_instance_types = ["t3.large"]
+      kubernetes_labels         = {}
+      kubernetes_version        = "1.20"
+      node_group_desired_size   = 1
+      node_group_max_size       = 1
+      node_group_min_size       = 1
+      node_group_capacity_type  = "ON_DEMAND"
+      node_group_volume_type    = "gp2"
+    }
+  }
 
 
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
-  kubernetes_version        = "1.18"
+  kubernetes_version        = "1.20"
   map_additional_iam_users = [
-    {
-      userarn  = "arn:aws:iam::924144197303:user/rishabh@clouddrove.com"
-      username = "rishabh@clouddrove.com"
-      groups   = ["system:masters"]
-    },
     {
       userarn  = "arn:aws:iam::924144197303:user/nikita@clouddrove.com"
       username = "nikita@clouddrove.com"
