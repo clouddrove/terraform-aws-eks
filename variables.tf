@@ -557,7 +557,6 @@ variable "node_groups" {
     node_group_min_size       = number
     node_group_capacity_type  = string
     node_group_volume_type    = string
-
   }))
   default = {
     tools = {
