@@ -4,12 +4,13 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
 
   name        = var.name
-  application = var.application
+  repository  = var.repository
   environment = var.environment
-  tags        = var.tags
+  extra_tags  = var.tags
   enabled     = var.enabled
   managedby   = var.managedby
   attributes  = compact(concat(var.attributes, ["autoscaling"]))
@@ -23,7 +24,7 @@ module "labels" {
 resource "aws_launch_template" "on_demand" {
   count = var.enabled && var.ondemand_enabled ? length(var.ondemand_instance_type) : 0
 
-  name_prefix = format("%s%s%s", module.labels.id, var.delimiter,element(var.ondemand_instance_type, (count.index)))
+  name_prefix = format("%s%s%s", module.labels.id, var.delimiter, element(var.ondemand_instance_type, (count.index)))
   block_device_mappings {
     device_name = "/dev/sda1"
     ebs {
@@ -38,6 +39,7 @@ resource "aws_launch_template" "on_demand" {
   instance_type                        = element(var.ondemand_instance_type, count.index)
   key_name                             = var.key_name
   user_data                            = var.user_data_base64
+  disable_api_termination              = var.disable_api_termination
 
   iam_instance_profile {
     name = var.iam_instance_profile_name
@@ -76,7 +78,7 @@ resource "aws_launch_template" "on_demand" {
 resource "aws_launch_template" "spot" {
   count = var.enabled && var.spot_enabled ? length(var.spot_instance_type) : 0
 
-  name_prefix = format("%s%sspot-%s", module.labels.id, var.delimiter,element(var.ondemand_instance_type, (count.index)))
+  name_prefix = format("%s%sspot-%s", module.labels.id, var.delimiter, element(var.ondemand_instance_type, (count.index)))
   block_device_mappings {
     device_name = "/dev/sda1"
     ebs {
@@ -152,7 +154,7 @@ resource "aws_launch_template" "spot" {
 resource "aws_autoscaling_group" "on_demand" {
   count = var.enabled && var.ondemand_enabled ? length(var.ondemand_instance_type) : 0
 
-  name_prefix               =  format("%s-ondemand%s%s%s", module.labels.id, var.delimiter,element(var.ondemand_instance_type, (count.index)), var.delimiter)
+  name_prefix               = format("%s-ondemand%s%s%s", module.labels.id, var.delimiter, element(var.ondemand_instance_type, (count.index)), var.delimiter)
   vpc_zone_identifier       = var.subnet_ids
   max_size                  = element(var.max_size, count.index)
   min_size                  = element(var.min_size, count.index)
@@ -195,7 +197,7 @@ resource "aws_autoscaling_group" "on_demand" {
 resource "aws_autoscaling_group" "spot" {
   count = var.enabled && var.spot_enabled ? length(var.spot_instance_type) : 0
 
-  name_prefix               = format("%s-spot%s%s%s", module.labels.id, var.delimiter,element(var.spot_instance_type, (count.index)), var.delimiter)
+  name_prefix               = format("%s-spot%s%s%s", module.labels.id, var.delimiter, element(var.spot_instance_type, (count.index)), var.delimiter)
   vpc_zone_identifier       = var.subnet_ids
   max_size                  = element(var.spot_max_size, count.index)
   min_size                  = element(var.spot_min_size, count.index)

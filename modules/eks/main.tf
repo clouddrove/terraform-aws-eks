@@ -10,10 +10,11 @@ locals {
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
 
   name        = var.name
-  application = var.application
+  repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
   attributes  = compact(concat(var.attributes, ["cluster"]))
@@ -91,7 +92,7 @@ resource "aws_cloudwatch_log_group" "default" {
   name              = "/aws/eks/${module.labels.id}/cluster"
   retention_in_days = var.cluster_log_retention_period
   tags              = module.labels.tags
-  kms_key_id        = join("", aws_kms_key.cloudwatch_log.*.arn) 
+  kms_key_id        = join("", aws_kms_key.cloudwatch_log.*.arn)
 }
 
 resource "aws_kms_key" "cluster" {
