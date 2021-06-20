@@ -86,9 +86,8 @@ jobs:
     name: 'Pre-Commit'
     needs:
       - fmt
-      - private
-      - public
-      - public-private
+      - auto-scaling
+      - fargate
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
