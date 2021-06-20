@@ -9,7 +9,8 @@ provider "aws" {
 }
 
 module "keypair" {
-  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.12.2"
+  source  = "clouddrove/keypair/aws"
+  version = "0.15.0"
 
   key_path        = "~/.ssh/id_rsa.pub"
   key_name        = "main-key"
@@ -17,57 +18,8 @@ module "keypair" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.5"
-
-  name        = "vpc"
-  application = "clouddrove"
-  environment = "test"
-  label_order = ["environment", "application", "name"]
-  vpc_enabled = true
-
-  cidr_block = "10.10.0.0/16"
-}
-
-module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.6"
-
-  name        = "subnets"
-  application = "clouddrove"
-  environment = "test"
-  label_order = ["environment", "application", "name"]
-  tags        = local.tags
-  enabled     = true
-
-  nat_gateway_enabled = true
-  availability_zones  = ["eu-west-1a", "eu-west-1b"]
-  vpc_id              = module.vpc.vpc_id
-  cidr_block          = module.vpc.vpc_cidr_block
-  type                = "public-private"
-  igw_id              = module.vpc.igw_id
-}
-
-module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.4"
-
-  name        = "ssh"
-  application = "clouddrove"
-  environment = "test"
-  label_order = ["environment", "application", "name"]
-
-  vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["49.36.129.154/32", module.vpc.vpc_cidr_block]
-  allowed_ports = [22]
-}
-module "keypair" {
-  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.15.0"
-
-  key_path        = "~/.ssh/id_rsa.pub"
-  key_name        = "main-key"
-  enable_key_pair = true
-}
-
-module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.15.0"
+  source  = "clouddrove/vpc/aws"
+  version = "0.15.0"
 
   name        = "vpc"
   environment = "test"
@@ -78,7 +30,8 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.15.0"
+  source  = "clouddrove/subnet/aws"
+  version = "0.15.0"
 
   name        = "subnets"
   environment = "test"
@@ -96,7 +49,8 @@ module "subnets" {
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.15.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name        = "ssh"
   environment = "test"
@@ -134,7 +88,7 @@ module "eks-cluster" {
   cluster_namespace = "kube-system"
 
   ## Cluster
-  kubernetes_version = "1.17"
+  kubernetes_version = "1.20"
   map_additional_iam_users = [
     {
       userarn  = "arn:aws:iam::924144197303:user/rishabh@clouddrove.com"

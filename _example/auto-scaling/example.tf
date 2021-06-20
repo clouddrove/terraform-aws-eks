@@ -9,7 +9,8 @@ provider "aws" {
 }
 
 module "keypair" {
-  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.15.0"
+  source  = "clouddrove/keypair/aws"
+  version = "0.15.0"
 
   key_path        = "~/.ssh/id_rsa.pub"
   key_name        = "main-key"
@@ -17,7 +18,8 @@ module "keypair" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.15.0"
+  source  = "clouddrove/vpc/aws"
+  version = "0.15.0"
 
   name        = "vpc"
   environment = "test"
@@ -28,7 +30,8 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.15.0"
+  source  = "clouddrove/subnet/aws"
+  version = "0.15.0"
 
   name        = "subnets"
   environment = "test"
@@ -46,7 +49,8 @@ module "subnets" {
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.15.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name        = "ssh"
   environment = "test"
