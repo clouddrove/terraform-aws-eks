@@ -12,7 +12,7 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "0.15.0"
 
-  key_path        = "~/.ssh/id_rsa.pub"
+  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDfjNc4A+atuEBaElnpQqFkBFgGc+kCslpXh/aKETl1"
   key_name        = "main-key"
   enable_key_pair = true
 }
