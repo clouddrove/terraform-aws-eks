@@ -1,6 +1,6 @@
 locals {
   tags = {
-    "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
+    "kubernetes.io/cluster/test-eks-cluster" = "shared"
   }
 }
 

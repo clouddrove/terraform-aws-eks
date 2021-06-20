@@ -1,6 +1,6 @@
 locals {
   tags = {
-    "kubernetes.io/cluster/${module.eks-cluster.eks_cluster_id}" = "shared"
+    "kubernetes.io/cluster/test-eks-cluster" = "shared"
   }
 }
 
@@ -66,9 +66,8 @@ module "eks-cluster" {
 
   ## Tags
   name        = "eks"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
   enabled     = true
 
   ## Network
