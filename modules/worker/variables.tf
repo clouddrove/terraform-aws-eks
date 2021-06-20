@@ -13,7 +13,7 @@ variable "environment" {
 }
 
 variable "label_order" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
@@ -25,13 +25,13 @@ variable "repository" {
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
@@ -138,7 +138,7 @@ variable "image_id" {
 }
 
 variable "ondemand_instance_type" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Instance type to launch."
 }
@@ -180,19 +180,19 @@ variable "disable_api_termination" {
 }
 
 variable "max_size" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The maximum size of the autoscale group."
 }
 
 variable "min_size" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The minimum size of the autoscale group."
 }
 
 variable "desired_capacity" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The desired size of the autoscale group."
 }
@@ -442,26 +442,26 @@ variable "instance_interruption_behavior" {
 }
 
 variable "max_price" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The maximum hourly price you're willing to pay for the Spot Instances."
 }
 
 variable "spot_instance_type" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Sport instance type to launch."
 }
 
 
 variable "spot_max_size" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The maximum size of the spot autoscale group."
 }
 
 variable "spot_min_size" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The minimum size of the spot autoscale group."
 }
@@ -479,74 +479,74 @@ variable "scheduler_up" {
 }
 
 variable "schedule_min_size_scaledown" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 variable "schedule_max_size_scaledown" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The maximum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 variable "schedule_spot_min_size_scaledown" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 variable "schedule_spot_max_size_scaledown" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The maximum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 
 variable "schedule_desired_scale_down" {
-  type        = list
+  type        = list(any)
   default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
 variable "schedule_desired_spot_scale_down" {
-  type        = list
+  type        = list(any)
   default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
 
 
 variable "schedule_desired_scaleup" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The schedule desired size of the autoscale group."
 }
 
 variable "schedule_max_size_scaleup" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The schedule maximum size of the autoscale group."
 }
 
 variable "schedule_min_size_scaleup" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The schedule minimum size of the autoscale group."
 }
 variable "schedule_spot_desired_scaleup" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The schedule desired size of the autoscale group."
 }
 
 variable "schedule_spot_max_size_scaleup" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The schedule maximum size of the autoscale group."
 }
 
 variable "schedule_spot_min_size_scaleup" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "The schedule minimum size of the autoscale group."
 }
@@ -562,7 +562,7 @@ variable "scale_up_desired" {
 }
 
 variable "spot_scale_up_desired" {
-  type        = list
+  type        = list(any)
   default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
@@ -580,7 +580,7 @@ variable "spot_schedule_enabled" {
 }
 
 variable "spot_desired_capacity" {
-  type        = list
+  type        = list(any)
   default     = []
   description = " The number of Amazon EC2 instances that should be running in the group."
 }
@@ -616,7 +616,7 @@ variable "kubernetes_version" {
 }
 
 variable "kubernetes_labels" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed"
 }
