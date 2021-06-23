@@ -61,12 +61,9 @@ resource "aws_eks_node_group" "default" {
     min_size     = each.value.node_group_min_size
   }
 
-  dynamic "launch_template" {
-    for_each = var.node_groups
-    content {
-      name    = each.value.node_group_name
-      version = 1
-    }
+  launch_template {
+    name    = each.value.node_group_name
+    version = 1
   }
 
   depends_on = [aws_launch_template.default]

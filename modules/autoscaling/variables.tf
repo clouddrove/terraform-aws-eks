@@ -38,7 +38,7 @@ variable "tags" {
 
 variable "managedby" {
   type        = string
-  default     = "anmol@clouddrove.com"
+  default     = "hello@clouddrove.com"
   description = "ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'."
 }
 

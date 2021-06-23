@@ -12,7 +12,7 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "0.15.0"
 
-  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDfjNc4A+atuEBaElnpQqFkBFgGc+kCslpXh/aKETl1"
+  public_key      = "ssh-rsa AAAAB3sdfggggggggggg"
   key_name        = "main-key"
   enable_key_pair = true
 }
@@ -128,6 +128,20 @@ module "eks-cluster" {
   node_groups = {
     tools = {
       node_group_name           = "autoscale"
+      subnet_ids                = module.subnets.private_subnet_id
+      ami_type                  = "AL2_x86_64"
+      node_group_volume_size    = 100
+      node_group_instance_types = ["t3.large"]
+      kubernetes_labels         = {}
+      kubernetes_version        = "1.20"
+      node_group_desired_size   = 1
+      node_group_max_size       = 1
+      node_group_min_size       = 1
+      node_group_capacity_type  = "ON_DEMAND"
+      node_group_volume_type    = "gp2"
+    }
+    tools1 = {
+      node_group_name           = "autoscale1"
       subnet_ids                = module.subnets.private_subnet_id
       ami_type                  = "AL2_x86_64"
       node_group_volume_size    = 100
