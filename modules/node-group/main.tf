@@ -54,6 +54,7 @@ resource "aws_eks_node_group" "default" {
   version         = each.value.kubernetes_version
   tags            = module.labels.tags
   capacity_type   = each.value.node_group_capacity_type
+  ami_type        = each.value.ami_type
 
   scaling_config {
     desired_size = each.value.node_group_desired_size
