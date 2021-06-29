@@ -226,7 +226,7 @@ module "eks-cluster" {
 | cpu\_utilization\_low\_threshold\_percent | Worker nodes AutoScaling Group CPU utilization low threshold percent. | `number` | `20` | no |
 | delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | `string` | `"-"` | no |
 | disable\_api\_termination | If `true`, enables EC2 Instance Termination Protection. | `bool` | `false` | no |
-| ebs\_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot\_id. | `bool` | `false` | no |
+| ebs\_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot\_id. | `bool` | `true` | no |
 | eks\_subnet\_ids | A list of subnet IDs to launch resources in EKS. | `list(string)` | `[]` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | `bool` | `true` | no |
 | enabled\_cluster\_log\_types | A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]. | `list(string)` | `[]` | no |
