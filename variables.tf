@@ -230,7 +230,7 @@ variable "volume_type" {
 
 variable "ebs_encryption" {
   type        = bool
-  default     = false
+  default     = true
   description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
 }
 

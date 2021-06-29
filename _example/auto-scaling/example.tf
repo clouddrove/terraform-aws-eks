@@ -12,7 +12,7 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "0.15.0"
 
-  public_key      = "ssh-rsa AAAAB3sdfggggggggggg"
+  public_key      = "ssh-rsa AAAAB3Nzadrfdgr"
   key_name        = "main-key"
   enable_key_pair = true
 }
@@ -175,9 +175,6 @@ module "eks-cluster" {
   cpu_utilization_high_threshold_percent = 80
   cpu_utilization_low_threshold_percent  = 20
   health_check_type                      = "EC2"
-
-  ## EBS Encryption
-  ebs_encryption = true
 
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
