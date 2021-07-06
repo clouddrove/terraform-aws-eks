@@ -146,7 +146,8 @@ module "eks-cluster" {
      node_group_max_size             = [2, 2]
      node_group_volume_size          = 20
      before_cluster_joining_userdata = ""
-     node_group_capacity_type        = "ON_DEMAND"node_groups = {
+     node_group_capacity_type        = "ON_DEMAND"
+     node_groups = {
       tools = {
         node_group_name           = "autoscale"
         subnet_ids                = module.subnets.private_subnet_id
