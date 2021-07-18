@@ -118,26 +118,6 @@ output "workers_security_group_name" {
   description = "Name of the worker nodes Security Group."
 }
 
-output "eks_node_group_id" {
-  value       = module.eks_workers.eks_node_group_id
-  description = "EKS Cluster name and EKS Node Group name separated by a colon"
-}
-
-output "eks_node_group_arn" {
-  value       = module.eks_workers.eks_node_group_arn
-  description = "Amazon Resource Name (ARN) of the EKS Node Group"
-}
-
-output "eks_node_group_resources" {
-  value       = module.eks_workers.eks_node_group_resources
-  description = "List of objects containing information about underlying resources of the EKS Node Group"
-}
-
-output "eks_node_group_status" {
-  value       = module.eks_workers.eks_node_group_status
-  description = "Status of the EKS Node Group"
-}
-
 output "eks_fargate_arn" {
   value       = module.eks_workers.eks_fargate_arn
   description = "Amazon Resource Name (ARN) of the EKS Fargate Profile."
@@ -151,4 +131,24 @@ output "eks_fargate_id" {
 output "tags" {
   value       = module.eks_cluster.tags
   description = "A mapping of tags to assign to the resource."
+}
+
+output "eks_node_group_id" {
+  value       = module.node_group.eks_node_group_id
+  description = "EKS Cluster name and EKS Node Group name separated by a colon"
+}
+
+output "eks_node_group_arn" {
+  value       = module.node_group.eks_node_group_arn
+  description = "Amazon Resource Name (ARN) of the EKS Node Group"
+}
+
+output "eks_node_group_resources" {
+  value       = module.node_group.eks_node_group_resources
+  description = "List of objects containing information about underlying resources of the EKS Node Group"
+}
+
+output "eks_node_group_status" {
+  value       = module.node_group.eks_node_group_status
+  description = "Status of the EKS Node Group"
 }

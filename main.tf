@@ -46,11 +46,6 @@ module "eks_workers" {
   health_check_type                      = var.health_check_type
   min_size                               = var.min_size
   max_size                               = var.max_size
-  node_group_desired_size                = var.node_group_desired_size
-  node_group_max_size                    = var.node_group_max_size
-  node_group_min_size                    = var.node_group_min_size
-  node_group_enabled                     = var.node_group_enabled
-  number_of_node_groups                  = var.number_of_node_groups
   ami_type                               = var.ami_type
   ami_release_version                    = var.ami_release_version
   desired_size                           = var.desired_size
@@ -97,4 +92,29 @@ module "eks_workers" {
   on_demand_enabled                      = var.on_demand_enabled
   cpu_utilization_high_threshold_percent = var.cpu_utilization_high_threshold_percent
   cpu_utilization_low_threshold_percent  = var.cpu_utilization_low_threshold_percent
+}
+
+#Module      : EKS node_group
+#Description : Manages an EKS Autoscaling.
+module "node_group" {
+  source = "./modules/node-group"
+
+  ## Tags
+  name                            = var.name
+  application                     = var.application
+  node_groups                     = var.node_groups
+  environment                     = var.environment
+  managedby                       = var.managedby
+  label_order                     = var.label_order
+  node_group_enabled              = var.node_group_enabled
+  ami_release_version             = var.ami_release_version
+  cluster_name                    = module.eks_cluster.eks_cluster_id
+  key_name                        = var.key_name
+  node_security_group_ids         = var.additional_security_group_ids
+  before_cluster_joining_userdata = var.before_cluster_joining_userdata
+  ebs_encryption                  = var.ebs_encryption
+  kms_key_arn                     = var.kms_key_arn
+  module_depends_on = [
+    module.eks_cluster.eks_cluster_certificate_authority_data
+  ]
 }

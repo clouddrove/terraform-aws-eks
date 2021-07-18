@@ -115,20 +115,44 @@ module "eks-cluster" {
   public_access_cidrs             = ["0.0.0.0/0"]
   resources                       = ["secrets"]
 
-  ## Node-Group
-  node_group_enabled        = true
-  number_of_node_groups     = 1
-  node_group_instance_types = ["t3.medium"]
+  node_groups = {
+    tools = {
+      node_group_name           = "autoscale"
+      subnet_ids                = module.subnets.private_subnet_id
+      ami_type                  = "AL2_x86_64"
+      node_group_volume_size    = 100
+      node_group_instance_types = ["t3.large"]
+      kubernetes_labels         = {}
+      kubernetes_version        = "1.20"
+      node_group_desired_size   = 1
+      node_group_max_size       = 1
+      node_group_min_size       = 1
+      node_group_capacity_type  = "ON_DEMAND"
+      node_group_volume_type    = "gp2"
+    }
+    tools1 = {
+      node_group_name           = "autoscale1"
+      subnet_ids                = module.subnets.private_subnet_id
+      ami_type                  = "AL2_x86_64"
+      node_group_volume_size    = 100
+      node_group_instance_types = ["t3.large"]
+      kubernetes_labels         = {}
+      kubernetes_version        = "1.20"
+      node_group_desired_size   = 1
+      node_group_max_size       = 1
+      node_group_min_size       = 1
+      node_group_capacity_type  = "ON_DEMAND"
+      node_group_volume_type    = "gp2"
+    }
+  }
+
   key_name                  = module.keypair.name
-  node_security_group_ids   = []
-  node_group_max_size       = 3
-  node_group_desired_size   = 2
-  node_group_min_size       = 1
   volume_size               = 20
 
   ## Cluster
-  kubernetes_version = "1.16"
+  kubernetes_version = "1.20"
   kms_key_arn        = module.kms_key.key_arn
+  ebs_encryption     = true
 
   ## logs
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]

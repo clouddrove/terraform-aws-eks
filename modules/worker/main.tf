@@ -40,18 +40,6 @@ module "labels" {
   label_order = var.label_order
 }
 
-module "node_group_labels" {
-  source      = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
-  name        = var.name
-  application = var.application
-  environment = var.environment
-  managedby   = var.managedby
-  delimiter   = var.delimiter
-  tags        = local.node_group_tags
-  attributes  = compact(concat(var.attributes, ["nodes"]))
-  label_order = var.label_order
-}
-
 data "aws_iam_policy_document" "assume_role" {
   count = var.enabled && local.use_existing_instance_profile == false ? 1 : 0
 
@@ -279,46 +267,6 @@ resource "aws_eks_fargate_profile" "default" {
   selector {
     namespace = var.cluster_namespace
     labels    = var.kubernetes_labels
-  }
-}
-
-#Module:     : NODE GROUP
-#Description : Creating a node group for eks cluster
-resource "aws_eks_node_group" "default" {
-  count           = var.enabled && var.node_group_enabled ? var.number_of_node_groups : 0
-  cluster_name    = var.cluster_name
-  node_group_name = format("%s-node-group-${count.index + 1}", module.node_group_labels.id)
-  node_role_arn   = join("", aws_iam_role.default.*.arn)
-  subnet_ids      = var.subnet_ids
-  ami_type        = var.ami_type
-  disk_size       = var.volume_size
-  instance_types  = var.node_group_instance_types
-  labels          = var.kubernetes_labels
-  release_version = var.ami_release_version
-  version         = var.kubernetes_version
-
-  tags = module.node_group_labels.tags
-
-  scaling_config {
-    desired_size = var.node_group_desired_size
-    max_size     = var.node_group_max_size
-    min_size     = var.node_group_min_size
-  }
-
-  remote_access {
-    ec2_ssh_key               = var.key_name
-    source_security_group_ids = var.node_security_group_ids
-  }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
-    aws_iam_role_policy_attachment.amazon_eks_node_group_autoscaler_policy,
-    aws_iam_role_policy_attachment.amazon_eks_cni_policy,
-    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only
-  ]
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 

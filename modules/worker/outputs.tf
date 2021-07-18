@@ -83,26 +83,6 @@ output "config_map_aws_auth" {
   description = "Kubernetes ConfigMap configuration for worker nodes to join the EKS cluster. https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html#required-kubernetes-configuration-to-join-worker-nodes."
 }
 
-output "eks_node_group_id" {
-  value       = join("", aws_eks_node_group.default.*.id)
-  description = "EKS Cluster name and EKS Node Group name separated by a colon"
-}
-
-output "eks_node_group_arn" {
-  value       = join("", aws_eks_node_group.default.*.arn)
-  description = "Amazon Resource Name (ARN) of the EKS Node Group"
-}
-
-output "eks_node_group_resources" {
-  value       = var.enabled ? aws_eks_node_group.default.*.resources : []
-  description = "List of objects containing information about underlying resources of the EKS Node Group"
-}
-
-output "eks_node_group_status" {
-  value       = join("", aws_eks_node_group.default.*.status)
-  description = "Status of the EKS Node Group"
-}
-
 output "eks_fargate_arn" {
   value       = join("", aws_eks_fargate_profile.default.*.arn)
   description = "Amazon Resource Name (ARN) of the EKS Fargate Profile."
