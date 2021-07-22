@@ -34,6 +34,7 @@ module "eks_workers" {
   source                                 = "./modules/worker"
   name                                   = var.name
   application                            = var.application
+  enabled                                = var.enabled
   environment                            = var.environment
   managedby                              = var.managedby
   label_order                            = var.label_order
