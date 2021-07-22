@@ -6,10 +6,10 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "application" {
+variable "repository" {
   type        = string
-  default     = ""
-  description = "Application (e.g. `cd` or `clouddrove`)."
+  default     = "https://github.com/clouddrove/terraform-aws-eks"
+  description = "Terraform current module repo"
 }
 
 variable "environment" {
@@ -18,27 +18,33 @@ variable "environment" {
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
 }
 
+variable "application" {
+  type        = string
+  default     = ""
+  description = "Application (e.g. `cd` or `clouddrove`)."
+}
+
 variable "label_order" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
 variable "managedby" {
   type        = string
-  default     = "anmol@clouddrove.com"
+  default     = "hello@clouddrove.com"
   description = "ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'."
 }
 
@@ -59,7 +65,6 @@ variable "cluster_name" {
   default     = ""
   description = "The name of the EKS cluster."
 }
-
 
 variable "aws_iam_instance_profile_name" {
   type        = string
@@ -96,24 +101,6 @@ variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Defaults to `AL2_x86_64`. Valid values: `AL2_x86_64`, `AL2_x86_64_GPU`. Terraform will only perform drift detection if a configuration value is provided"
 }
 
-variable "node_group_desired_size" {
-  type        = list
-  default     = []
-  description = "Desired number of worker node groups"
-}
-
-variable "node_group_max_size" {
-  type        = list
-  default     = []
-  description = "The maximum size of the autoscale node group."
-}
-
-variable "node_group_min_size" {
-  type        = list
-  default     = []
-  description = "The minimum size of the autoscale node group."
-}
-
 variable "ami_release_version" {
   type        = string
   default     = ""
@@ -138,19 +125,6 @@ variable "kubernetes_version" {
   description = "Kubernetes version. Defaults to EKS Cluster Kubernetes version. Terraform will only perform drift detection if a configuration value is provided"
 }
 
-variable "kubernetes_labels" {
-  type        = map
-  default     = {}
-  description = "Key-value mapping of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed"
-}
-
-variable "node_group_instance_types" {
-  type        = list
-  default     = []
-  description = "Set of instance types associated with the EKS Node Group. Defaults to [\"t3.medium\"]. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-
 variable "cluster_namespace" {
   type        = string
   default     = ""
@@ -161,18 +135,6 @@ variable "enable_cluster_autoscaler" {
   type        = bool
   default     = false
   description = "Whether to enable node group to scale the Auto Scaling Group"
-}
-
-variable "node_group_volume_size" {
-  type        = number
-  default     = 20
-  description = "Disk size in GiB for worker nodes. Defaults to 20. Terraform will only perform drift detection if a configuration value is provided"
-}
-
-variable "node_group_name" {
-  type        = list
-  default     = []
-  description = "Name of node group"
 }
 
 variable "module_depends_on" {
@@ -191,4 +153,46 @@ variable "node_role_arn" {
   type        = string
   default     = ""
   description = "ARN of role profile."
+}
+
+variable "node_groups" {
+  description = "Node group configurations"
+  type = map(object({
+    node_group_name           = string
+    subnet_ids                = list(string)
+    ami_type                  = string
+    node_group_volume_size    = number
+    node_group_instance_types = list(string)
+    kubernetes_labels         = map(string)
+    kubernetes_version        = string
+    node_group_desired_size   = number
+    node_group_max_size       = number
+    node_group_min_size       = number
+    node_group_capacity_type  = string
+    node_group_volume_type    = string
+  }))
+}
+
+variable "resources_to_tag" {
+  type        = list(string)
+  description = "List of auto-launched resource types to tag. Valid types are \"instance\", \"volume\", \"elastic-gpu\", \"spot-instances-request\"."
+  default     = []
+  validation {
+    condition = (
+      length(compact([for r in var.resources_to_tag : r if !contains(["instance", "volume", "elastic-gpu", "spot-instances-request"], r)])) == 0
+    )
+    error_message = "Invalid resource type in `resources_to_tag`. Valid types are \"instance\", \"volume\", \"elastic-gpu\", \"spot-instances-request\"."
+  }
+}
+
+variable "ebs_encryption" {
+  type        = bool
+  default     = false
+  description = "Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot_id."
+}
+
+variable "kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. encrypted must be set to true when this is set."
 }

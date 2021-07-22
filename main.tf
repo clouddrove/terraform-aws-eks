@@ -152,28 +152,24 @@ module "node_group" {
 
   ## Tags
   name                            = var.name
-  application                     = var.application
+  node_groups                     = var.node_groups
   environment                     = var.environment
   managedby                       = var.managedby
   label_order                     = var.label_order
   node_group_enabled              = var.node_group_enabled
-  node_group_name                 = var.node_group_name
+  ami_release_version             = var.ami_release_version
   cluster_name                    = module.eks_cluster.eks_cluster_id
-  node_group_desired_size         = var.node_group_desired_size
-  node_group_max_size             = var.node_group_max_size
-  node_group_min_size             = var.node_group_min_size
-  subnet_ids                      = var.worker_subnet_ids
   key_name                        = var.key_name
-  kubernetes_version              = var.kubernetes_version
-  volume_size                     = var.node_group_volume_size
   node_security_group_ids         = var.additional_security_group_ids
-  node_group_instance_types       = var.node_group_instance_types
   before_cluster_joining_userdata = var.before_cluster_joining_userdata
   node_role_arn                   = join("", aws_iam_role.default.*.arn)
+  ebs_encryption                  = var.ebs_encryption
+  kms_key_arn                     = var.kms_key_arn
   module_depends_on = [
     aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
     aws_iam_role_policy_attachment.amazon_eks_node_group_autoscaler_policy,
     aws_iam_role_policy_attachment.amazon_eks_cni_policy,
-    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only
+    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only,
+    module.eks_cluster.eks_cluster_certificate_authority_data
   ]
 }
