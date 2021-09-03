@@ -80,10 +80,11 @@ resource "aws_launch_template" "spot" {
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {
-      volume_size = var.volume_size
-      encrypted   = var.ebs_encryption
-      kms_key_id  = var.kms_key_arn
-      volume_type = var.volume_type
+      volume_size           = var.volume_size
+      delete_on_termination = true
+      encrypted             = var.ebs_encryption
+      kms_key_id            = var.kms_key_arn
+      volume_type           = var.volume_type
     }
   }
   image_id                             = var.image_id

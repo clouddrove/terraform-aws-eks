@@ -326,7 +326,7 @@ variable "volume_size" {
 
 variable "volume_type" {
   type        = string
-  default     = "standard"
+  default     = "gp2"
   description = "The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`)."
 }
 
