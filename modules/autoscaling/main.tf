@@ -84,7 +84,7 @@ resource "aws_launch_template" "spot" {
       delete_on_termination = true
       encrypted             = var.ebs_encryption
       kms_key_id            = var.kms_key_arn
-      volume_type           = var.volume_type
+      volume_type           = "gp2"
     }
   }
   image_id                             = var.image_id
