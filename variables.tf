@@ -557,6 +557,9 @@ variable "node_groups" {
     node_group_min_size       = number
     node_group_capacity_type  = string
     node_group_volume_type    = string
+    node_group_taint_key      = string
+    node_group_taint_value    = string
+    node_group_taint_effect   = string
   }))
   default = {
     tools = {
@@ -572,8 +575,17 @@ variable "node_groups" {
       node_group_min_size       = 1
       node_group_capacity_type  = "ON_DEMAND"
       node_group_volume_type    = "gp2"
+      node_group_taint_key      = ""
+      node_group_taint_value    = ""
+      node_group_taint_effect   = ""
     }
   }
+}
+
+variable "node_group_taint_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to `enable`  or `disable` node group taints"
 }
 
 variable "node_group_enabled" {

@@ -88,7 +88,7 @@ module "eks-cluster" {
   volume_size = 20
 
   ## ondemand
-  ondemand_enabled          = true
+  ondemand_enabled          = false
   ondemand_instance_type    = ["t3.small", "t3.medium", "t3.small"]
   ondemand_max_size         = [1, 0, 0]
   ondemand_min_size         = [1, 0, 0]
@@ -124,7 +124,8 @@ module "eks-cluster" {
   scheduler_up   = "0 6 * * MON-FRI"
 
   #node_group
-  node_group_enabled = true
+  node_group_enabled       = true
+  node_group_taint_enabled = false
   node_groups = {
     tools = {
       node_group_name           = "autoscale"
@@ -139,6 +140,10 @@ module "eks-cluster" {
       node_group_min_size       = 1
       node_group_capacity_type  = "ON_DEMAND"
       node_group_volume_type    = "gp2"
+      node_group_taint_key      = "test"
+      node_group_taint_value    = "value"
+      node_group_taint_effect   = "NO_SCHEDULE"
+
     }
     tools1 = {
       node_group_name           = "autoscale1"
@@ -153,6 +158,9 @@ module "eks-cluster" {
       node_group_min_size       = 1
       node_group_capacity_type  = "ON_DEMAND"
       node_group_volume_type    = "gp2"
+      node_group_taint_key      = "test"
+      node_group_taint_value    = "value"
+      node_group_taint_effect   = "NO_SCHEDULE"
     }
   }
 

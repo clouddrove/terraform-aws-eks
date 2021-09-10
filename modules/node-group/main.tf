@@ -62,6 +62,15 @@ resource "aws_eks_node_group" "default" {
     min_size     = each.value.node_group_min_size
   }
 
+  dynamic "taint" {
+    for_each = var.node_group_taint_enabled != false ? [1] : []
+    content {
+      key    = each.value.node_group_taint_key
+      value  = each.value.node_group_taint_value
+      effect = each.value.node_group_taint_effect
+    }
+  }
+
   launch_template {
     name    = each.value.node_group_name
     version = 1

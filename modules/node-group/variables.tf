@@ -164,6 +164,9 @@ variable "node_groups" {
     node_group_min_size       = number
     node_group_capacity_type  = string
     node_group_volume_type    = string
+    node_group_taint_key      = string
+    node_group_taint_value    = string
+    node_group_taint_effect   = string
   }))
 }
 
@@ -177,6 +180,12 @@ variable "resources_to_tag" {
     )
     error_message = "Invalid resource type in `resources_to_tag`. Valid types are \"instance\", \"volume\", \"elastic-gpu\", \"spot-instances-request\"."
   }
+}
+
+variable "node_group_taint_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to `enable`  or `disable` node group taints"
 }
 
 variable "ebs_encryption" {
