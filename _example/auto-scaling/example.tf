@@ -57,7 +57,7 @@ module "ssh" {
   label_order = ["environment", "name"]
 
   vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["49.36.129.154/32", module.vpc.vpc_cidr_block]
+  allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [22]
 }
 
@@ -83,9 +83,8 @@ module "eks-cluster" {
   cluster_encryption_config_resources = ["secrets"]
   associate_public_ip_address         = false
   key_name                            = module.keypair.name
-
   ## volume_size
-  volume_size = 20
+  volume_size = 30
 
   ## ondemand
   ondemand_enabled          = false
@@ -125,7 +124,7 @@ module "eks-cluster" {
 
   #node_group
   node_group_enabled       = true
-  node_group_taint_enabled = false
+  node_group_taint_enabled = true
   node_groups = {
     tools = {
       node_group_name           = "autoscale"
@@ -134,7 +133,7 @@ module "eks-cluster" {
       node_group_volume_size    = 100
       node_group_instance_types = ["t3.large"]
       kubernetes_labels         = {}
-      kubernetes_version        = "1.20"
+      kubernetes_version        = "1.21"
       node_group_desired_size   = 1
       node_group_max_size       = 1
       node_group_min_size       = 1
@@ -152,7 +151,7 @@ module "eks-cluster" {
       node_group_volume_size    = 100
       node_group_instance_types = ["t3.large"]
       kubernetes_labels         = {}
-      kubernetes_version        = "1.20"
+      kubernetes_version        = "1.21"
       node_group_desired_size   = 1
       node_group_max_size       = 1
       node_group_min_size       = 1
@@ -168,7 +167,7 @@ module "eks-cluster" {
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
-  kubernetes_version        = "1.20"
+  kubernetes_version        = "1.21"
   map_additional_iam_users = [
     {
       userarn  = "arn:aws:iam::924144197303:user/nikita@clouddrove.com"
