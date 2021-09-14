@@ -154,6 +154,7 @@ module "node_group" {
   managedby                       = var.managedby
   label_order                     = var.label_order
   node_group_enabled              = var.node_group_enabled
+  node_group_taint_enabled        = var.node_group_taint_enabled
   ami_release_version             = var.ami_release_version
   cluster_name                    = module.eks_cluster.eks_cluster_id
   key_name                        = var.key_name

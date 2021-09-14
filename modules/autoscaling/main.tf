@@ -26,7 +26,7 @@ resource "aws_launch_template" "on_demand" {
 
   name_prefix = format("%s%s%s", module.labels.id, var.delimiter, element(var.ondemand_instance_type, (count.index)))
   block_device_mappings {
-    device_name = "/dev/sda1"
+    device_name = "/dev/xvda"
     ebs {
       volume_size = var.volume_size
       encrypted   = var.ebs_encryption
@@ -80,7 +80,7 @@ resource "aws_launch_template" "spot" {
 
   name_prefix = format("%s%sspot-%s", module.labels.id, var.delimiter, element(var.ondemand_instance_type, (count.index)))
   block_device_mappings {
-    device_name = "/dev/sda1"
+    device_name = "/dev/xvda"
     ebs {
       volume_size = var.volume_size
       encrypted   = var.ebs_encryption

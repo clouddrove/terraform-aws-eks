@@ -57,7 +57,7 @@ module "ssh" {
   label_order = ["environment", "name"]
 
   vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["49.36.129.154/32", module.vpc.vpc_cidr_block]
+  allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [22]
 }
 
@@ -83,12 +83,11 @@ module "eks-cluster" {
   cluster_encryption_config_resources = ["secrets"]
   associate_public_ip_address         = false
   key_name                            = module.keypair.name
-
   ## volume_size
-  volume_size = 20
+  volume_size = 30
 
   ## ondemand
-  ondemand_enabled          = true
+  ondemand_enabled          = false
   ondemand_instance_type    = ["t3.small", "t3.medium", "t3.small"]
   ondemand_max_size         = [1, 0, 0]
   ondemand_min_size         = [1, 0, 0]
@@ -124,7 +123,8 @@ module "eks-cluster" {
   scheduler_up   = "0 6 * * MON-FRI"
 
   #node_group
-  node_group_enabled = true
+  node_group_enabled       = true
+  node_group_taint_enabled = true
   node_groups = {
     tools = {
       node_group_name           = "autoscale"
@@ -133,12 +133,16 @@ module "eks-cluster" {
       node_group_volume_size    = 100
       node_group_instance_types = ["t3.large"]
       kubernetes_labels         = {}
-      kubernetes_version        = "1.20"
+      kubernetes_version        = "1.21"
       node_group_desired_size   = 1
       node_group_max_size       = 1
       node_group_min_size       = 1
       node_group_capacity_type  = "ON_DEMAND"
       node_group_volume_type    = "gp2"
+      node_group_taint_key      = "test"
+      node_group_taint_value    = "value"
+      node_group_taint_effect   = "NO_SCHEDULE"
+
     }
     tools1 = {
       node_group_name           = "autoscale1"
@@ -147,12 +151,15 @@ module "eks-cluster" {
       node_group_volume_size    = 100
       node_group_instance_types = ["t3.large"]
       kubernetes_labels         = {}
-      kubernetes_version        = "1.20"
+      kubernetes_version        = "1.21"
       node_group_desired_size   = 1
       node_group_max_size       = 1
       node_group_min_size       = 1
       node_group_capacity_type  = "ON_DEMAND"
       node_group_volume_type    = "gp2"
+      node_group_taint_key      = "test"
+      node_group_taint_value    = "value"
+      node_group_taint_effect   = "NO_SCHEDULE"
     }
   }
 
@@ -160,7 +167,7 @@ module "eks-cluster" {
   ## Cluster
   wait_for_capacity_timeout = "15m"
   apply_config_map_aws_auth = true
-  kubernetes_version        = "1.20"
+  kubernetes_version        = "1.21"
   map_additional_iam_users = [
     {
       userarn  = "arn:aws:iam::924144197303:user/nikita@clouddrove.com"
