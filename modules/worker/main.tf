@@ -30,6 +30,20 @@ module "labels" {
   label_order = var.label_order
 }
 
+module "labels_sg" {
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
+
+  name        = var.name
+  repository  = var.repository
+  environment = var.environment
+  managedby   = var.managedby
+  delimiter   = var.delimiter
+  attributes  = compact(concat(var.attributes, ["workers"]))
+  label_order = var.label_order
+}
+
+
 #Module      : SECURITY GROUP
 #Description : Provides a security group resource.
 resource "aws_security_group" "default" {
@@ -37,7 +51,7 @@ resource "aws_security_group" "default" {
   name        = module.labels.id
   description = "Security Group for EKS worker nodes"
   vpc_id      = var.vpc_id
-  tags        = module.labels.tags
+  tags        = module.labels_sg.tags
 }
 
 #Module      : SECURITY GROUP RULE EGRESS
