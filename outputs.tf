@@ -133,6 +133,11 @@ output "iam_role_arn" {
   description = "ARN of the worker nodes IAM role."
 }
 
+output "iam_role_name" {
+  value       = join("", aws_iam_role.default.*.name)
+  description = "Name of the worker nodes IAM role."
+}
+
 output "eks_node_group_id" {
   value       = module.node_group.eks_node_group_id
   description = "EKS Cluster name and EKS Node Group name separated by a colon"
@@ -151,4 +156,9 @@ output "eks_node_group_resources" {
 output "eks_node_group_status" {
   value       = module.node_group.eks_node_group_status
   description = "Status of the EKS Node Group"
+}
+
+output "oidc_issuer_url" {
+  value       = module.eks_cluster.oidc_issuer_url
+  description = "The URL on the EKS cluster OIDC Issuer"
 }
