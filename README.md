@@ -317,7 +317,9 @@ module "eks-cluster" {
 | eks\_node\_group\_resources | List of objects containing information about underlying resources of the EKS Node Group |
 | eks\_node\_group\_status | Status of the EKS Node Group |
 | iam\_role\_arn | ARN of the worker nodes IAM role. |
+| iam\_role\_name | Name of the worker nodes IAM role. |
 | kubernetes\_config\_map\_id | ID of `aws-auth` Kubernetes ConfigMap |
+| oidc\_issuer\_url | The URL on the EKS cluster OIDC Issuer |
 | tags | A mapping of tags to assign to the resource. |
 | workers\_autoscaling\_group\_arn | ARN of the AutoScaling Group. |
 | workers\_autoscaling\_group\_default\_cooldown | Time between a scaling activity and the succeeding scaling activity. |
