@@ -180,6 +180,7 @@ resource "aws_security_group" "default" {
 #Module      : SECURITY GROUP RULE EGRESS
 #Description : Provides a security group rule resource. Represents a single egress group rule,
 #              which can be added to external Security Groups.
+#tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group_rule" "egress" {
   count             = var.enabled ? 1 : 0
   description       = "Allow all egress traffic"
@@ -237,6 +238,8 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 #Description : Manages an EKS Cluster.
 #tfsec:ignore:aws-eks-no-public-cluster-access
 #tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr
+#tfsec:ignore:aws-eks-encrypt-secrets
+#tfsec:ignore:aws-eks-encrypt-secrets
 resource "aws_eks_cluster" "default" {
   count                     = var.enabled ? 1 : 0
   name                      = module.labels.id

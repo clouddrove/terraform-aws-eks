@@ -56,6 +56,7 @@ resource "aws_security_group" "default" {
 #Module      : SECURITY GROUP RULE EGRESS
 #Description : Provides a security group rule resource. Represents a single egress group rule,
 #              which can be added to external Security Groups.
+#tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group_rule" "egress" {
   count             = var.enabled && var.use_existing_security_group == false ? 1 : 0
   description       = "Allow all egress traffic"

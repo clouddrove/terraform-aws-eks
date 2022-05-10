@@ -109,7 +109,7 @@ data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
     resources = ["*"]
   }
 }
-#tfsec:ignore:aws-iam-no-policy-wildcards
+
 #tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "ecr" {
   count  = var.enabled ? 1 : 0
