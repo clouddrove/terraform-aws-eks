@@ -68,6 +68,7 @@ resource "aws_ami_copy" "image_id" {
 
 #Module      : EKS Worker
 #Description : Manages an EKS Autoscaling.
+#tfsec:ignore:aws-autoscaling-enforce-http-token-imds
 module "eks_workers" {
   source                  = "./modules/worker"
   name                    = var.name
@@ -144,6 +145,7 @@ module "eks_workers" {
 
 #Module      : EKS node_group
 #Description : Manages an EKS Autoscaling.
+#tfsec:ignore:aws-autoscaling-enforce-http-token-imds
 module "node_group" {
   source = "./modules/node-group"
 
