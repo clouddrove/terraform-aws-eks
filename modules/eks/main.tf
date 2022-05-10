@@ -168,6 +168,7 @@ resource "aws_iam_role_policy" "cluster_elb_service_role" {
 
 #Module      : SECURITY GROUP
 #Description : Provides a security group resource.
+#tfsec:ignore:aws-eks-encrypt-secrets
 resource "aws_security_group" "default" {
   count       = var.enabled ? 1 : 0
   name        = module.labels.id
@@ -234,6 +235,8 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 
 #Module      : EKS CLUSTER
 #Description : Manages an EKS Cluster.
+#tfsec:ignore:aws-eks-no-public-cluster-access
+#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr
 resource "aws_eks_cluster" "default" {
   count                     = var.enabled ? 1 : 0
   name                      = module.labels.id

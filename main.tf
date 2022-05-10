@@ -54,7 +54,7 @@ data "aws_ami" "image_id" {
 }
 
 data "aws_region" "current" {}
-
+#tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_ami_copy" "image_id" {
   count = var.enabled ? 1 : 0
 
