@@ -6,9 +6,9 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 3.1.15"
     }
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.1"
+    cloudinit = {
+      source  = "hashicorp/cloudinit"
+      version = ">= 2.0"
     }
   }
 }
