@@ -158,7 +158,7 @@ variable "cpu_utilization_high_threshold_percent" {
 
 variable "workers_security_group_count" {
   type        = number
-  default     = 0
+  default     = 1
   description = "Count of the worker Security Groups. Needed to prevent Terraform error `count can't be computed`."
 }
 
