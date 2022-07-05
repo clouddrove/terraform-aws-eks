@@ -64,7 +64,7 @@ resource "aws_eks_node_group" "default" {
 
   launch_template {
     name    = each.value.node_group_name
-    version = 1
+    version = each.value.launch_template_version
   }
 
   depends_on = [aws_launch_template.default]
@@ -87,7 +87,6 @@ resource "aws_launch_template" "default" {
   name                   = each.value.node_group_name
   update_default_version = true
   image_id               = var.ami_release_version
-  key_name               = var.key_name
 
   dynamic "tag_specifications" {
     for_each = var.resources_to_tag

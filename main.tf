@@ -19,7 +19,7 @@ module "eks_cluster" {
   kubernetes_version                                        = var.kubernetes_version
   allowed_security_groups                                   = var.allowed_security_groups_cluster
   workers_security_group_ids                                = [module.eks_workers.security_group_id]
-  workers_security_group_count                              = 1
+  workers_security_group_count                              = var.workers_security_group_count
   allowed_cidr_blocks                                       = var.allowed_cidr_blocks_cluster
   enabled_cluster_log_types                                 = var.enabled_cluster_log_types
   public_access_cidrs                                       = var.public_access_cidrs

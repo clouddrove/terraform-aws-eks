@@ -156,6 +156,12 @@ variable "cpu_utilization_high_threshold_percent" {
   description = "Worker nodes AutoScaling Group CPU utilization high threshold percent."
 }
 
+variable "workers_security_group_count" {
+  type        = number
+  default     = 0
+  description = "Count of the worker Security Groups. Needed to prevent Terraform error `count can't be computed`."
+}
+
 variable "cpu_utilization_low_threshold_percent" {
   type        = number
   default     = 20
@@ -557,6 +563,7 @@ variable "node_groups" {
     node_group_min_size       = number
     node_group_capacity_type  = string
     node_group_volume_type    = string
+    launch_template_version   = number
   }))
   default = {
     tools = {
@@ -572,6 +579,7 @@ variable "node_groups" {
       node_group_min_size       = 1
       node_group_capacity_type  = "ON_DEMAND"
       node_group_volume_type    = "gp2"
+      launch_template_version   = 1
     }
   }
 }
