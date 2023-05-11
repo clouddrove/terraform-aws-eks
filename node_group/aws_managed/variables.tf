@@ -322,3 +322,17 @@ variable "before_cluster_joining_userdata" {
   default     = ""
   description = "Additional commands to execute on each worker node before joining the EKS cluster (before executing the `bootstrap.sh` script). For more info, see https://kubedex.com/90-days-of-aws-eks-in-test"
 }
+
+#-----------------------------------------------ASG-Schedule----------------------------------------------------------------
+
+variable "create_schedule" {
+  description = "Determines whether to create autoscaling group schedule or not"
+  type        = bool
+  default     = true
+}
+
+variable "schedules" {
+  description = "Map of autoscaling group schedule to create"
+  type        = map(any)
+  default     = {}
+}

@@ -24,7 +24,7 @@ module "eks_managed_node_group" {
   min_size     = try(each.value.min_size, var.managed_node_group_defaults.min_size, 1)
   max_size     = try(each.value.max_size, var.managed_node_group_defaults.max_size, 3)
   desired_size = try(each.value.desired_size, var.managed_node_group_defaults.desired_size, 1)
-
+  
   ami_id              = try(each.value.ami_id, var.managed_node_group_defaults.ami_id, "")
   ami_type            = try(each.value.ami_type, var.managed_node_group_defaults.ami_type, null)
   ami_release_version = try(each.value.ami_release_version, var.managed_node_group_defaults.ami_release_version, null)
@@ -39,6 +39,10 @@ module "eks_managed_node_group" {
   taints        = try(each.value.taints, var.managed_node_group_defaults.taints, {})
   update_config = try(each.value.update_config, var.managed_node_group_defaults.update_config, {})
   timeouts      = try(each.value.timeouts, var.managed_node_group_defaults.timeouts, {})
+
+#------------ASG-Schedule--------------------------------------------------
+  create_schedule = try(each.value.create_schedule, var.managed_node_group_defaults.create_schedule, true)
+  schedules       = try(each.value.schedules, var.managed_node_group_defaults.schedules, var.schedules)
 
   # Launch Template
   launch_template_description = try(each.value.launch_template_description, var.managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")

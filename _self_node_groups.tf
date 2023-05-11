@@ -66,9 +66,10 @@ module "self_managed_node_group" {
   use_mixed_instances_policy = try(each.value.use_mixed_instances_policy, var.self_node_group_defaults.use_mixed_instances_policy, false)
   mixed_instances_policy     = try(each.value.mixed_instances_policy, var.self_node_group_defaults.mixed_instances_policy, null)
   warm_pool                  = try(each.value.warm_pool, var.self_node_group_defaults.warm_pool, null)
-
+  
+#------------ASG-Schedule--------------------------------------------------
   create_schedule = try(each.value.create_schedule, var.self_node_group_defaults.create_schedule, false)
-  schedules       = try(each.value.schedules, var.self_node_group_defaults.schedules, null)
+  schedules       = try(each.value.schedules, var.self_node_group_defaults.schedules, var.schedules)
 
   delete_timeout = try(each.value.delete_timeout, var.self_node_group_defaults.delete_timeout, null)
 
