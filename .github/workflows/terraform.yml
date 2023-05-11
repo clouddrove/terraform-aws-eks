@@ -15,13 +15,11 @@ jobs:
         uses: 'clouddrove/github-actions@v7.0'
         with:
           actions_subcommand: 'fmt'
-          
+
   pre-commit:
     name: 'Pre-Commit'
     needs:
       - fmt
-      - auto-scaling
-      - fargate
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
