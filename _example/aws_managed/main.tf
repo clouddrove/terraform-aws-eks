@@ -179,7 +179,7 @@ module "eks" {
       timezone     = "Europe/Amsterdam"
       recurrence   = "0 7 * * 5"
     }
-  }  
+  }
 
 
 }

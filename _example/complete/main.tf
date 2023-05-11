@@ -158,27 +158,27 @@ module "eks" {
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
       instance_type        = "m5.large"
     }
-# Schdule EKS Managed Auto Scaling node group
-  schedules = {
-    scale-up = {
-      min_size     = 2
-      max_size     = 2 # Retains current max size
-      desired_size = 2
-      start_time   = "2023-05-15T19:00:00Z"
-      end_time     = "2023-05-19T19:00:00Z"
-      timezone     = "Europe/Amsterdam"
-      recurrence   = "0 7 * * 1"
-    },
-    scale-down = {
-      min_size     = 0
-      max_size     = 0 # Retains current max size
-      desired_size = 0
-      start_time   = "2023-05-12T12:00:00Z"
-      end_time     = "2024-03-05T12:00:00Z"
-      timezone     = "Europe/Amsterdam"
-      recurrence   = "0 7 * * 5"
+    # Schdule EKS Managed Auto Scaling node group
+    schedules = {
+      scale-up = {
+        min_size     = 2
+        max_size     = 2 # Retains current max size
+        desired_size = 2
+        start_time   = "2023-05-15T19:00:00Z"
+        end_time     = "2023-05-19T19:00:00Z"
+        timezone     = "Europe/Amsterdam"
+        recurrence   = "0 7 * * 1"
+      },
+      scale-down = {
+        min_size     = 0
+        max_size     = 0 # Retains current max size
+        desired_size = 0
+        start_time   = "2023-05-12T12:00:00Z"
+        end_time     = "2024-03-05T12:00:00Z"
+        timezone     = "Europe/Amsterdam"
+        recurrence   = "0 7 * * 5"
+      }
     }
-  }
 
   }
 
@@ -241,7 +241,7 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
-# Schdule EKS Managed Auto Scaling node group
+  # Schdule EKS Managed Auto Scaling node group
   schedules = {
     scale-up = {
       min_size     = 2

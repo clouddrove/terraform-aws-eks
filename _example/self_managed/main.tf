@@ -159,7 +159,7 @@ module "eks" {
       instance_type        = "m5.large"
     }
   }
-# Schdule Self Managed Auto Scaling node group
+  # Schdule Self Managed Auto Scaling node group
   schedules = {
     scale-up = {
       min_size     = 2
