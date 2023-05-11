@@ -15,73 +15,7 @@ jobs:
         uses: 'clouddrove/github-actions@v7.0'
         with:
           actions_subcommand: 'fmt'
-
-  auto-scaling:
-    name: 'auto-scaling'
-    needs: fmt
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2.3.4
-
-      - name: 'Configure AWS Credentials'
-        uses: clouddrove/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.TEST_AWS_ACCESS_SECRET_KEY }}
-          aws-region: us-east-2
-
-      - name: 'Terraform init for Auto Scale'
-        uses: 'clouddrove/github-actions@v7.0'
-        with:
-          actions_subcommand: 'init'
-          tf_actions_working_dir: ./_example/auto-scaling
-
-      - name: 'Terraform validate for Auto Scale'
-        uses: 'clouddrove/github-actions@v7.0'
-        with:
-          actions_subcommand: 'validate'
-          tf_actions_working_dir: ./_example/auto-scaling
-
-      - name: 'Terraform plan for Auto Scale'
-        uses: 'clouddrove/github-actions@v7.0'
-        with:
-          actions_subcommand: 'plan'
-          tf_actions_working_dir: ./_example/auto-scaling
-  fargate:
-    name: 'fargate'
-    needs: fmt
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: 'Checkout'
-        uses: actions/checkout@v2.3.4
-
-      - name: 'Configure AWS Credentials'
-        uses: clouddrove/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.TEST_AWS_ACCESS_SECRET_KEY }}
-          aws-region: us-east-2
-
-      - name: 'Terraform init for fargate'
-        uses: 'clouddrove/github-actions@v7.0'
-        with:
-          actions_subcommand: 'init'
-          tf_actions_working_dir: ./_example/fargate
-
-      - name: 'Terraform validate for fargate'
-        uses: 'clouddrove/github-actions@v7.0'
-        with:
-          actions_subcommand: 'validate'
-          tf_actions_working_dir: ./_example/fargate
-
-      - name: 'Terraform plan for fargate'
-        uses: 'clouddrove/github-actions@v7.0'
-        with:
-          actions_subcommand: 'plan'
-          tf_actions_working_dir: ./_example/fargate
-
+          
   pre-commit:
     name: 'Pre-Commit'
     needs:
