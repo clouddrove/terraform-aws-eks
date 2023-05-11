@@ -269,8 +269,8 @@ variable "force_update_version" {
 }
 
 variable "iam_role_arn" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = ""
 }
 
