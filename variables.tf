@@ -152,12 +152,6 @@ variable "allowed_cidr_blocks" {
   description = "List of CIDR blocks to be allowed to connect to the EKS cluster."
 }
 
-variable "cidr_blocks" {
-  type        = list(string)
-  default     = ["10.0.0.0/16"]
-  description = "List of CIDR blocks to be allowed to connect to the EKS cluster."
-}
-
 #------------------------------------------------------------Networking-------------------------------------------------
 variable "vpc_id" {
   type        = string
@@ -173,7 +167,7 @@ variable "subnet_ids" {
 
 variable "public_access_cidrs" {
   type        = list(string)
-  default     = ["1.2.3.4/32"]
+  default     = ["0.0.0.0/0"]
   description = "Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. EKS defaults this to a list with 0.0.0.0/0."
 }
 
@@ -185,7 +179,7 @@ variable "endpoint_private_access" {
 
 variable "endpoint_public_access" {
   type        = bool
-  default     = false
+  default     = true
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true."
 }
 

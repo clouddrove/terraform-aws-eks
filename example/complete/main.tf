@@ -91,7 +91,7 @@ module "eks" {
   label_order = ["environment", "name"]
   enabled     = true
 
-  kubernetes_version        = "1.21"
+  kubernetes_version        = "1.26"
   endpoint_private_access   = true
   endpoint_public_access    = false
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
@@ -231,7 +231,7 @@ module "eks" {
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::924144197303:user/hello@clouddrove.com"
+      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
       username = "hello@clouddrove.com"
       groups   = ["system:masters"]
     }
