@@ -152,6 +152,12 @@ variable "allowed_cidr_blocks" {
   description = "List of CIDR blocks to be allowed to connect to the EKS cluster."
 }
 
+variable "cidr_blocks" {
+  type        = list(string)
+  default     = ["10.0.0.0/16"]
+  description = "List of CIDR blocks to be allowed to connect to the EKS cluster."
+}
+
 #------------------------------------------------------------Networking-------------------------------------------------
 variable "vpc_id" {
   type        = string

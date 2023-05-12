@@ -93,7 +93,7 @@ module "eks" {
 
   kubernetes_version        = "1.21"
   endpoint_private_access   = true
-  endpoint_public_access    = true
+  endpoint_public_access    = false
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   oidc_provider_enabled     = true
 
