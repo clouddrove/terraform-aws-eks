@@ -173,7 +173,7 @@ variable "subnet_ids" {
 
 variable "public_access_cidrs" {
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = ["1.2.3.4/32"]
   description = "Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. EKS defaults this to a list with 0.0.0.0/0."
 }
 
@@ -185,7 +185,7 @@ variable "endpoint_private_access" {
 
 variable "endpoint_public_access" {
   type        = bool
-  default     = true
+  default     = false
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true."
 }
 
