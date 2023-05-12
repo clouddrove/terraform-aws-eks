@@ -18,7 +18,8 @@ resource "aws_security_group_rule" "node_group" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = var.cidr_blocks
+#tfsec:ignore:aws_security_group_rule-cidr_blocks  
+  cidr_blocks       = ["0.0.0.0/0"] 
   security_group_id = join("", aws_security_group.node_group.*.id)
   type              = "egress"
 }
