@@ -40,6 +40,10 @@ module "eks_managed_node_group" {
   update_config = try(each.value.update_config, var.managed_node_group_defaults.update_config, {})
   timeouts      = try(each.value.timeouts, var.managed_node_group_defaults.timeouts, {})
 
+  #------------ASG-Schedule--------------------------------------------------
+  create_schedule = try(each.value.create_schedule, var.managed_node_group_defaults.create_schedule, true)
+  schedules       = try(each.value.schedules, var.managed_node_group_defaults.schedules, var.schedules)
+
   # Launch Template
   launch_template_description = try(each.value.launch_template_description, var.managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
   launch_template_tags        = try(each.value.launch_template_tags, var.managed_node_group_defaults.launch_template_tags, {})

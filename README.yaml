@@ -43,15 +43,16 @@ usage : |-
   ### Sample example
   Here is an example of how you can use this module in your inventory structure:
   ```hcl
-module "eks" {
-  source = "../.."
+  module "eks" {
+  source = "clouddrove/eks/aws"
+  version = "1.0.1"  
 
   name        = "eks"
   environment = "test"
   label_order = ["environment", "name"]
   enabled     = true
 
-  kubernetes_version        = "1.21"
+  kubernetes_version        = "1.25"
   endpoint_private_access   = true
   endpoint_public_access    = true
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
@@ -116,6 +117,28 @@ module "eks" {
         }
       }
 
+    # Schdule self Managed Auto Scaling node group
+    schedules = {
+      scale-up = {
+        min_size     = 2
+        max_size     = 2 # Retains current max size
+        desired_size = 2
+        start_time   = "2023-05-15T19:00:00Z"
+        end_time     = "2023-05-19T19:00:00Z"
+        timezone     = "Europe/Amsterdam"
+        recurrence   = "0 7 * * 1"
+      },
+      scale-down = {
+        min_size     = 0
+        max_size     = 0 # Retains current max size
+        desired_size = 0
+        start_time   = "2023-05-12T12:00:00Z"
+        end_time     = "2024-03-05T12:00:00Z"
+        timezone     = "Europe/Amsterdam"
+        recurrence   = "0 7 * * 5"
+      }
+    }
+
   # Node Groups Defaults Values It will Work all Node Groups
   managed_node_group_defaults = {
     subnet_ids                          = module.subnets.private_subnet_id
@@ -171,5 +194,26 @@ module "eks" {
       groups   = ["system:masters"]
           }
         ]
-      }
-   ```
+      # Schdule EKS Managed Auto Scaling node group
+      schedules = {
+        scale-up = {
+          min_size     = 2
+          max_size     = 2 # Retains current max size
+          desired_size = 2
+          start_time   = "2023-05-15T19:00:00Z"
+          end_time     = "2023-05-19T19:00:00Z"
+          timezone     = "Europe/Amsterdam"
+          recurrence   = "0 7 * * 1"
+        },
+        scale-down = {
+          min_size     = 0
+          max_size     = 0 # Retains current max size
+          desired_size = 0
+          start_time   = "2023-05-12T12:00:00Z"
+          end_time     = "2024-03-05T12:00:00Z"
+          timezone     = "Europe/Amsterdam"
+          recurrence   = "0 7 * * 5"
+        }
+      }        
+    }
+  ```

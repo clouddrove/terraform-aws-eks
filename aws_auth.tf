@@ -50,7 +50,7 @@ locals {
 
 data "template_file" "kubeconfig" {
   count    = var.enabled ? 1 : 0
-  template = file("${path.module}/_kubeconfig.tpl")
+  template = file("${path.module}/kubeconfig.tpl")
 
   vars = {
     server                     = join("", aws_eks_cluster.default.*.endpoint)

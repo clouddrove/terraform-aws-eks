@@ -6,13 +6,13 @@ data "aws_caller_identity" "current" {}
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
   source  = "clouddrove/labels/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = var.name
   repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
-  extra_tags   = var.tags
+  extra_tags  = var.tags
   attributes  = compact(concat(var.attributes, ["nodes"]))
   label_order = var.label_order
 }
@@ -25,21 +25,21 @@ module "labels" {
 
 
 resource "aws_launch_template" "this" {
-  count = var.enabled ? 1 : 0
-  name  = module.labels.id
+  count       = var.enabled ? 1 : 0
+  name        = module.labels.id
   description = var.launch_template_description
 
   ebs_optimized = var.ebs_optimized
   image_id      = var.ami_id
   # # Set on node group instead
   # instance_type = var.launch_template_instance_type
-  key_name  = var.key_name
- user_data = var.before_cluster_joining_userdata
+  key_name               = var.key_name
+  user_data              = var.before_cluster_joining_userdata
   vpc_security_group_ids = var.vpc_security_group_ids
 
   disable_api_termination = var.disable_api_termination
-  kernel_id   = var.kernel_id
-  ram_disk_id = var.ram_disk_id
+  kernel_id               = var.kernel_id
+  ram_disk_id             = var.ram_disk_id
 
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings
@@ -179,7 +179,7 @@ resource "aws_launch_template" "this" {
     content {
       resource_type = tag_specifications.key
       tags = merge(
-      module.labels.tags,
+        module.labels.tags,
       { Name = module.labels.id })
     }
   }
@@ -211,7 +211,7 @@ resource "aws_eks_node_group" "this" {
   }
 
   # Optional
-  node_group_name        = module.labels.id
+  node_group_name = module.labels.id
 
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
   ami_type        = var.ami_id != "" ? null : var.ami_type
@@ -219,7 +219,7 @@ resource "aws_eks_node_group" "this" {
   version         = var.ami_id != "" ? null : var.cluster_version
 
   capacity_type        = var.capacity_type
-  disk_size            =  var.disk_size
+  disk_size            = var.disk_size
   force_update_version = var.force_update_version
   instance_types       = var.instance_types
   labels               = var.labels
@@ -271,4 +271,24 @@ resource "aws_eks_node_group" "this" {
   }
 
   tags = module.labels.tags
+}
+
+#-----------------------------------------------ASG-Schedule----------------------------------------------------------------
+
+resource "aws_autoscaling_schedule" "this" {
+  for_each = var.enabled && var.create_schedule ? var.schedules : {}
+
+  scheduled_action_name  = each.key
+  autoscaling_group_name = aws_eks_node_group.this[0].resources[0].autoscaling_groups[0].name
+
+  min_size         = lookup(each.value, "min_size", null)
+  max_size         = lookup(each.value, "max_size", null)
+  desired_capacity = lookup(each.value, "desired_size", null)
+  start_time       = lookup(each.value, "start_time", null)
+  end_time         = lookup(each.value, "end_time", null)
+  time_zone        = lookup(each.value, "time_zone", null)
+
+  # [Minute] [Hour] [Day_of_Month] [Month_of_Year] [Day_of_Week]
+  # Cron examples: https://crontab.guru/examples.html
+  recurrence = lookup(each.value, "recurrence", null)
 }

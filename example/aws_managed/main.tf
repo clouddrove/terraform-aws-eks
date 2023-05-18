@@ -14,7 +14,7 @@ locals {
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = "vpc"
   environment = "test"
@@ -30,7 +30,7 @@ module "vpc" {
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = "subnets"
   environment = "test"
@@ -53,14 +53,14 @@ module "subnets" {
 
 module "keypair" {
   source  = "clouddrove/keypair/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = "key"
   environment = "test"
   label_order = ["name", "environment"]
 
   enable_key_pair = true
-  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDc4AjHFctUATtd5of4u9bJtTgkh9bKogSDjxc9QqbylRORxUa422jO+t1ldTVdyqDRKltxQCJb4v23HZc2kssU5uROxpiF2fzgiHXRduL+RtyOtY2J+rNUdCRmHz4WQySblYpgteIJZpVo2smwdek8xSpjoHXhgxxa9hb4pQQwyjtVGEdH8vdYwtxgPZgPVaJgHVeJgVmhjTf2VGTATaeR9txzHsEPxhe/n1y34mQjX0ygEX8x0RZzlGziD1ih3KPaIHcpTVSYYk4LOoMK38vEI67SIMomskKn4yU043s+t9ZriJwk2V9+oU6tJU/5E1rd0SskXUhTypc3/Znc/rkYtLe8s6Uy26LOrBFzlhnCT7YH1XbCv3rEO+Nn184T4BSHeW2up8UJ1SOEd+WzzynXczdXoQcBN2kaz4dYFpRXchsAB6ejZrbEq7wyZvutf11OiS21XQ67+30lEL2WAO4i95e4sI8AdgwJgzrqVcicr3ImE+BRDkndMn5k1LhNGqwMD3Iuoel84xvinPAcElDLiFmL3BJVA/53bAlUmWqvUGW9SL5JpLUmZgE6kp+Tps7D9jpooGGJKmqgJLkJTzAmTSJh0gea/rT5KwI4j169TQD9xl6wFqns4BdQ4dMKHQCgDx8LbEd96l9F9ruWwQ8EAZBe4nIEKTV9ri+04JVhSQ== sohan@clouddrove.com"
+  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDc4AjHFctUATtd5of4u9bJtTgkh9bKogSDjxc9QqbylRORxUa422jO+t1ldTVdyqDRKltxQCJb4v23HZc2kssU5uROxpiF2fzgiHXRduL+RtyOtY2J+rNUdCRmHz4WQySblYpgteIJZpVo2smwdek8xSpjoHXhgxxa9hb4pQQwyjtVGEdH8vdYwtxgPZgPVaJgHVeJgVmhjTf2VGTATaeR9txzHsEPxhe/n1y34mQjX0ygEX8x0RZzlGziD1ih3KPaIHcpTVSYYk4LOoMK38vEI67SIMomskKn4yU043s+t9ZriJwk2V9+oU6tJU/5E1rd0SskXUhTypc3/Znc/rkYtLe8s6Uy26LOrBFzlhnCT7YH1XbCv3rEO+Nn184T4BSHeW2up8UJ1SOEd+WzzynXczdXoQcBN2kaz4dYFpRXchsAB6ejZrbEq7wyZvutf11OiS21XQ67+30lEL2WAO4i95e4sI8AdgwJgzrqVcicr3ImE+BRDkndMn5k1LhNGqwMD3Iuoel84xvinPAcElDLiFmL3BJVA/53bAlUmWqvUGW9SL5JpLUmZgE6kp+Tps7D9jpooGGJKmqgJLkJTzAmTSJh0gea/rT5KwI4j169TQD9xl6wFqns4BdQ4dMKHQCgDx8LbEd96l9F9ruWwQ8EAZBe4nIEKTV9ri+04JVhSQ== hello@clouddrove.com"
 }
 
 ################################################################################
@@ -69,7 +69,7 @@ module "keypair" {
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = "ssh"
   environment = "test"
@@ -93,9 +93,9 @@ module "eks" {
   enabled     = true
 
   # EKS
-  kubernetes_version        = "1.21"
+  kubernetes_version        = "1.26"
   endpoint_private_access   = true
-  endpoint_public_access    = true
+  endpoint_public_access    = false
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   oidc_provider_enabled     = true
   # Networking
@@ -132,7 +132,7 @@ module "eks" {
       min_size       = 1
       max_size       = 7
       desired_size   = 2
-      instance_types = ["t3a.medium"]
+      instance_types = ["t4g.medium"]
     }
 
     spot = {
@@ -143,22 +143,40 @@ module "eks" {
       max_size             = 7
       desired_size         = 1
       force_update_version = true
-      instance_types       = ["t3.medium", "t3a.medium"]
+      instance_types       = ["t4g.medium"]
     }
   }
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::924144197303:user/nikita@clouddrove.com"
-      username = "nikita@clouddrove.com"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::924144197303:user/sohan@clouddrove.com"
-      username = "sohan@clouddrove.com"
+      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
+      username = "hello@clouddrove.com"
       groups   = ["system:masters"]
     }
   ]
+  # Schdule EKS Managed Auto Scaling node group
+  schedules = {
+    scale-up = {
+      min_size     = 2
+      max_size     = 2 # Retains current max size
+      desired_size = 2
+      start_time   = "2023-05-15T19:00:00Z"
+      end_time     = "2023-05-19T19:00:00Z"
+      timezone     = "Europe/Amsterdam"
+      recurrence   = "0 7 * * 1"
+    },
+    scale-down = {
+      min_size     = 0
+      max_size     = 0 # Retains current max size
+      desired_size = 0
+      start_time   = "2023-05-12T12:00:00Z"
+      end_time     = "2024-03-05T12:00:00Z"
+      timezone     = "Europe/Amsterdam"
+      recurrence   = "0 7 * * 5"
+    }
+  }
+
+
 }
 
 ################################################################################

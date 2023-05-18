@@ -32,13 +32,13 @@ data "template_file" "userdata" {
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
   source  = "clouddrove/labels/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = var.name
   repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
-  extra_tags   = var.tags
+  extra_tags  = var.tags
   attributes  = compact(concat(var.attributes, ["nodes"]))
   label_order = var.label_order
 }
@@ -390,14 +390,14 @@ resource "aws_autoscaling_group" "this" {
         propagate_at_launch = true
       },
     ],
-  var.propagate_tags,
+    var.propagate_tags,
     [for k, v in var.tags :
-    {
-    key                 = k
-    value               = v
-    propagate_at_launch = true
-  }
-  ]
+      {
+        key                 = k
+        value               = v
+        propagate_at_launch = true
+      }
+    ]
   )
 }
 
