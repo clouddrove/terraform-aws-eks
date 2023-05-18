@@ -195,7 +195,7 @@ variable "enable_monitoring" {
 }
 
 variable "network_interfaces" {
-  description = "Customize network interfaces to be attached at instancoke sir and I am sending you aws eks terraform module updated PR in few minse boot time"
+  description = "Customize network interfaces to be attached at instance boot time"
   type        = list(any)
   default     = []
 }
