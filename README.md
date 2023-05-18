@@ -4,39 +4,33 @@
 
 
 <h1 align="center">
-    Terraform AWS VPC
+    Terraform AWS EKS
 </h1>
 
 <p align="center" style="font-size: 1.2rem;"> 
-    Terraform module to create VPC resource on AWS.
+    Terraform module will be created Autoscaling, Workers, EKS, Node Groups.
      </p>
 
 <p align="center">
 
 <a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v1.1.7-green" alt="Terraform">
+  <img src="https://img.shields.io/badge/Terraform-v0.13-green" alt="Terraform">
 </a>
 <a href="LICENSE.md">
-  <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
-</a>
-<a href="https://github.com/clouddrove/terraform-aws-vpc/actions/workflows/tfsec.yml">
-  <img src="https://github.com/clouddrove/terraform-aws-vpc/actions/workflows/tfsec.yml/badge.svg" alt="tfsec">
-</a>
-<a href="https://github.com/clouddrove/terraform-aws-vpc/actions/workflows/terraform.yml">
-  <img src="https://github.com/clouddrove/terraform-aws-vpc/actions/workflows/terraform.yml/badge.svg" alt="static-checks">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
 </a>
 
 
 </p>
 <p align="center">
 
-<a href='https://facebook.com/sharer/sharer.php?u=https://github.com/clouddrove/terraform-aws-vpc'>
+<a href='https://facebook.com/sharer/sharer.php?u=https://github.com/clouddrove/terraform-aws-eks'>
   <img title="Share on Facebook" src="https://user-images.githubusercontent.com/50652676/62817743-4f64cb80-bb59-11e9-90c7-b057252ded50.png" />
 </a>
-<a href='https://www.linkedin.com/shareArticle?mini=true&title=Terraform+AWS+VPC&url=https://github.com/clouddrove/terraform-aws-vpc'>
+<a href='https://www.linkedin.com/shareArticle?mini=true&title=Terraform+AWS+EKS&url=https://github.com/clouddrove/terraform-aws-eks'>
   <img title="Share on LinkedIn" src="https://user-images.githubusercontent.com/50652676/62817742-4e339e80-bb59-11e9-87b9-a1f68cae1049.png" />
 </a>
-<a href='https://twitter.com/intent/tweet/?text=Terraform+AWS+VPC&url=https://github.com/clouddrove/terraform-aws-vpc'>
+<a href='https://twitter.com/intent/tweet/?text=Terraform+AWS+EKS&url=https://github.com/clouddrove/terraform-aws-eks'>
   <img title="Share on Twitter" src="https://user-images.githubusercontent.com/50652676/62817740-4c69db00-bb59-11e9-8a79-3580fbbf6d5c.png" />
 </a>
 
@@ -62,6 +56,9 @@ This module has a few dependencies:
 - [github.com/stretchr/testify/assert](https://github.com/stretchr/testify)
 - [github.com/gruntwork-io/terratest/modules/terraform](https://github.com/gruntwork-io/terratest)
 
+- [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [AWS IAM Authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
+
 
 
 
@@ -71,88 +68,164 @@ This module has a few dependencies:
 ## Examples
 
 
-**IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/clouddrove/terraform-aws-vpc/releases).
+**IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/clouddrove/terraform-aws-eks/releases).
 
 
-### Simple Example for EKS Managed and Self Managed
+### Sample example
+Here is an example of how you can use this module in your inventory structure:
+```hcl
+module "eks" {
+source = "clouddrove/eks/aws"
+version = "1.0.1"  
 
-  Here is an example of how you can use this module in your inventory structure:
-  ```hcl
-  module "eks" {
-  source = "clouddrove/eks/aws"
-  version = "1.0.1"  
+name        = "eks"
+environment = "test"
+label_order = ["environment", "name"]
+enabled     = true
 
-  name        = "eks"
-  environment = "test"
-  label_order = ["environment", "name"]
-  enabled     = true
+kubernetes_version        = "1.25"
+endpoint_private_access   = true
+endpoint_public_access    = true
+enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+oidc_provider_enabled     = true
 
-  kubernetes_version        = "1.25"
-  endpoint_private_access   = true
-  endpoint_public_access    = true
-  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-  oidc_provider_enabled     = true
+# Network
+vpc_id                  = module.vpc.vpc_id
+subnet_ids              = module.subnets.private_subnet_id
+allowed_security_groups = [module.ssh.security_group_ids]
+allowed_cidr_blocks     = ["0.0.0.0/0"]
 
-  # Network
-  vpc_id                  = module.vpc.vpc_id
-  subnet_ids              = module.subnets.private_subnet_id
-  allowed_security_groups = [module.ssh.security_group_ids]
-  allowed_cidr_blocks     = ["0.0.0.0/0"]
-
-  # Node Groups Defaults Values It will Work all Node Groups
-  self_node_group_defaults = {
-    subnet_ids = module.subnets.private_subnet_id
-    key_name   = module.keypair.name
-    propagate_tags = [{
-      key                 = "aws-node-termination-handler/managed"
-      value               = true
+# Node Groups Defaults Values It will Work all Node Groups
+self_node_group_defaults = {
+  subnet_ids = module.subnets.private_subnet_id
+  key_name   = module.keypair.name
+  propagate_tags = [{
+    key                 = "aws-node-termination-handler/managed"
+    value               = true
+    propagate_at_launch = true
+    },
+    {
+      key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
+      value               = "owned"
       propagate_at_launch = true
-      },
-      {
-        key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
-        value               = "owned"
-        propagate_at_launch = true
-        }
-      ]
+      }
+    ]
 
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size = 50
-          volume_type = "gp3"
-          iops        = 3000
-          throughput  = 150
-          }
+  block_device_mappings = {
+    xvda = {
+      device_name = "/dev/xvda"
+      ebs = {
+        volume_size = 50
+        volume_type = "gp3"
+        iops        = 3000
+        throughput  = 150
         }
       }
     }
+  }
 
 
-  self_node_groups = {
-    tools = {
-      name                 = "tools"
-      min_size             = 1
-      max_size             = 7
-      desired_size         = 2
-      bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
-      instance_type        = "t3a.medium"
+self_node_groups = {
+  tools = {
+    name                 = "tools"
+    min_size             = 1
+    max_size             = 7
+    desired_size         = 2
+    bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
+    instance_type        = "t3a.medium"
+    }
+
+  spot = {
+    name = "spot"
+    instance_market_options = {
+      market_type = "spot"
+    }
+    min_size             = 1
+    max_size             = 7
+    desired_size         = 1
+    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    instance_type        = "m5.large"
       }
+    }
 
-    spot = {
-      name = "spot"
-      instance_market_options = {
-        market_type = "spot"
-      }
-      min_size             = 1
-      max_size             = 7
-      desired_size         = 1
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-      instance_type        = "m5.large"
+  # Schdule self Managed Auto Scaling node group
+  schedules = {
+    scale-up = {
+      min_size     = 2
+      max_size     = 2 # Retains current max size
+      desired_size = 2
+      start_time   = "2023-05-15T19:00:00Z"
+      end_time     = "2023-05-19T19:00:00Z"
+      timezone     = "Europe/Amsterdam"
+      recurrence   = "0 7 * * 1"
+    },
+    scale-down = {
+      min_size     = 0
+      max_size     = 0 # Retains current max size
+      desired_size = 0
+      start_time   = "2023-05-12T12:00:00Z"
+      end_time     = "2024-03-05T12:00:00Z"
+      timezone     = "Europe/Amsterdam"
+      recurrence   = "0 7 * * 5"
+    }
+  }
+
+# Node Groups Defaults Values It will Work all Node Groups
+managed_node_group_defaults = {
+  subnet_ids                          = module.subnets.private_subnet_id
+  key_name                            = module.keypair.name
+  nodes_additional_security_group_ids = [module.ssh.security_group_ids]
+  tags = {
+    Example = "test"
+    }
+
+  block_device_mappings = {
+    xvda = {
+      device_name = "/dev/xvda"
+      ebs = {
+        volume_size = 50
+        volume_type = "gp3"
+        iops        = 3000
+        throughput  = 150
         }
       }
+    }
+  }
 
-    # Schdule self Managed Auto Scaling node group
+managed_node_group = {
+  test = {
+    min_size       = 1
+    max_size       = 7
+    desired_size   = 2
+    instance_types = ["t3a.medium"]
+    }
+
+  spot = {
+    name          = "spot"
+    capacity_type = "SPOT"
+
+    min_size             = 1
+    max_size             = 7
+    desired_size         = 1
+    force_update_version = true
+    instance_types       = ["t3.medium", "t3a.medium"]
+      }
+    }
+
+  apply_config_map_aws_auth = true
+  map_additional_iam_users = [
+    {
+    userarn  = "arn:aws:iam::xxxxxx:user/nikita@clouddrove.com"
+    username = "nikita@clouddrove.com"
+    groups   = ["system:masters"]
+    },
+    {
+    userarn  = "arn:aws:iam::xxxxxx:user/sohan@clouddrove.com"
+    username = "sohan@clouddrove.com"
+    groups   = ["system:masters"]
+        }
+      ]
+    # Schdule EKS Managed Auto Scaling node group
     schedules = {
       scale-up = {
         min_size     = 2
@@ -172,86 +245,9 @@ This module has a few dependencies:
         timezone     = "Europe/Amsterdam"
         recurrence   = "0 7 * * 5"
       }
-    }
-
-  # Node Groups Defaults Values It will Work all Node Groups
-  managed_node_group_defaults = {
-    subnet_ids                          = module.subnets.private_subnet_id
-    key_name                            = module.keypair.name
-    nodes_additional_security_group_ids = [module.ssh.security_group_ids]
-    tags = {
-      Example = "test"
-      }
-
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size = 50
-          volume_type = "gp3"
-          iops        = 3000
-          throughput  = 150
-          }
-        }
-      }
-    }
-
-  managed_node_group = {
-    test = {
-      min_size       = 1
-      max_size       = 7
-      desired_size   = 2
-      instance_types = ["t3a.medium"]
-      }
-
-    spot = {
-      name          = "spot"
-      capacity_type = "SPOT"
-
-      min_size             = 1
-      max_size             = 7
-      desired_size         = 1
-      force_update_version = true
-      instance_types       = ["t3.medium", "t3a.medium"]
-        }
-      }
-
-    apply_config_map_aws_auth = true
-    map_additional_iam_users = [
-      {
-      userarn  = "arn:aws:iam::xxxxxx:user/nikita@clouddrove.com"
-      username = "nikita@clouddrove.com"
-      groups   = ["system:masters"]
-      },
-      {
-      userarn  = "arn:aws:iam::xxxxxx:user/sohan@clouddrove.com"
-      username = "sohan@clouddrove.com"
-      groups   = ["system:masters"]
-          }
-        ]
-      # Schdule EKS Managed Auto Scaling node group
-      schedules = {
-        scale-up = {
-          min_size     = 2
-          max_size     = 2 # Retains current max size
-          desired_size = 2
-          start_time   = "2023-05-15T19:00:00Z"
-          end_time     = "2023-05-19T19:00:00Z"
-          timezone     = "Europe/Amsterdam"
-          recurrence   = "0 7 * * 1"
-        },
-        scale-down = {
-          min_size     = 0
-          max_size     = 0 # Retains current max size
-          desired_size = 0
-          start_time   = "2023-05-12T12:00:00Z"
-          end_time     = "2024-03-05T12:00:00Z"
-          timezone     = "Europe/Amsterdam"
-          recurrence   = "0 7 * * 5"
-        }
-      }        
-    }
-  ```
+    }        
+  }
+```
 
 
 
@@ -262,53 +258,76 @@ This module has a few dependencies:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| additional\_cidr\_block | List of secondary CIDR blocks of the VPC. | `list(string)` | `[]` | no |
+| addons | Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources. | <pre>list(object({<br>    addon_name               = string<br>    addon_version            = string<br>    resolve_conflicts        = string<br>    service_account_role_arn = string<br>  }))</pre> | `[]` | no |
+| allowed\_cidr\_blocks | List of CIDR blocks to be allowed to connect to the EKS cluster. | `list(string)` | `[]` | no |
+| allowed\_security\_groups | List of Security Group IDs to be allowed to connect to the EKS cluster. | `list(string)` | `[]` | no |
+| apply\_config\_map\_aws\_auth | Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster. | `bool` | `true` | no |
 | attributes | Additional attributes (e.g. `1`). | `list(any)` | `[]` | no |
-| cidr\_block | CIDR for the VPC. | `string` | `""` | no |
-| default\_security\_group\_egress | List of maps of egress rules to set on the default security group | `list(map(string))` | `[]` | no |
-| default\_security\_group\_ingress | List of maps of ingress rules to set on the default security group | `list(map(string))` | `[]` | no |
-| dhcp\_options\_domain\_name | Specifies DNS name for DHCP options set (requires enable\_dhcp\_options set to true) | `string` | `""` | no |
-| dhcp\_options\_domain\_name\_servers | Specify a list of DNS server addresses for DHCP options set, default to AWS provided (requires enable\_dhcp\_options set to true) | `list(string)` | <pre>[<br>  "AmazonProvidedDNS"<br>]</pre> | no |
-| dhcp\_options\_netbios\_name\_servers | Specify a list of netbios servers for DHCP options set (requires enable\_dhcp\_options set to true) | `list(string)` | `[]` | no |
-| dhcp\_options\_netbios\_node\_type | Specify netbios node\_type for DHCP options set (requires enable\_dhcp\_options set to true) | `string` | `""` | no |
-| dhcp\_options\_ntp\_servers | Specify a list of NTP servers for DHCP options set (requires enable\_dhcp\_options set to true) | `list(string)` | `[]` | no |
-| enable\_classiclink | A boolean flag to enable/disable ClassicLink for the VPC. | `bool` | `false` | no |
-| enable\_classiclink\_dns\_support | A boolean flag to enable/disable ClassicLink DNS Support for the VPC. | `bool` | `false` | no |
-| enable\_dhcp\_options | Should be true if you want to specify a DHCP options set with a custom domain name, DNS servers, NTP servers, netbios servers, and/or netbios server type | `bool` | `false` | no |
-| enable\_dns\_hostnames | A boolean flag to enable/disable DNS hostnames in the VPC. | `bool` | `true` | no |
-| enable\_dns\_support | A boolean flag to enable/disable DNS support in the VPC. | `bool` | `true` | no |
-| enable\_flow\_log | Enable vpc\_flow\_log logs. | `bool` | `false` | no |
-| enabled\_ipv6\_egress\_only\_internet\_gateway | A boolean flag to enable/disable IPv6 Egress-Only Internet Gateway creation | `bool` | `false` | no |
+| aws\_iam\_role\_arn | ARN of EKS iam user | `string` | `""` | no |
+| cluster\_create\_timeout | Timeout value when creating the EKS cluster. | `string` | `"30m"` | no |
+| cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | `string` | `"15m"` | no |
+| cluster\_encryption\_config\_enabled | Set to `true` to enable Cluster Encryption Configuration | `bool` | `true` | no |
+| cluster\_encryption\_config\_kms\_key\_deletion\_window\_in\_days | Cluster Encryption Config KMS Key Resource argument - key deletion windows in days post destruction | `number` | `10` | no |
+| cluster\_encryption\_config\_kms\_key\_enable\_key\_rotation | Cluster Encryption Config KMS Key Resource argument - enable kms key rotation | `bool` | `true` | no |
+| cluster\_encryption\_config\_kms\_key\_policy | Cluster Encryption Config KMS Key Resource argument - key policy | `string` | `null` | no |
+| cluster\_encryption\_config\_resources | Cluster Encryption Config Resources to encrypt, e.g. ['secrets'] | `list(any)` | <pre>[<br>  "secrets"<br>]</pre> | no |
+| cluster\_log\_retention\_period | Number of days to retain cluster logs. Requires `enabled_cluster_log_types` to be set. See https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. | `number` | `30` | no |
+| cluster\_update\_timeout | Timeout value when updating the EKS cluster. | `string` | `"60m"` | no |
+| create\_schedule | Determines whether to create autoscaling group schedule or not | `bool` | `true` | no |
+| eks\_additional\_security\_group\_ids | EKS additional security group id | `list(string)` | `[]` | no |
+| enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | `bool` | `true` | no |
+| enabled\_cluster\_log\_types | A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]. | `list(string)` | `[]` | no |
+| endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false. | `bool` | `false` | no |
+| endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true. | `bool` | `true` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `""` | no |
-| instance\_tenancy | A tenancy option for instances launched into the VPC. | `string` | `"default"` | no |
-| ipv4\_ipam\_pool\_id | The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. | `string` | `""` | no |
-| ipv4\_netmask\_length | The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a ipv4\_ipam\_pool\_id | `string` | `null` | no |
+| kubernetes\_version | Desired Kubernetes master version. If you do not specify a value, the latest available version is used. | `string` | `""` | no |
 | label\_order | Label order, e.g. `name`,`application`. | `list(any)` | `[]` | no |
-| managedby | ManagedBy, eg 'CloudDrove' | `string` | `"hello@clouddrove.com"` | no |
+| local\_exec\_interpreter | shell to use for local\_exec | `list(string)` | <pre>[<br>  "/bin/sh",<br>  "-c"<br>]</pre> | no |
+| managed\_node\_group | Map of eks-managed node group definitions to create | `any` | `{}` | no |
+| managed\_node\_group\_defaults | Map of eks-managed node group definitions to create | `any` | `{}` | no |
+| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `"hello@clouddrove.com"` | no |
+| map\_additional\_aws\_accounts | Additional AWS account numbers to add to `config-map-aws-auth` ConfigMap | `list(string)` | `[]` | no |
+| map\_additional\_iam\_roles | Additional IAM roles to add to `config-map-aws-auth` ConfigMap | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
+| map\_additional\_iam\_users | Additional IAM users to add to `config-map-aws-auth` ConfigMap | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
-| repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-vpc"` | no |
-| restrict\_default\_sg | Flag to control the restrict default sg creation. | `bool` | `true` | no |
-| s3\_bucket\_arn | S3 ARN for vpc logs. | `string` | `""` | no |
+| nodes\_additional\_security\_group\_ids | EKS additional node group ids | `list(string)` | `[]` | no |
+| oidc\_provider\_enabled | Create an IAM OIDC identity provider for the cluster, then you can create IAM roles to associate with a service account in the cluster, instead of using kiam or kube2iam. For more information, see https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html | `bool` | `false` | no |
+| openid\_connect\_audiences | List of OpenID Connect audience client IDs to add to the IRSA provider | `list(string)` | `[]` | no |
+| permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
+| public\_access\_cidrs | Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. EKS defaults this to a list with 0.0.0.0/0. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
+| repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-eks"` | no |
+| schedules | Map of autoscaling group schedule to create | `map(any)` | `{}` | no |
+| self\_node\_group\_defaults | Map of self-managed node group default configurations | `any` | `{}` | no |
+| self\_node\_groups | Map of self-managed node group definitions to create | `any` | `{}` | no |
+| subnet\_ids | A list of subnet IDs to launch the cluster in. | `list(string)` | `[]` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
-| traffic\_type | Type of traffic to capture. Valid values: ACCEPT,REJECT, ALL. | `string` | `"ALL"` | no |
-| vpc\_enabled | Flag to control the vpc creation. | `bool` | `true` | no |
+| vpc\_id | VPC ID for the EKS cluster. | `string` | `""` | no |
+| vpc\_security\_group\_ids | A list of security group IDs to associate | `list(string)` | `[]` | no |
+| wait\_for\_cluster\_command | `local-exec` command to execute to determine if the EKS cluster is healthy. Cluster endpoint are available as environment variable `ENDPOINT` | `string` | `"curl --silent --fail --retry 60 --retry-delay 5 --retry-connrefused --insecure --output /dev/null $ENDPOINT/healthz"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| arn | Amazon Resource Name (ARN) of VPC |
-| enable\_classiclink | Whether or not the VPC has Classiclink enabled |
-| igw\_id | The ID of the Internet Gateway. |
-| ipv6\_cidr\_block | The IPv6 CIDR block. |
-| tags | A mapping of tags to assign to the resource. |
-| vpc\_cidr\_block | The CIDR block of the VPC. |
-| vpc\_default\_network\_acl\_id | The ID of the network ACL created by default on VPC creation. |
-| vpc\_default\_route\_table\_id | The ID of the route table created by default on VPC creation. |
-| vpc\_default\_security\_group\_id | The ID of the security group created by default on VPC creation. |
-| vpc\_id | The ID of the VPC. |
-| vpc\_ipv6\_association\_id | The association ID for the IPv6 CIDR block. |
-| vpc\_main\_route\_table\_id | The ID of the main route table associated with this VPC. |
+| cluster\_arn | The Amazon Resource Name (ARN) of the cluster |
+| cluster\_certificate\_authority\_data | Base64 encoded certificate data required to communicate with the cluster |
+| cluster\_endpoint | Endpoint for your Kubernetes API server |
+| cluster\_iam\_role\_arn | IAM role ARN of the EKS cluster |
+| cluster\_iam\_role\_name | IAM role name of the EKS cluster |
+| cluster\_iam\_role\_unique\_id | Stable and unique string identifying the IAM role |
+| cluster\_id | The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready |
+| cluster\_name | n/a |
+| cluster\_oidc\_issuer\_url | The URL on the EKS cluster for the OpenID Connect identity provider |
+| cluster\_platform\_version | Platform version for the cluster |
+| cluster\_primary\_security\_group\_id | Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use default security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console |
+| cluster\_status | Status of the EKS cluster. One of `CREATING`, `ACTIVE`, `DELETING`, `FAILED` |
+| node\_group\_iam\_role\_arn | IAM role ARN of the EKS cluster |
+| node\_group\_iam\_role\_name | IAM role name of the EKS cluster |
+| node\_group\_iam\_role\_unique\_id | Stable and unique string identifying the IAM role |
+| node\_security\_group\_arn | Amazon Resource Name (ARN) of the node shared security group |
+| node\_security\_group\_id | ID of the node shared security group |
+| oidc\_provider\_arn | The ARN of the OIDC Provider if `enable_irsa = true` |
+| tags | n/a |
 
 
 
@@ -324,9 +343,9 @@ You need to run the following command in the testing folder:
 
 
 ## Feedback 
-If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-vpc/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
+If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-eks/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
-If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-vpc)!
+If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-eks)!
 
 ## About us
 
