@@ -28,18 +28,15 @@ resource "aws_eks_cluster" "default" {
   count                     = var.enabled ? 1 : 0
   name                      = module.labels.id
   role_arn                  = join("", aws_iam_role.default.*.arn)
-  version                   = var.kubernetes_version
-#tfsec:ignore:aws_eks_enabled_cluster_log_types  
+  version                   = var.kubernetes_version  
   enabled_cluster_log_types = var.enabled_cluster_log_types
   tags                      = module.labels.tags
 
 
   vpc_config {    
     subnet_ids              = var.subnet_ids
-    endpoint_private_access = var.endpoint_private_access
-#tfsec:ignore:aws_eks_cluster-endpoint_public_access    
-    endpoint_public_access  = var.endpoint_public_access 
-#tfsec:ignore:aws_eks_cluster-public-access-cidr    
+    endpoint_private_access = var.endpoint_private_access    
+    endpoint_public_access  = var.endpoint_public_access    
     public_access_cidrs     = var.public_access_cidrs
     security_group_ids      = var.eks_additional_security_group_ids
   }
