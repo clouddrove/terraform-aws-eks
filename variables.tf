@@ -1,5 +1,6 @@
-#Module      : LABEL
-#Description : Terraform label module variables.
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- LABELS --#
+
 variable "name" {
   type        = string
   default     = ""
@@ -49,7 +50,9 @@ variable "enabled" {
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources."
 }
 
-#---------------------------------------------------------EKS-----------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- EKS CLUSTER --#
+
 variable "cluster_encryption_config_resources" {
   type        = list(any)
   default     = ["secrets"]
@@ -100,7 +103,9 @@ variable "addons" {
   description = "Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources."
 }
 
-#-----------------------------------------------------------KMS---------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- KMS-KEY --#
+
 variable "cluster_encryption_config_enabled" {
   type        = bool
   default     = true
@@ -132,14 +137,18 @@ variable "openid_connect_audiences" {
 }
 
 
-#---------------------------------------------------------IAM-----------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- IAM ROLE --#
+
 variable "permissions_boundary" {
   type        = string
   default     = null
   description = "If provided, all IAM roles will be created with this permissions boundary attached."
 }
 
-#---------------------------------------------------------Security_Group------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- SECURITY GROUP --#
+
 variable "allowed_security_groups" {
   type        = list(string)
   default     = []
@@ -152,7 +161,9 @@ variable "allowed_cidr_blocks" {
   description = "List of CIDR blocks to be allowed to connect to the EKS cluster."
 }
 
-#------------------------------------------------------------Networking-------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- NETWORKING --#
+
 variable "vpc_id" {
   type        = string
   default     = ""
@@ -188,7 +199,8 @@ variable "vpc_security_group_ids" {
   default     = []
   description = "A list of security group IDs to associate"
 }
-#-----------------------------------------------TimeOuts----------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- Timeouts --#
 
 variable "cluster_create_timeout" {
   type        = string
@@ -208,9 +220,8 @@ variable "cluster_update_timeout" {
   description = "Timeout value when updating the EKS cluster."
 }
 
-################################################################################
-# Self Managed Node Group
-################################################################################
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- Self managed node group --#
 
 variable "self_node_groups" {
   type        = any
@@ -224,7 +235,9 @@ variable "self_node_group_defaults" {
   description = "Map of self-managed node group default configurations"
 }
 
-# AWS auth
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- AWS AUTH --#
+
 variable "apply_config_map_aws_auth" {
   type        = bool
   default     = true
@@ -277,7 +290,9 @@ variable "aws_iam_role_arn" {
   description = "ARN of EKS iam user"
 }
 
-#Managed
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- AWS MANAGED NODE GROUP --#
+
 variable "managed_node_group_defaults" {
   type        = any
   default     = {}
@@ -290,7 +305,8 @@ variable "managed_node_group" {
   description = "Map of eks-managed node group definitions to create"
 }
 
-#-----------------------------------------------ASG-Schedule----------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------#
+#-- Auto Scaling Group Schedule --#
 
 variable "create_schedule" {
   description = "Determines whether to create autoscaling group schedule or not"

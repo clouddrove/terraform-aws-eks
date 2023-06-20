@@ -41,179 +41,179 @@ include:
 # How to use this project
 usage : |-
   ### Sample example
-  Here is an example of how you can use this module in your inventory structure:
-  ```hcl
-  module "eks" {
-  source = "clouddrove/eks/aws"
-  version = "1.0.1"  
+    Here is an example of how you can use this module in your inventory structure:
+    ```hcl
+      module "eks" {
+      source = "clouddrove/eks/aws"
+      version = "1.0.1"  
 
-  name        = "eks"
-  environment = "test"
-  label_order = ["environment", "name"]
-  enabled     = true
+      name        = "eks"
+      environment = "test"
+      label_order = ["environment", "name"]
+      enabled     = true
 
-  kubernetes_version        = "1.25"
-  endpoint_private_access   = true
-  endpoint_public_access    = true
-  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-  oidc_provider_enabled     = true
+      kubernetes_version        = "1.25"
+      endpoint_private_access   = true
+      endpoint_public_access    = true
+      enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+      oidc_provider_enabled     = true
 
-  # Network
-  vpc_id                  = module.vpc.vpc_id
-  subnet_ids              = module.subnets.private_subnet_id
-  allowed_security_groups = [module.ssh.security_group_ids]
-  allowed_cidr_blocks     = ["0.0.0.0/0"]
+      # Network
+      vpc_id                  = module.vpc.vpc_id
+      subnet_ids              = module.subnets.private_subnet_id
+      allowed_security_groups = [module.ssh.security_group_ids]
+      allowed_cidr_blocks     = ["0.0.0.0/0"]
 
-  # Node Groups Defaults Values It will Work all Node Groups
-  self_node_group_defaults = {
-    subnet_ids = module.subnets.private_subnet_id
-    key_name   = module.keypair.name
-    propagate_tags = [{
-      key                 = "aws-node-termination-handler/managed"
-      value               = true
-      propagate_at_launch = true
-      },
-      {
-        key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
-        value               = "owned"
-        propagate_at_launch = true
-        }
-      ]
+      # Node Groups Defaults Values It will Work all Node Groups
+      self_node_group_defaults = {
+        subnet_ids = module.subnets.private_subnet_id
+        key_name   = module.keypair.name
+        propagate_tags = [{
+          key                 = "aws-node-termination-handler/managed"
+          value               = true
+          propagate_at_launch = true
+          },
+          {
+            key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
+            value               = "owned"
+            propagate_at_launch = true
+            }
+          ]
 
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size = 50
-          volume_type = "gp3"
-          iops        = 3000
-          throughput  = 150
+        block_device_mappings = {
+          xvda = {
+            device_name = "/dev/xvda"
+            ebs = {
+              volume_size = 50
+              volume_type = "gp3"
+              iops        = 3000
+              throughput  = 150
+              }
+            }
           }
         }
-      }
-    }
 
 
-  self_node_groups = {
-    tools = {
-      name                 = "tools"
-      min_size             = 1
-      max_size             = 7
-      desired_size         = 2
-      bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
-      instance_type        = "t3a.medium"
-      }
+      self_node_groups = {
+        tools = {
+          name                 = "tools"
+          min_size             = 1
+          max_size             = 7
+          desired_size         = 2
+          bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
+          instance_type        = "t3a.medium"
+          }
 
-    spot = {
-      name = "spot"
-      instance_market_options = {
-        market_type = "spot"
-      }
-      min_size             = 1
-      max_size             = 7
-      desired_size         = 1
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-      instance_type        = "m5.large"
-        }
-      }
+        spot = {
+          name = "spot"
+          instance_market_options = {
+            market_type = "spot"
+          }
+          min_size             = 1
+          max_size             = 7
+          desired_size         = 1
+          bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+          instance_type        = "m5.large"
+            }
+          }
 
-    # Schdule self Managed Auto Scaling node group
-    schedules = {
-      scale-up = {
-        min_size     = 2
-        max_size     = 2 # Retains current max size
-        desired_size = 2
-        start_time   = "2023-05-15T19:00:00Z"
-        end_time     = "2023-05-19T19:00:00Z"
-        timezone     = "Europe/Amsterdam"
-        recurrence   = "0 7 * * 1"
-      },
-      scale-down = {
-        min_size     = 0
-        max_size     = 0 # Retains current max size
-        desired_size = 0
-        start_time   = "2023-05-12T12:00:00Z"
-        end_time     = "2024-03-05T12:00:00Z"
-        timezone     = "Europe/Amsterdam"
-        recurrence   = "0 7 * * 5"
-      }
-    }
-
-  # Node Groups Defaults Values It will Work all Node Groups
-  managed_node_group_defaults = {
-    subnet_ids                          = module.subnets.private_subnet_id
-    key_name                            = module.keypair.name
-    nodes_additional_security_group_ids = [module.ssh.security_group_ids]
-    tags = {
-      Example = "test"
-      }
-
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size = 50
-          volume_type = "gp3"
-          iops        = 3000
-          throughput  = 150
+        # Schdule self Managed Auto Scaling node group
+        schedules = {
+          scale-up = {
+            min_size     = 2
+            max_size     = 2 # Retains current max size
+            desired_size = 2
+            start_time   = "2023-05-15T19:00:00Z"
+            end_time     = "2023-05-19T19:00:00Z"
+            timezone     = "Europe/Amsterdam"
+            recurrence   = "0 7 * * 1"
+          },
+          scale-down = {
+            min_size     = 0
+            max_size     = 0 # Retains current max size
+            desired_size = 0
+            start_time   = "2023-05-12T12:00:00Z"
+            end_time     = "2024-03-05T12:00:00Z"
+            timezone     = "Europe/Amsterdam"
+            recurrence   = "0 7 * * 5"
           }
         }
-      }
-    }
 
-  managed_node_group = {
-    test = {
-      min_size       = 1
-      max_size       = 7
-      desired_size   = 2
-      instance_types = ["t3a.medium"]
-      }
-
-    spot = {
-      name          = "spot"
-      capacity_type = "SPOT"
-
-      min_size             = 1
-      max_size             = 7
-      desired_size         = 1
-      force_update_version = true
-      instance_types       = ["t3.medium", "t3a.medium"]
-        }
-      }
-
-    apply_config_map_aws_auth = true
-    map_additional_iam_users = [
-      {
-      userarn  = "arn:aws:iam::xxxxxx:user/nikita@clouddrove.com"
-      username = "nikita@clouddrove.com"
-      groups   = ["system:masters"]
-      },
-      {
-      userarn  = "arn:aws:iam::xxxxxx:user/sohan@clouddrove.com"
-      username = "sohan@clouddrove.com"
-      groups   = ["system:masters"]
+      # Node Groups Defaults Values It will Work all Node Groups
+      managed_node_group_defaults = {
+        subnet_ids                          = module.subnets.private_subnet_id
+        key_name                            = module.keypair.name
+        nodes_additional_security_group_ids = [module.ssh.security_group_ids]
+        tags = {
+          Example = "test"
           }
-        ]
-      # Schdule EKS Managed Auto Scaling node group
-      schedules = {
-        scale-up = {
-          min_size     = 2
-          max_size     = 2 # Retains current max size
-          desired_size = 2
-          start_time   = "2023-05-15T19:00:00Z"
-          end_time     = "2023-05-19T19:00:00Z"
-          timezone     = "Europe/Amsterdam"
-          recurrence   = "0 7 * * 1"
-        },
-        scale-down = {
-          min_size     = 0
-          max_size     = 0 # Retains current max size
-          desired_size = 0
-          start_time   = "2023-05-12T12:00:00Z"
-          end_time     = "2024-03-05T12:00:00Z"
-          timezone     = "Europe/Amsterdam"
-          recurrence   = "0 7 * * 5"
+
+        block_device_mappings = {
+          xvda = {
+            device_name = "/dev/xvda"
+            ebs = {
+              volume_size = 50
+              volume_type = "gp3"
+              iops        = 3000
+              throughput  = 150
+              }
+            }
+          }
         }
-      }        
-    }
-  ```
+
+      managed_node_group = {
+        test = {
+          min_size       = 1
+          max_size       = 7
+          desired_size   = 2
+          instance_types = ["t3a.medium"]
+          }
+
+        spot = {
+          name          = "spot"
+          capacity_type = "SPOT"
+
+          min_size             = 1
+          max_size             = 7
+          desired_size         = 1
+          force_update_version = true
+          instance_types       = ["t3.medium", "t3a.medium"]
+            }
+          }
+
+        apply_config_map_aws_auth = true
+        map_additional_iam_users = [
+          {
+          userarn  = "arn:aws:iam::xxxxxx:user/nikita@clouddrove.com"
+          username = "nikita@clouddrove.com"
+          groups   = ["system:masters"]
+          },
+          {
+          userarn  = "arn:aws:iam::xxxxxx:user/sohan@clouddrove.com"
+          username = "sohan@clouddrove.com"
+          groups   = ["system:masters"]
+              }
+            ]
+          # Schdule EKS Managed Auto Scaling node group
+          schedules = {
+            scale-up = {
+              min_size     = 2
+              max_size     = 2 # Retains current max size
+              desired_size = 2
+              start_time   = "2023-05-15T19:00:00Z"
+              end_time     = "2023-05-19T19:00:00Z"
+              timezone     = "Europe/Amsterdam"
+              recurrence   = "0 7 * * 1"
+            },
+            scale-down = {
+              min_size     = 0
+              max_size     = 0 # Retains current max size
+              desired_size = 0
+              start_time   = "2023-05-12T12:00:00Z"
+              end_time     = "2024-03-05T12:00:00Z"
+              timezone     = "Europe/Amsterdam"
+              recurrence   = "0 7 * * 5"
+            }
+          }        
+        }
+    ```

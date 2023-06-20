@@ -1,3 +1,6 @@
+#--------------------------------------------------------------------------------------------------------------#
+#-- Cluster --#
+
 output "cluster_arn" {
   value       = try(aws_eks_cluster.default[0].arn, "")
   description = "The Amazon Resource Name (ARN) of the cluster"
@@ -37,6 +40,9 @@ output "cluster_primary_security_group_id" {
   value       = try(aws_eks_cluster.default[0].vpc_config[0].cluster_security_group_id, "")
   description = "Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use default security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console"
 }
+
+#--------------------------------------------------------------------------------------------------------------#
+#-- node group --#
 
 output "node_security_group_arn" {
   description = "Amazon Resource Name (ARN) of the node shared security group"
