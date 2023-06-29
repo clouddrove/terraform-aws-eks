@@ -17,11 +17,11 @@ module "labels" {
 #--------------------------------------------------------------------------------------------------------------------------#
 #-- This Data Blocks are used to retrive and access information from various data sources --#
 
-data "aws_partition" "current" {}             # This data source retrieves information about the current AWS partition.
-data "aws_caller_identity" "current" {}       # This data source provides details about the AWS caller identity, which includes information about the user, role, or entity making the Terraform API request.
-data "aws_region" "current" {}                # This data source retrieves the current AWS region in which Terraform is being executed. It allows you to determine the region dynamically and use it in your module configuration.
-data "aws_iam_session_context" "current" {    # This data source provides information on the IAM source role of an STS assumed role
-  arn = data.aws_caller_identity.current.arn  
+data "aws_partition" "current" {}          # This data source retrieves information about the current AWS partition.
+data "aws_caller_identity" "current" {}    # This data source provides details about the AWS caller identity, which includes information about the user, role, or entity making the Terraform API request.
+data "aws_region" "current" {}             # This data source retrieves the current AWS region in which Terraform is being executed. It allows you to determine the region dynamically and use it in your module configuration.
+data "aws_iam_session_context" "current" { # This data source provides information on the IAM source role of an STS assumed role
+  arn = data.aws_caller_identity.current.arn
 }
 
 #--------------------------------------------------------------------------------------------------------------------------#
@@ -55,15 +55,15 @@ resource "aws_eks_cluster" "default" {
   count                     = var.enabled ? 1 : 0
   name                      = module.labels.id
   role_arn                  = join("", aws_iam_role.default.*.arn)
-  version                   = var.kubernetes_version  
+  version                   = var.kubernetes_version
   enabled_cluster_log_types = var.enabled_cluster_log_types
   tags                      = module.labels.tags
 
 
-  vpc_config {    
+  vpc_config {
     subnet_ids              = var.subnet_ids
-    endpoint_private_access = var.endpoint_private_access    
-    endpoint_public_access  = var.endpoint_public_access    
+    endpoint_private_access = var.endpoint_private_access
+    endpoint_public_access  = var.endpoint_public_access
     public_access_cidrs     = var.public_access_cidrs
     security_group_ids      = var.eks_additional_security_group_ids
   }

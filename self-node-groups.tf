@@ -29,8 +29,8 @@ module "self_managed_node_group" {
 
   iam_instance_profile_arn = join("", aws_iam_instance_profile.default.*.arn)
 
-#--------------------------------------------------------------------------------------------------------------------------#
-#-- Auto Scaling Group --#
+  #--------------------------------------------------------------------------------------------------------------------------#
+  #-- Auto Scaling Group --#
 
   name        = try(each.value.name, each.key)
   environment = var.environment
@@ -71,23 +71,23 @@ module "self_managed_node_group" {
   mixed_instances_policy     = try(each.value.mixed_instances_policy, var.self_node_group_defaults.mixed_instances_policy, null)
   warm_pool                  = try(each.value.warm_pool, var.self_node_group_defaults.warm_pool, null)
 
-#-----------------------------------------------------------------------------------------------------------#
-#-- AutoScaling Group Schedule --#
+  #-----------------------------------------------------------------------------------------------------------#
+  #-- AutoScaling Group Schedule --#
   create_schedule = try(each.value.create_schedule, var.self_node_group_defaults.create_schedule, false)
   schedules       = try(each.value.schedules, var.self_node_group_defaults.schedules, var.schedules)
 
   delete_timeout = try(each.value.delete_timeout, var.self_node_group_defaults.delete_timeout, null)
 
-#-------------------------------------------------------------------------------------------------------------#
-#-- User Data --#
+  #-------------------------------------------------------------------------------------------------------------#
+  #-- User Data --#
   cluster_endpoint         = try(aws_eks_cluster.default[0].endpoint, "")
   cluster_auth_base64      = try(aws_eks_cluster.default[0].certificate_authority[0].data, "")
   pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_node_group_defaults.bootstrap_extra_args, "")
 
-#--------------------------------------------------------------------------------------------------------------#
-#-- Launch Template --#
+  #--------------------------------------------------------------------------------------------------------------#
+  #-- Launch Template --#
 
 
   ebs_optimized      = try(each.value.ebs_optimized, var.self_node_group_defaults.ebs_optimized, true)

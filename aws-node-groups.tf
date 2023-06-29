@@ -43,12 +43,12 @@ module "eks_managed_node_group" {
   update_config = try(each.value.update_config, var.managed_node_group_defaults.update_config, {})
   timeouts      = try(each.value.timeouts, var.managed_node_group_defaults.timeouts, {})
 
-#-------------AutoScaling Group Schedule--------------------------------------------------------------------------------#
+  #-------------AutoScaling Group Schedule--------------------------------------------------------------------------------#
 
   create_schedule = try(each.value.create_schedule, var.managed_node_group_defaults.create_schedule, true)
   schedules       = try(each.value.schedules, var.managed_node_group_defaults.schedules, var.schedules)
 
-#------------Launch Template-------------------------------------------------------------------------------------------#
+  #------------Launch Template-------------------------------------------------------------------------------------------#
 
   launch_template_description = try(each.value.launch_template_description, var.managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
   launch_template_tags        = try(each.value.launch_template_tags, var.managed_node_group_defaults.launch_template_tags, {})
@@ -76,7 +76,7 @@ module "eks_managed_node_group" {
   network_interfaces                 = try(each.value.network_interfaces, var.managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.managed_node_group_defaults.placement, null)
 
-#------------IAM Role-------------------------------------------------------------------------------------------#
+  #------------IAM Role-------------------------------------------------------------------------------------------#
   iam_role_arn = join("", aws_iam_role.node_groups.*.arn)
 
   tags = merge(var.tags, try(each.value.tags, var.managed_node_group_defaults.tags, {}))
