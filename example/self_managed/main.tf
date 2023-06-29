@@ -144,7 +144,7 @@ module "eks" {
       max_size             = 7
       desired_size         = 2
       bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
-      instance_type        = "t4g.medium"
+      instance_type        = "t3.medium"
     }
 
     spot = {
@@ -156,7 +156,7 @@ module "eks" {
       max_size             = 7
       desired_size         = 1
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-      instance_type        = "t4g.medium"
+      instance_type        = "t3.medium"
     }
   }
   # Schdule Self Managed Auto Scaling node group
