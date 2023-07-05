@@ -221,21 +221,6 @@ variable "cluster_update_timeout" {
 }
 
 #--------------------------------------------------------------------------------------------------------------------------#
-#-- Self managed node group --#
-
-variable "self_node_groups" {
-  type        = any
-  default     = {}
-  description = "Map of self-managed node group definitions to create"
-}
-
-variable "self_node_group_defaults" {
-  type        = any
-  default     = {}
-  description = "Map of self-managed node group default configurations"
-}
-
-#--------------------------------------------------------------------------------------------------------------------------#
 #-- AWS AUTH --#
 
 variable "apply_config_map_aws_auth" {

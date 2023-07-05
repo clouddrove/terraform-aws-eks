@@ -32,8 +32,7 @@ jobs:
           - ${{ needs.versionExtract.outputs.maxVersion }}
         directory:
           - example/aws_managed/
-          - example/complete/
-          - example/self_managed/              
+          - example/complete/          
 
     steps:
       - name: Checkout
