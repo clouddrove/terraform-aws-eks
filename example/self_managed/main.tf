@@ -260,7 +260,7 @@ module "eks" {
   # Networking
   vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.subnets.private_subnet_id
-  allowed_security_groups           = [module.ssh.security_group_ids]
+  allowed_security_groups           = [module.ssh.security_group_id]
   eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
   allowed_cidr_blocks               = ["10.0.0.0/16"]
 
