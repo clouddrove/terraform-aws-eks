@@ -382,7 +382,7 @@ module "eks" {
   managed_node_group_defaults = {
     subnet_ids                          = module.subnets.private_subnet_id
     key_name                            = module.keypair.name
-    nodes_additional_security_group_ids = [module.ssh.security_group_ids]
+    nodes_additional_security_group_ids = [module.ssh.security_group_id]
     tags = {
       "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
       "k8s.io/cluster/${module.eks.cluster_name}"        = "shared"
