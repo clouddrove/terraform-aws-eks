@@ -307,7 +307,7 @@ module "eks" {
     nodes_additional_security_group_ids = [module.ssh.security_group_id]
     # ami_id                              = "ami-064d3e6a8ca655d19"
     # ami_type                            = "AL2_ARM_64"
-    # instance_types                      = ["t3.medium"]
+    # instance_types                      = ["t4g.medium"]
     tags = {
       "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
       "k8s.io/cluster/${module.eks.cluster_name}"        = "shared"
