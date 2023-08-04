@@ -10,6 +10,6 @@ terraform {
     cloudinit = {
       source  = "hashicorp/cloudinit"
       version = ">= 2.0"
-    }    
+    }
   }
 }
