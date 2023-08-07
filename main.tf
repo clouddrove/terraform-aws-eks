@@ -28,15 +28,15 @@ resource "aws_eks_cluster" "default" {
   count                     = var.enabled ? 1 : 0
   name                      = module.labels.id
   role_arn                  = join("", aws_iam_role.default.*.arn)
-  version                   = var.kubernetes_version  
+  version                   = var.kubernetes_version
   enabled_cluster_log_types = var.enabled_cluster_log_types
   tags                      = module.labels.tags
 
 
-  vpc_config {    
+  vpc_config {
     subnet_ids              = var.subnet_ids
-    endpoint_private_access = var.endpoint_private_access    
-    endpoint_public_access  = var.endpoint_public_access    
+    endpoint_private_access = var.endpoint_private_access
+    endpoint_public_access  = var.endpoint_public_access
     public_access_cidrs     = var.public_access_cidrs
     security_group_ids      = var.eks_additional_security_group_ids
   }
@@ -52,9 +52,29 @@ resource "aws_eks_cluster" "default" {
   }
 
   timeouts {
-    create = var.cluster_create_timeout
-    delete = var.cluster_delete_timeout
-    update = var.cluster_update_timeout
+    create = lookup(var.cluster_timeouts, "create", null)
+    update = lookup(var.cluster_timeouts, "update", null)
+    delete = lookup(var.cluster_timeouts, "delete", null)
+  }
+
+  dynamic "kubernetes_network_config" {
+    # Not valid on Outposts
+    for_each = local.create_outposts_local_cluster ? [] : [1]
+
+    content {
+      ip_family         = var.cluster_ip_family
+      service_ipv4_cidr = var.cluster_service_ipv4_cidr
+      service_ipv6_cidr = var.cluster_service_ipv6_cidr
+    }
+  }
+
+  dynamic "outpost_config" {
+    for_each = local.create_outposts_local_cluster ? [var.outpost_config] : []
+
+    content {
+      control_plane_instance_type = outpost_config.value.control_plane_instance_type
+      outpost_arns                = outpost_config.value.outpost_arns
+    }
   }
 
   depends_on = [
@@ -82,11 +102,11 @@ resource "aws_iam_openid_connect_provider" "default" {
 resource "aws_eks_addon" "cluster" {
   for_each = var.enabled ? { for addon in var.addons : addon.addon_name => addon } : {}
 
-  cluster_name             = join("", aws_eks_cluster.default.*.name)
-  addon_name               = each.key
-  addon_version            = lookup(each.value, "addon_version", null)
-  resolve_conflicts        = lookup(each.value, "resolve_conflicts", null)
-  service_account_role_arn = lookup(each.value, "service_account_role_arn", null)
+  cluster_name                = join("", aws_eks_cluster.default.*.name)
+  addon_name                  = each.key
+  addon_version               = lookup(each.value, "addon_version", null)
+  resolve_conflicts_on_create = lookup(each.value, "resolve_conflicts", null)
+  service_account_role_arn    = lookup(each.value, "service_account_role_arn", null)
 
   tags = module.labels.tags
 }

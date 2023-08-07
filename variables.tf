@@ -100,6 +100,30 @@ variable "addons" {
   description = "Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources."
 }
 
+variable "cluster_ip_family" {
+  description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created"
+  type        = string
+  default     = null
+}
+
+variable "cluster_service_ipv4_cidr" {
+  description = "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"
+  type        = string
+  default     = null
+}
+
+variable "cluster_service_ipv6_cidr" {
+  description = "The CIDR block to assign Kubernetes pod and service IP addresses from if `ipv6` was specified when the cluster was created. Kubernetes assigns service addresses from the unique local address range (fc00::/7) because you can't specify a custom IPv6 CIDR block when you create the cluster"
+  type        = string
+  default     = null
+}
+
+variable "outpost_config" {
+  description = "Configuration for the AWS Outpost to provision the cluster on"
+  type        = any
+  default     = {}
+}
+
 #-----------------------------------------------------------KMS---------------------------------------------------------
 variable "cluster_encryption_config_enabled" {
   type        = bool
@@ -190,22 +214,10 @@ variable "vpc_security_group_ids" {
 }
 #-----------------------------------------------TimeOuts----------------------------------------------------------------
 
-variable "cluster_create_timeout" {
-  type        = string
-  default     = "30m"
-  description = "Timeout value when creating the EKS cluster."
-}
-
-variable "cluster_delete_timeout" {
-  type        = string
-  default     = "15m"
-  description = "Timeout value when deleting the EKS cluster."
-}
-
-variable "cluster_update_timeout" {
-  type        = string
-  default     = "60m"
-  description = "Timeout value when updating the EKS cluster."
+variable "cluster_timeouts" {
+  description = "Create, update, and delete timeout configurations for the cluster"
+  type        = map(string)
+  default     = {}
 }
 
 ################################################################################
@@ -269,12 +281,6 @@ variable "map_additional_aws_accounts" {
   type        = list(string)
   default     = []
   description = "Additional AWS account numbers to add to `config-map-aws-auth` ConfigMap"
-}
-
-variable "aws_iam_role_arn" {
-  type        = string
-  default     = ""
-  description = "ARN of EKS iam user"
 }
 
 #Managed

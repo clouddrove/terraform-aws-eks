@@ -83,7 +83,7 @@ environment = "test"
 label_order = ["environment", "name"]
 enabled     = true
 
-kubernetes_version        = "1.25"
+kubernetes_version        = "1.27"
 endpoint_private_access   = true
 endpoint_public_access    = true
 enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
@@ -154,8 +154,8 @@ self_node_groups = {
       min_size     = 2
       max_size     = 2 # Retains current max size
       desired_size = 2
-      start_time   = "2023-05-15T19:00:00Z"
-      end_time     = "2023-05-19T19:00:00Z"
+      start_time   = "2023-08-15T19:00:00Z"
+      end_time     = "2023-08-19T19:00:00Z"
       timezone     = "Europe/Amsterdam"
       recurrence   = "0 7 * * 1"
     },
@@ -163,7 +163,7 @@ self_node_groups = {
       min_size     = 0
       max_size     = 0 # Retains current max size
       desired_size = 0
-      start_time   = "2023-05-12T12:00:00Z"
+      start_time   = "2023-08-12T12:00:00Z"
       end_time     = "2024-03-05T12:00:00Z"
       timezone     = "Europe/Amsterdam"
       recurrence   = "0 7 * * 5"
@@ -215,24 +215,19 @@ managed_node_group = {
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
-    userarn  = "arn:aws:iam::xxxxxx:user/nikita@clouddrove.com"
-    username = "nikita@clouddrove.com"
-    groups   = ["system:masters"]
-    },
-    {
-    userarn  = "arn:aws:iam::xxxxxx:user/sohan@clouddrove.com"
-    username = "sohan@clouddrove.com"
-    groups   = ["system:masters"]
-        }
-      ]
+      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
+      username = "hello@clouddrove.com"
+      groups   = ["system:masters"]
+    }
+  ]
     # Schdule EKS Managed Auto Scaling node group
     schedules = {
       scale-up = {
         min_size     = 2
         max_size     = 2 # Retains current max size
         desired_size = 2
-        start_time   = "2023-05-15T19:00:00Z"
-        end_time     = "2023-05-19T19:00:00Z"
+        start_time   = "2023-08-15T19:00:00Z"
+        end_time     = "2023-08-19T19:00:00Z"
         timezone     = "Europe/Amsterdam"
         recurrence   = "0 7 * * 1"
       },
@@ -240,7 +235,7 @@ managed_node_group = {
         min_size     = 0
         max_size     = 0 # Retains current max size
         desired_size = 0
-        start_time   = "2023-05-12T12:00:00Z"
+        start_time   = "2023-08-12T12:00:00Z"
         end_time     = "2024-03-05T12:00:00Z"
         timezone     = "Europe/Amsterdam"
         recurrence   = "0 7 * * 5"

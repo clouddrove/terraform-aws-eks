@@ -99,12 +99,6 @@ variable "bootstrap_extra_args" {
   description = "Additional arguments passed to the bootstrap script. When `platform` = `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
 }
 
-variable "enable_bootstrap_user_data" {
-  type        = bool
-  default     = true
-  description = "Determines whether the bootstrap configurations are populated within the user data template"
-}
-
 #-----------------------------------------------------------Launch_Template---------------------------------------------------------
 
 variable "ebs_optimized" {
@@ -432,22 +426,10 @@ variable "propagate_tags" {
 
 #-----------------------------------------------TimeOuts----------------------------------------------------------------
 
-variable "cluster_create_timeout" {
-  description = "Timeout value when creating the EKS cluster."
-  type        = string
-  default     = "30m"
-}
-
 variable "cluster_delete_timeout" {
   description = "Timeout value when deleting the EKS cluster."
   type        = string
   default     = "15m"
-}
-
-variable "cluster_update_timeout" {
-  description = "Timeout value when updating the EKS cluster."
-  type        = string
-  default     = "60m"
 }
 
 #---------------------------------------------------ASG-schedule-----------------------------------------------------------

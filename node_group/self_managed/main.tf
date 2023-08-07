@@ -1,3 +1,12 @@
+locals {
+  self_managed_node_group_default_tags = {
+    "Name"                                      = "${module.labels.id}"
+    "Environment"                               = "${var.environment}"
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "k8s.io/cluster/${var.cluster_name}"        = "owned"
+  }
+}
+
 data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
@@ -367,38 +376,14 @@ resource "aws_autoscaling_group" "this" {
     ]
   }
 
-  tags = concat(
-    [
-      {
-        key                 = "Name"
-        value               = module.labels.id
-        propagate_at_launch = true
-      },
-      {
-        key                 = "Environment"
-        value               = var.environment
-        propagate_at_launch = true
-      },
-      {
-        key                 = "kubernetes.io/cluster/${var.cluster_name}"
-        value               = "owned"
-        propagate_at_launch = true
-      },
-      {
-        key                 = "k8s.io/cluster/${var.cluster_name}"
-        value               = "owned"
-        propagate_at_launch = true
-      },
-    ],
-    var.propagate_tags,
-    [for k, v in var.tags :
-      {
-        key                 = k
-        value               = v
-        propagate_at_launch = true
-      }
-    ]
-  )
+  dynamic "tag" {
+    for_each = merge(local.self_managed_node_group_default_tags, var.tags)
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
+  }
 }
 
 #---------------------------------------------------ASG-schedule-----------------------------------------------------------
