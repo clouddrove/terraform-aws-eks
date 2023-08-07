@@ -50,12 +50,6 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 ## Prerequisites
 
 This module has a few dependencies: 
-
-- [Terraform 1.x.x](https://learn.hashicorp.com/terraform/getting-started/install.html)
-- [Go](https://golang.org/doc/install)
-- [github.com/stretchr/testify/assert](https://github.com/stretchr/testify)
-- [github.com/gruntwork-io/terratest/modules/terraform](https://github.com/gruntwork-io/terratest)
-
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [AWS IAM Authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
 
@@ -83,7 +77,7 @@ environment = "test"
 label_order = ["environment", "name"]
 enabled     = true
 
-kubernetes_version        = "1.27"
+kubernetes_version        = "1.25"
 endpoint_private_access   = true
 endpoint_public_access    = true
 enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
@@ -154,8 +148,8 @@ self_node_groups = {
       min_size     = 2
       max_size     = 2 # Retains current max size
       desired_size = 2
-      start_time   = "2023-08-15T19:00:00Z"
-      end_time     = "2023-08-19T19:00:00Z"
+      start_time   = "2023-05-15T19:00:00Z"
+      end_time     = "2023-05-19T19:00:00Z"
       timezone     = "Europe/Amsterdam"
       recurrence   = "0 7 * * 1"
     },
@@ -163,7 +157,7 @@ self_node_groups = {
       min_size     = 0
       max_size     = 0 # Retains current max size
       desired_size = 0
-      start_time   = "2023-08-12T12:00:00Z"
+      start_time   = "2023-05-12T12:00:00Z"
       end_time     = "2024-03-05T12:00:00Z"
       timezone     = "Europe/Amsterdam"
       recurrence   = "0 7 * * 5"
@@ -215,19 +209,24 @@ managed_node_group = {
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
-      username = "hello@clouddrove.com"
-      groups   = ["system:masters"]
-    }
-  ]
+    userarn  = "arn:aws:iam::xxxxxx:user/nikita@clouddrove.com"
+    username = "nikita@clouddrove.com"
+    groups   = ["system:masters"]
+    },
+    {
+    userarn  = "arn:aws:iam::xxxxxx:user/sohan@clouddrove.com"
+    username = "sohan@clouddrove.com"
+    groups   = ["system:masters"]
+        }
+      ]
     # Schdule EKS Managed Auto Scaling node group
     schedules = {
       scale-up = {
         min_size     = 2
         max_size     = 2 # Retains current max size
         desired_size = 2
-        start_time   = "2023-08-15T19:00:00Z"
-        end_time     = "2023-08-19T19:00:00Z"
+        start_time   = "2023-05-15T19:00:00Z"
+        end_time     = "2023-05-19T19:00:00Z"
         timezone     = "Europe/Amsterdam"
         recurrence   = "0 7 * * 1"
       },
@@ -235,7 +234,7 @@ managed_node_group = {
         min_size     = 0
         max_size     = 0 # Retains current max size
         desired_size = 0
-        start_time   = "2023-08-12T12:00:00Z"
+        start_time   = "2023-05-12T12:00:00Z"
         end_time     = "2024-03-05T12:00:00Z"
         timezone     = "Europe/Amsterdam"
         recurrence   = "0 7 * * 5"
@@ -258,16 +257,16 @@ managed_node_group = {
 | allowed\_security\_groups | List of Security Group IDs to be allowed to connect to the EKS cluster. | `list(string)` | `[]` | no |
 | apply\_config\_map\_aws\_auth | Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster. | `bool` | `true` | no |
 | attributes | Additional attributes (e.g. `1`). | `list(any)` | `[]` | no |
-| aws\_iam\_role\_arn | ARN of EKS iam user | `string` | `""` | no |
-| cluster\_create\_timeout | Timeout value when creating the EKS cluster. | `string` | `"30m"` | no |
-| cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | `string` | `"15m"` | no |
 | cluster\_encryption\_config\_enabled | Set to `true` to enable Cluster Encryption Configuration | `bool` | `true` | no |
 | cluster\_encryption\_config\_kms\_key\_deletion\_window\_in\_days | Cluster Encryption Config KMS Key Resource argument - key deletion windows in days post destruction | `number` | `10` | no |
 | cluster\_encryption\_config\_kms\_key\_enable\_key\_rotation | Cluster Encryption Config KMS Key Resource argument - enable kms key rotation | `bool` | `true` | no |
 | cluster\_encryption\_config\_kms\_key\_policy | Cluster Encryption Config KMS Key Resource argument - key policy | `string` | `null` | no |
 | cluster\_encryption\_config\_resources | Cluster Encryption Config Resources to encrypt, e.g. ['secrets'] | `list(any)` | <pre>[<br>  "secrets"<br>]</pre> | no |
+| cluster\_ip\_family | The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created | `string` | `null` | no |
 | cluster\_log\_retention\_period | Number of days to retain cluster logs. Requires `enabled_cluster_log_types` to be set. See https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. | `number` | `30` | no |
-| cluster\_update\_timeout | Timeout value when updating the EKS cluster. | `string` | `"60m"` | no |
+| cluster\_service\_ipv4\_cidr | The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks | `string` | `null` | no |
+| cluster\_service\_ipv6\_cidr | The CIDR block to assign Kubernetes pod and service IP addresses from if `ipv6` was specified when the cluster was created. Kubernetes assigns service addresses from the unique local address range (fc00::/7) because you can't specify a custom IPv6 CIDR block when you create the cluster | `string` | `null` | no |
+| cluster\_timeouts | Create, update, and delete timeout configurations for the cluster | `map(string)` | `{}` | no |
 | create\_schedule | Determines whether to create autoscaling group schedule or not | `bool` | `true` | no |
 | eks\_additional\_security\_group\_ids | EKS additional security group id | `list(string)` | `[]` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | `bool` | `true` | no |
@@ -288,6 +287,7 @@ managed_node_group = {
 | nodes\_additional\_security\_group\_ids | EKS additional node group ids | `list(string)` | `[]` | no |
 | oidc\_provider\_enabled | Create an IAM OIDC identity provider for the cluster, then you can create IAM roles to associate with a service account in the cluster, instead of using kiam or kube2iam. For more information, see https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html | `bool` | `false` | no |
 | openid\_connect\_audiences | List of OpenID Connect audience client IDs to add to the IRSA provider | `list(string)` | `[]` | no |
+| outpost\_config | Configuration for the AWS Outpost to provision the cluster on | `any` | `{}` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
 | public\_access\_cidrs | Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. EKS defaults this to a list with 0.0.0.0/0. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-eks"` | no |
