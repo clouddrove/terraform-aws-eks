@@ -247,7 +247,7 @@ module "kms" {
   source  = "clouddrove/kms/aws"
   version = "1.3.0"
 
-  name                = "${local.name}-kms"
+  name                = "${local.name}-kmss"
   environment         = "test"
   label_order         = ["environment", "name"]
   enabled             = true
@@ -288,7 +288,6 @@ module "eks" {
   endpoint_private_access   = true
   endpoint_public_access    = true
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-  oidc_provider_enabled     = true
 
   # Networking
   vpc_id                            = module.vpc.vpc_id
@@ -305,9 +304,6 @@ module "eks" {
     subnet_ids                          = module.subnets.private_subnet_id
     key_name                            = module.keypair.name
     nodes_additional_security_group_ids = [module.ssh.security_group_id]
-    # ami_id                              = "ami-064d3e6a8ca655d19"
-    # ami_type                            = "AL2_ARM_64"
-    # instance_types                      = ["t4g.medium"]
     tags = {
       "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
       "k8s.io/cluster/${module.eks.cluster_name}"        = "shared"
@@ -329,7 +325,7 @@ module "eks" {
   managed_node_group = {
     critical = {
       name           = "${module.eks.cluster_name}-critical"
-      capacity_type  = "ON_DEMAND"
+      capacity_type  = "SPOT"
       min_size       = 1
       max_size       = 7
       desired_size   = 2
@@ -351,10 +347,19 @@ module "eks" {
   addons = [
     {
       addon_name               = "coredns"
-      addon_version            = "v1.10.1-eksbuild.1"
+      addon_version            = "v1.10.1-eksbuild.2"
       resolve_conflicts        = "OVERWRITE"
-      service_account_role_arn = "${module.eks.node_group_iam_role_arn}"
-    }
+    },
+    {
+      addon_name               = "kube-proxy"
+      addon_version            = "v1.27.3-eksbuild.2"
+      resolve_conflicts        = "OVERWRITE"
+    },
+    {
+      addon_name               = "vpc-cni"
+      addon_version            = "v1.13.4-eksbuild.1"
+      resolve_conflicts        = "OVERWRITE"
+    },
   ]
 
   # -- Set this to `true` only when you have correct iam_user details.
