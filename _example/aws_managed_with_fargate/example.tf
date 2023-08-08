@@ -1,11 +1,13 @@
 provider "aws" {
   region = local.region
 }
+
 locals {
+
   name   = "clouddrove-eks"
   region = "eu-west-1"
   tags = {
-    "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
   }
 }
 
@@ -24,26 +26,27 @@ module "vpc" {
   cidr_block = "10.10.0.0/16"
 }
 
-################################################################################
-# Subnets
-################################################################################
+# ################################################################################
+# # Subnets
+# ################################################################################
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.0"
 
-  name        = "${local.name}-subnets"
+  name        = "${local.name}-subnet"
   environment = "test"
   label_order = ["environment", "name"]
-  tags        = local.tags
 
   nat_gateway_enabled = true
-  availability_zones  = ["${local.region}a", "${local.region}b"]
+  single_nat_gateway  = true
+  availability_zones  = ["${local.region}a", "${local.region}b", "${local.region}c"]
   vpc_id              = module.vpc.vpc_id
-  cidr_block          = module.vpc.vpc_cidr_block
-  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   type                = "public-private"
   igw_id              = module.vpc.igw_id
+  cidr_block          = module.vpc.vpc_cidr_block
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
+  enable_ipv6         = false
 
   public_inbound_acl_rules = [
     {
@@ -244,7 +247,7 @@ module "kms" {
   source  = "clouddrove/kms/aws"
   version = "1.3.0"
 
-  name                = "${local.name}-kms-nw"
+  name                = "${local.name}-kmss"
   environment         = "test"
   label_order         = ["environment", "name"]
   enabled             = true
@@ -273,17 +276,18 @@ data "aws_iam_policy_document" "kms" {
 ################################################################################
 
 module "eks" {
-  source = "../.."
+  source  = "../.."
+  enabled = true
 
   name        = local.name
   environment = "test"
   label_order = ["environment", "name"]
-  enabled     = true
 
+  # EKS
   kubernetes_version        = "1.27"
   endpoint_private_access   = true
   endpoint_public_access    = true
-  oidc_provider_enabled     = true
+  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
   # Networking
   vpc_id                            = module.vpc.vpc_id
@@ -291,87 +295,6 @@ module "eks" {
   allowed_security_groups           = [module.ssh.security_group_id]
   eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
   allowed_cidr_blocks               = ["10.0.0.0/16"]
-
-  ################################################################################
-  # Self Managed Node Group
-  ################################################################################
-  # Node Groups Defaults Values It will Work all Node Groups
-  self_node_group_defaults = {
-    subnet_ids = module.subnets.private_subnet_id
-    key_name   = module.keypair.name
-    propagate_tags = [{
-      key                 = "aws-node-termination-handler/managed"
-      value               = true
-      propagate_at_launch = true
-      },
-      {
-        key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
-        value               = "owned"
-        propagate_at_launch = true
-
-      }
-    ]
-
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size = 50
-          volume_type = "gp3"
-          iops        = 3000
-          throughput  = 150
-          encrypted   = true
-          kms_key_id  = module.kms.key_arn
-        }
-      }
-    }
-  }
-
-
-  self_node_groups = {
-    self_managed_critical = {
-      name                 = "self_managed_critical"
-      min_size             = 1
-      max_size             = 2
-      desired_size         = 1
-      bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
-      instance_type        = "t3.medium"
-    }
-
-    self_managed_application = {
-      name = "self_managed_application"
-      instance_market_options = {
-        market_type = "spot"
-      }
-      min_size             = 1
-      max_size             = 2
-      desired_size         = 1
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-      instance_type        = "t3.medium"
-    }
-    # Schdule EKS Managed Auto Scaling node group. Change start_time and end_time.
-    schedules = {
-      scale-up = {
-        min_size     = 2
-        max_size     = 2 # Retains current max size
-        desired_size = 2
-        start_time   = "2023-09-15T19:00:00Z"
-        end_time     = "2023-09-19T19:00:00Z"
-        timezone     = "Europe/Amsterdam"
-        recurrence   = "0 7 * * 1"
-      },
-      scale-down = {
-        min_size     = 0
-        max_size     = 0 # Retains current max size
-        desired_size = 0
-        start_time   = "2023-09-12T12:00:00Z"
-        end_time     = "2024-03-05T12:00:00Z"
-        timezone     = "Europe/Amsterdam"
-        recurrence   = "0 7 * * 5"
-      }
-    }
-
-  }
 
   ################################################################################
   # AWS Managed Node Group
@@ -385,7 +308,6 @@ module "eks" {
       "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
       "k8s.io/cluster/${module.eks.cluster_name}"        = "shared"
     }
-
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
@@ -400,22 +322,21 @@ module "eks" {
       }
     }
   }
-
   managed_node_group = {
     critical = {
       name           = "${module.eks.cluster_name}-critical"
+      capacity_type  = "SPOT"
       min_size       = 1
-      max_size       = 2
-      desired_size   = 1
+      max_size       = 7
+      desired_size   = 2
       instance_types = ["t3.medium"]
     }
 
     application = {
-      name          = "${module.eks.cluster_name}-application"
-      capacity_type = "SPOT"
-
+      name                 = "${module.eks.cluster_name}-application"
+      capacity_type        = "SPOT"
       min_size             = 1
-      max_size             = 2
+      max_size             = 7
       desired_size         = 1
       force_update_version = true
       instance_types       = ["t3.medium"]
@@ -428,22 +349,20 @@ module "eks" {
       addon_name               = "coredns"
       addon_version            = "v1.10.1-eksbuild.2"
       resolve_conflicts        = "OVERWRITE"
-      service_account_role_arn = "${module.eks.node_group_iam_role_arn}"
     },
     {
       addon_name               = "kube-proxy"
       addon_version            = "v1.27.3-eksbuild.2"
       resolve_conflicts        = "OVERWRITE"
-      service_account_role_arn = "${module.eks.node_group_iam_role_arn}"
     },
     {
       addon_name               = "vpc-cni"
       addon_version            = "v1.13.4-eksbuild.1"
       resolve_conflicts        = "OVERWRITE"
-      service_account_role_arn = "${module.eks.node_group_iam_role_arn}"
     },
   ]
 
+  # -- Set this to `true` only when you have correct iam_user details.
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
@@ -452,25 +371,12 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
-  # Schdule EKS Managed Auto Scaling node group
-  schedules = {
-    scale-up = {
-      min_size     = 2
-      max_size     = 2 # Retains current max size
-      desired_size = 2
-      start_time   = "2023-09-15T19:00:00Z"
-      end_time     = "2023-09-19T19:00:00Z"
-      timezone     = "Europe/Amsterdam"
-      recurrence   = "0 7 * * 1"
-    },
-    scale-down = {
-      min_size     = 0
-      max_size     = 0 # Retains current max size
-      desired_size = 0
-      start_time   = "2023-09-12T12:00:00Z"
-      end_time     = "2024-03-05T12:00:00Z"
-      timezone     = "Europe/Amsterdam"
-      recurrence   = "0 7 * * 5"
+
+  fargate_enabled = true 
+  fargate_profiles = {
+    profile-0 = {
+    addon_name = "0"
+    namespace  = "default"
     }
   }
 
@@ -481,12 +387,15 @@ module "eks" {
 ################################################################################
 
 data "aws_eks_cluster" "this" {
-  name = module.eks.cluster_id
+  depends_on = [module.eks]
+  name       = module.eks.cluster_id
 }
 
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_certificate_authority_data
+  depends_on = [module.eks]
+  name       = module.eks.cluster_certificate_authority_data
 }
+
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.this.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)

@@ -81,6 +81,13 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
   role       = join("", aws_iam_role.node_groups.*.name)
 }
 
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = { for k, v in var.iam_role_additional_policies : k => v if var.enabled }
+
+  policy_arn = each.value
+  role       = join("", aws_iam_role.node_groups.*.name)
+}
+
 #Module      : IAM ROLE POLICY ATTACHMENT EC2 CONTAINER REGISTRY READ ONLY
 #Description : Attaches a Managed IAM Policy to an IAM role.
 resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
