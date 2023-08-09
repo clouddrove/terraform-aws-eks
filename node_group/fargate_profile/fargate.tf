@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     aws = {
-      source                = "hashicorp/aws"
-      version               = ">= 3.1.15"
+      source  = "hashicorp/aws"
+      version = ">= 3.1.15"
     }
   }
 }
@@ -25,7 +25,7 @@ module "labels" {
 #Module      : IAM ROLE
 #Description : Provides an IAM role.
 resource "aws_iam_role" "fargate_role" {
-  count    = var.enabled && var.fargate_enabled ? 1 : 0
+  count = var.enabled && var.fargate_enabled ? 1 : 0
 
   name               = format("%s-fargate-role", module.labels.id)
   assume_role_policy = join("", data.aws_iam_policy_document.aws_eks_fargate_policy.*.json)
@@ -33,7 +33,7 @@ resource "aws_iam_role" "fargate_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_fargate_pod_execution_role_policy" {
-  count    = var.enabled && var.fargate_enabled ? 1 : 0
+  count = var.enabled && var.fargate_enabled ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
   role       = join("", aws_iam_role.fargate_role.*.name)
@@ -45,14 +45,14 @@ resource "aws_eks_fargate_profile" "default" {
   for_each = var.enabled && var.fargate_enabled ? var.fargate_profiles : {}
 
   cluster_name           = var.cluster_name
-  fargate_profile_name   = format("%s-%s", module.labels.id, each.value.addon_name )
+  fargate_profile_name   = format("%s-%s", module.labels.id, each.value.addon_name)
   pod_execution_role_arn = aws_iam_role.fargate_role[0].arn
   subnet_ids             = var.subnet_ids
   tags                   = module.labels.tags
 
   selector {
     namespace = lookup(each.value, "namespace", "default")
-    labels    = lookup(each.value, "labels", null )
+    labels    = lookup(each.value, "labels", null)
   }
 }
 

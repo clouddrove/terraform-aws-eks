@@ -20,7 +20,7 @@ variable "environment" {
 
 variable "label_order" {
   type        = list(any)
-  default     = []
+  default     = ["name", "environment"]
   description = "Label order, e.g. `name`,`application`."
 }
 
@@ -90,8 +90,24 @@ variable "nodes_additional_security_group_ids" {
   description = "EKS additional node group ids"
 }
 variable "addons" {
-  type        = any
-  default     = []
+  type = any
+  default = [
+    {
+      addon_name        = "coredns"
+      addon_version     = "v1.10.1-eksbuild.2"
+      resolve_conflicts = "OVERWRITE"
+    },
+    {
+      addon_name        = "kube-proxy"
+      addon_version     = "v1.27.3-eksbuild.2"
+      resolve_conflicts = "OVERWRITE"
+    },
+    {
+      addon_name        = "vpc-cni"
+      addon_version     = "v1.13.4-eksbuild.1"
+      resolve_conflicts = "OVERWRITE"
+    },
+  ]
   description = "Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources."
 }
 
@@ -198,7 +214,7 @@ variable "public_access_cidrs" {
 
 variable "endpoint_private_access" {
   type        = bool
-  default     = false
+  default     = true
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false."
 }
 

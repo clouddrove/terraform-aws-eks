@@ -2,42 +2,37 @@ provider "aws" {
   region = local.region
 }
 locals {
-
-  name   = "clouddrove-eks"
-  region = "eu-west-1"
+  name        = "clouddrove-eks"
+  region      = "eu-west-1"
+  environment = "test"
+  label_order = ["name", "environment"]
   tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
   }
 }
 
 ################################################################################
-# VPC
+# VPC module call
 ################################################################################
-
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
 
   name        = "${local.name}-vpc"
-  environment = "test"
-  label_order = ["environment", "name"]
-
-  cidr_block = "10.10.0.0/16"
+  environment = local.environment
+  cidr_block  = "10.10.0.0/16"
 }
 
 ################################################################################
 # Subnets
 ################################################################################
-
 module "subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.0"
 
-  name        = "${local.name}-subnets"
-  environment = "test"
-  label_order = ["environment", "name"]
-  tags        = local.tags
-
+  name                = "${local.name}-subnets"
+  environment         = local.environment
+  tags                = local.tags
   nat_gateway_enabled = true
   availability_zones  = ["${local.region}a", "${local.region}b"]
   vpc_id              = module.vpc.vpc_id
@@ -45,7 +40,6 @@ module "subnets" {
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   type                = "public-private"
   igw_id              = module.vpc.igw_id
-
   public_inbound_acl_rules = [
     {
       rule_number = 100
@@ -64,7 +58,6 @@ module "subnets" {
       ipv6_cidr_block = "::/0"
     },
   ]
-
   public_outbound_acl_rules = [
     {
       rule_number = 100
@@ -83,7 +76,6 @@ module "subnets" {
       ipv6_cidr_block = "::/0"
     },
   ]
-
   private_inbound_acl_rules = [
     {
       rule_number = 100
@@ -102,7 +94,6 @@ module "subnets" {
       ipv6_cidr_block = "::/0"
     },
   ]
-
   private_outbound_acl_rules = [
     {
       rule_number = 100
@@ -124,17 +115,15 @@ module "subnets" {
 }
 
 ################################################################################
-# Keypair
+# Keypair module call
 ################################################################################
-
 module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.0"
 
-  name        = "${local.name}-key"
-  environment = "test"
-  label_order = ["name", "environment"]
-
+  name            = "${local.name}-key"
+  environment     = "test"
+  label_order     = ["name", "environment"]
   enable_key_pair = true
   public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDc4AjHFctUATtd5of4u9bJtTgkh9bKogSDjxc9QqbylRORxUa422jO+t1ldTVdyqDRKltxQCJb4v23HZc2kssU5uROxpiF2fzgiHXRduL+RtyOtY2J+rNUdCRmHz4WQySblYpgteIJZpVo2smwdek8xSpjoHXhgxxa9hb4pQQwyjtVGEdH8vdYwtxgPZgPVaJgHVeJgVmhjTf2VGTATaeR9txzHsEPxhe/n1y34mQjX0ygEX8x0RZzlGziD1ih3KPaIHcpTVSYYk4LOoMK38vEI67SIMomskKn4yU043s+t9ZriJwk2V9+oU6tJU/5E1rd0SskXUhTypc3/Znc/rkYtLe8s6Uy26LOrBFzlhnCT7YH1XbCv3rEO+Nn184T4BSHeW2up8UJ1SOEd+WzzynXczdXoQcBN2kaz4dYFpRXchsAB6ejZrbEq7wyZvutf11OiS21XQ67+30lEL2WAO4i95e4sI8AdgwJgzrqVcicr3ImE+BRDkndMn5k1LhNGqwMD3Iuoel84xvinPAcElDLiFmL3BJVA/53bAlUmWqvUGW9SL5JpLUmZgE6kp+Tps7D9jpooGGJKmqgJLkJTzAmTSJh0gea/rT5KwI4j169TQD9xl6wFqns4BdQ4dMKHQCgDx8LbEd96l9F9ruWwQ8EAZBe4nIEKTV9ri+04JVhSQ== hello@clouddrove.com"
 }
@@ -148,10 +137,8 @@ module "ssh" {
   version = "2.0.0"
 
   name        = "${local.name}-ssh"
-  environment = "test"
-  label_order = ["environment", "name"]
-
-  vpc_id = module.vpc.vpc_id
+  environment = local.environment
+  vpc_id      = module.vpc.vpc_id
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
     from_port   = 22
@@ -169,7 +156,6 @@ module "ssh" {
       description = "Allow Mongodb traffic."
     }
   ]
-
   ## EGRESS Rules
   new_sg_egress_rules_with_cidr_blocks = [{
     rule_count  = 1
@@ -194,10 +180,8 @@ module "http_https" {
   version = "2.0.0"
 
   name        = "${local.name}-http-https"
-  environment = "test"
-  label_order = ["name", "environment"]
-
-  vpc_id = module.vpc.vpc_id
+  environment = local.environment
+  vpc_id      = module.vpc.vpc_id
   ## INGRESS Rules
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
@@ -239,35 +223,25 @@ module "http_https" {
 }
 
 ################################################################################
-# EKS Module
+# EKS Module call
 ################################################################################
-
 module "eks" {
   source = "../.."
 
   name        = local.name
   environment = "test"
-  label_order = ["environment", "name"]
-  enabled     = true
 
   # EKS
-  kubernetes_version        = "1.27"
-  endpoint_private_access   = true
-  endpoint_public_access    = true
-  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-  oidc_provider_enabled     = true
-
+  kubernetes_version      = "1.27"
+  endpoint_private_access = true
+  endpoint_public_access  = true
   # Networking
   vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.subnets.private_subnet_id
   allowed_security_groups           = [module.ssh.security_group_id]
   eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
   allowed_cidr_blocks               = ["10.0.0.0/16"]
-
-
-  ################################################################################
-  # Self Managed Node Group
-  ################################################################################
+  # Self Managed Node Grou
   # Node Groups Defaults Values It will Work all Node Groups
   self_node_group_defaults = {
     subnet_ids = module.subnets.private_subnet_id
@@ -307,7 +281,6 @@ module "eks" {
       bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
       instance_type        = "t3.medium"
     }
-
     application = {
       name = "${module.eks.cluster_name}-application"
       instance_market_options = {
@@ -342,10 +315,7 @@ module "eks" {
     }
   }
 }
-
-################################################################################
 # Kubernetes provider configuration
-################################################################################
 data "aws_eks_cluster" "this" {
   name = module.eks.cluster_id
 }
