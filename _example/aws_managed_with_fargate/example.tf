@@ -244,7 +244,7 @@ module "kms" {
   label_order         = local.label_order
   enabled             = true
   description         = "KMS key for EBS of EKS nodes"
-  enable_key_rotation = false
+  enable_key_rotation = true
   policy              = data.aws_iam_policy_document.kms.json
 }
 
