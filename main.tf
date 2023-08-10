@@ -1,8 +1,6 @@
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
-#tfsec:ignore:aws-eks-no-public-cluster-access  ## To provide eks endpoint public access from local network
-#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr ## To provide eks endpoint public access from local network 
 
 module "labels" {
   source  = "clouddrove/labels/aws"
@@ -26,7 +24,8 @@ resource "aws_cloudwatch_log_group" "default" {
   kms_key_id        = join("", aws_kms_key.cloudwatch_log.*.arn)
 }
 
-
+#tfsec:ignore:aws-eks-no-public-cluster-access  ## To provide eks endpoint public access from local network
+#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr ## To provide eks endpoint public access from local network 
 resource "aws_eks_cluster" "default" {
   count                     = var.enabled ? 1 : 0
   name                      = module.labels.id
