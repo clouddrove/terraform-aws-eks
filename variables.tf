@@ -20,7 +20,7 @@ variable "environment" {
 
 variable "label_order" {
   type        = list(any)
-  default     = []
+  default     = ["name", "environment"]
   description = "Label order, e.g. `name`,`application`."
 }
 
@@ -58,7 +58,7 @@ variable "cluster_encryption_config_resources" {
 
 variable "enabled_cluster_log_types" {
   type        = list(string)
-  default     = []
+  default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   description = "A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]."
 }
 
@@ -76,7 +76,7 @@ variable "kubernetes_version" {
 
 variable "oidc_provider_enabled" {
   type        = bool
-  default     = false
+  default     = true
   description = "Create an IAM OIDC identity provider for the cluster, then you can create IAM roles to associate with a service account in the cluster, instead of using kiam or kube2iam. For more information, see https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html"
 }
 variable "eks_additional_security_group_ids" {
@@ -90,13 +90,24 @@ variable "nodes_additional_security_group_ids" {
   description = "EKS additional node group ids"
 }
 variable "addons" {
-  type = list(object({
-    addon_name               = string
-    addon_version            = string
-    resolve_conflicts        = string
-    service_account_role_arn = string
-  }))
-  default     = []
+  type = any
+  default = [
+    {
+      addon_name        = "coredns"
+      addon_version     = "v1.10.1-eksbuild.2"
+      resolve_conflicts = "OVERWRITE"
+    },
+    {
+      addon_name        = "kube-proxy"
+      addon_version     = "v1.27.3-eksbuild.2"
+      resolve_conflicts = "OVERWRITE"
+    },
+    {
+      addon_name        = "vpc-cni"
+      addon_version     = "v1.13.4-eksbuild.1"
+      resolve_conflicts = "OVERWRITE"
+    },
+  ]
   description = "Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources."
 }
 
@@ -163,6 +174,12 @@ variable "permissions_boundary" {
   description = "If provided, all IAM roles will be created with this permissions boundary attached."
 }
 
+variable "iam_role_additional_policies" {
+  description = "Additional policies to be added to the IAM role"
+  type        = map(string)
+  default     = {}
+}
+
 #---------------------------------------------------------Security_Group------------------------------------------------
 variable "allowed_security_groups" {
   type        = list(string)
@@ -197,7 +214,7 @@ variable "public_access_cidrs" {
 
 variable "endpoint_private_access" {
   type        = bool
-  default     = false
+  default     = true
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false."
 }
 
@@ -308,4 +325,18 @@ variable "schedules" {
   description = "Map of autoscaling group schedule to create"
   type        = map(any)
   default     = {}
+}
+
+##fargate profile
+
+variable "fargate_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether fargate profile is enabled or not"
+}
+
+variable "fargate_profiles" {
+  type        = map(any)
+  default     = {}
+  description = "The number of Fargate Profiles that would be created."
 }

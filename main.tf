@@ -1,6 +1,7 @@
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
+
 module "labels" {
   source  = "clouddrove/labels/aws"
   version = "1.3.0"
@@ -23,7 +24,8 @@ resource "aws_cloudwatch_log_group" "default" {
   kms_key_id        = join("", aws_kms_key.cloudwatch_log.*.arn)
 }
 
-
+#tfsec:ignore:aws-eks-no-public-cluster-access  ## To provide eks endpoint public access from local network
+#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr ## To provide eks endpoint public access from local network 
 resource "aws_eks_cluster" "default" {
   count                     = var.enabled ? 1 : 0
   name                      = module.labels.id
@@ -106,8 +108,8 @@ resource "aws_eks_addon" "cluster" {
   addon_name                  = each.key
   addon_version               = lookup(each.value, "addon_version", null)
   resolve_conflicts_on_create = lookup(each.value, "resolve_conflicts", null)
+  resolve_conflicts_on_update = lookup(each.value, "resolve_conflicts", null)
   service_account_role_arn    = lookup(each.value, "service_account_role_arn", null)
 
   tags = module.labels.tags
 }
-
