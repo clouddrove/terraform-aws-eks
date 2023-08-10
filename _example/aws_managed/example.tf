@@ -315,7 +315,7 @@ module "eks" {
       instance_types       = ["t3.medium"]
     }
   }
-  # -- Set this to `true` only when you have correct iam_user details.
+  
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
