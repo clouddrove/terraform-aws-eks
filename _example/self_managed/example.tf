@@ -2,10 +2,12 @@ provider "aws" {
   region = local.region
 }
 locals {
-  name        = "clouddrove-eks"
-  region      = "eu-west-1"
-  environment = "test"
-  label_order = ["name", "environment"]
+  name                  = "clouddrove-eks"
+  region                = "eu-west-1"
+  vpc_cidr_block        = module.vpc.vpc_cidr_block
+  additional_cidr_block = "172.16.0.0/16"
+  environment           = "test"
+  label_order           = ["name", "environment"]
   tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
   }
@@ -114,20 +116,6 @@ module "subnets" {
   ]
 }
 
-################################################################################
-# Keypair module call
-################################################################################
-module "keypair" {
-  source  = "clouddrove/keypair/aws"
-  version = "1.3.0"
-
-  name            = "${local.name}-key"
-  environment     = "test"
-  label_order     = ["name", "environment"]
-  enable_key_pair = true
-  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDc4AjHFctUATtd5of4u9bJtTgkh9bKogSDjxc9QqbylRORxUa422jO+t1ldTVdyqDRKltxQCJb4v23HZc2kssU5uROxpiF2fzgiHXRduL+RtyOtY2J+rNUdCRmHz4WQySblYpgteIJZpVo2smwdek8xSpjoHXhgxxa9hb4pQQwyjtVGEdH8vdYwtxgPZgPVaJgHVeJgVmhjTf2VGTATaeR9txzHsEPxhe/n1y34mQjX0ygEX8x0RZzlGziD1ih3KPaIHcpTVSYYk4LOoMK38vEI67SIMomskKn4yU043s+t9ZriJwk2V9+oU6tJU/5E1rd0SskXUhTypc3/Znc/rkYtLe8s6Uy26LOrBFzlhnCT7YH1XbCv3rEO+Nn184T4BSHeW2up8UJ1SOEd+WzzynXczdXoQcBN2kaz4dYFpRXchsAB6ejZrbEq7wyZvutf11OiS21XQ67+30lEL2WAO4i95e4sI8AdgwJgzrqVcicr3ImE+BRDkndMn5k1LhNGqwMD3Iuoel84xvinPAcElDLiFmL3BJVA/53bAlUmWqvUGW9SL5JpLUmZgE6kp+Tps7D9jpooGGJKmqgJLkJTzAmTSJh0gea/rT5KwI4j169TQD9xl6wFqns4BdQ4dMKHQCgDx8LbEd96l9F9ruWwQ8EAZBe4nIEKTV9ri+04JVhSQ== hello@clouddrove.com"
-}
-
 # ################################################################################
 # Security Groups
 ################################################################################
@@ -144,7 +132,7 @@ module "ssh" {
     from_port   = 22
     protocol    = "tcp"
     to_port     = 22
-    cidr_blocks = [module.vpc.vpc_cidr_block, "172.16.0.0/16"]
+    cidr_blocks = [module.vpc.vpc_cidr_block, local.additional_cidr_block]
     description = "Allow ssh traffic."
     },
     {
@@ -152,7 +140,7 @@ module "ssh" {
       from_port   = 27017
       protocol    = "tcp"
       to_port     = 27017
-      cidr_blocks = ["172.16.0.0/16"]
+      cidr_blocks = [local.additional_cidr_block]
       description = "Allow Mongodb traffic."
     }
   ]
@@ -162,7 +150,7 @@ module "ssh" {
     from_port   = 22
     protocol    = "tcp"
     to_port     = 22
-    cidr_blocks = [module.vpc.vpc_cidr_block, "172.16.0.0/16"]
+    cidr_blocks = [module.vpc.vpc_cidr_block, local.additional_cidr_block]
     description = "Allow ssh outbound traffic."
     },
     {
@@ -170,7 +158,7 @@ module "ssh" {
       from_port   = 27017
       protocol    = "tcp"
       to_port     = 27017
-      cidr_blocks = ["172.16.0.0/16"]
+      cidr_blocks = [local.additional_cidr_block]
       description = "Allow Mongodb outbound traffic."
   }]
 }
@@ -240,12 +228,12 @@ module "eks" {
   subnet_ids                        = module.subnets.private_subnet_id
   allowed_security_groups           = [module.ssh.security_group_id]
   eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
-  allowed_cidr_blocks               = ["10.0.0.0/16"]
+  allowed_cidr_blocks               = [local.vpc_cidr_block]
+
   # Self Managed Node Grou
   # Node Groups Defaults Values It will Work all Node Groups
   self_node_group_defaults = {
     subnet_ids = module.subnets.private_subnet_id
-    key_name   = module.keypair.name
     propagate_tags = [{
       key                 = "aws-node-termination-handler/managed"
       value               = true
