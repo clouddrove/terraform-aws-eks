@@ -302,7 +302,7 @@ module "eks" {
       min_size       = 1
       max_size       = 2
       desired_size   = 2
-      instance_types = ["t3.medium"]    
+      instance_types = ["t3.medium"]
     }
 
     application = {
@@ -315,7 +315,7 @@ module "eks" {
       instance_types       = ["t3.medium"]
     }
   }
-  
+
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
