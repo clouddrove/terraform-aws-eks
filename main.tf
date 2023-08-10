@@ -1,6 +1,9 @@
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
+#tfsec:ignore:aws-eks-no-public-cluster-access  ## To provide eks endpoint public access from local network
+#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr ## To provide eks endpoint public access from local network 
+
 module "labels" {
   source  = "clouddrove/labels/aws"
   version = "1.3.0"

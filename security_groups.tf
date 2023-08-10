@@ -1,6 +1,7 @@
-
 #Module      : SECURITY GROUP
 #Description : Provides a security group resource.
+#tfsec:ignore:aws-ec2-no-public-egress-sgr ## To allow all outbound traffic from eks nodes.
+
 resource "aws_security_group" "node_group" {
   count       = var.enabled ? 1 : 0
   name        = "${module.labels.id}-node-group"
