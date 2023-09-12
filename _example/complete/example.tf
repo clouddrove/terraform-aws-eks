@@ -44,6 +44,9 @@ module "subnets" {
   type                = "public-private"
   igw_id              = module.vpc.igw_id
 
+  extra_public_tags  = { "kubernetes.io/role/elb" = "1" }
+  extra_private_tags = { "kubernetes.io/role/internal-elb" = "1" }
+
   public_inbound_acl_rules = [
     {
       rule_number = 100

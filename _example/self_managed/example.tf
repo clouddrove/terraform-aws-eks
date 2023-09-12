@@ -42,6 +42,10 @@ module "subnets" {
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   type                = "public-private"
   igw_id              = module.vpc.igw_id
+
+  extra_public_tags  = { "kubernetes.io/role/elb" = "1" }
+  extra_private_tags = { "kubernetes.io/role/internal-elb" = "1" }
+
   public_inbound_acl_rules = [
     {
       rule_number = 100
