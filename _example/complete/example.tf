@@ -34,7 +34,6 @@ module "subnets" {
 
   name        = "${local.name}-subnets"
   environment = local.environment
-  tags        = local.tags
 
   nat_gateway_enabled = true
   availability_zones  = ["${local.region}a", "${local.region}b"]
@@ -43,6 +42,16 @@ module "subnets" {
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   type                = "public-private"
   igw_id              = module.vpc.igw_id
+
+  extra_public_tags = {
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                           = "1"
+  }
+
+  extra_private_tags = {
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"                  = "1"
+  }
 
   public_inbound_acl_rules = [
     {

@@ -46,6 +46,16 @@ module "subnets" {
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   enable_ipv6         = false
 
+  extra_public_tags = {
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
+    "kubernetes.io/role/elb"                           = "1"
+  }
+
+  extra_private_tags = {
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
+    "kubernetes.io/role/internal-elb"                  = "1"
+  }
+
   public_inbound_acl_rules = [
     {
       rule_number = 100
