@@ -8,9 +8,6 @@ locals {
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"
   label_order           = ["name", "environment"]
-  tags = {
-    "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
-  }
 }
 
 ################################################################################

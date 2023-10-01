@@ -75,24 +75,6 @@ variable "cluster_auth_base64" {
   default     = ""
 }
 
-variable "cluster_service_ipv4_cidr" {
-  type        = string
-  default     = null
-  description = "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"
-}
-
-variable "pre_bootstrap_user_data" {
-  type        = string
-  default     = ""
-  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
-}
-
-variable "post_bootstrap_user_data" {
-  type        = string
-  default     = ""
-  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
-}
-
 variable "bootstrap_extra_args" {
   type        = string
   default     = ""
@@ -410,18 +392,6 @@ variable "warm_pool" {
   description = "If this block is configured, add a Warm Pool to the specified Auto Scaling group"
   type        = any
   default     = null
-}
-
-variable "delete_timeout" {
-  description = "Delete timeout to wait for destroying autoscaling group"
-  type        = string
-  default     = null
-}
-
-variable "propagate_tags" {
-  description = "A list of tag blocks. Each element should have keys named `key`, `value`, and `propagate_at_launch`"
-  type        = list(map(string))
-  default     = []
 }
 
 #-----------------------------------------------TimeOuts----------------------------------------------------------------
