@@ -8,5 +8,5 @@ jobs:
     secrets:
       GITHUB: ${{ secrets.GITHUB }}
     with:
-      tfcheck: 'tf-checks-aws-managed-example / Get min/max versions'
+      tfcheck: 'tf-checks-aws-managed-example / Check code format / Get min/max versions'
 ...
