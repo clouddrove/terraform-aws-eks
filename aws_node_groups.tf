@@ -5,12 +5,12 @@ module "eks_managed_node_group" {
 
   enabled = try(each.value.enabled, true)
 
-  cluster_name    = join("", aws_eks_cluster.default.*.name)
+  cluster_name    = join("", aws_eks_cluster.default[*].name)
   cluster_version = var.kubernetes_version
   vpc_security_group_ids = compact(
     concat(
-      aws_security_group.node_group.*.id,
-      aws_eks_cluster.default.*.vpc_config.0.cluster_security_group_id,
+      aws_security_group.node_group[*].id,
+      aws_eks_cluster.default[*].vpc_config.0.cluster_security_group_id,
       var.nodes_additional_security_group_ids
 
     )
@@ -72,7 +72,7 @@ module "eks_managed_node_group" {
   placement                          = try(each.value.placement, var.managed_node_group_defaults.placement, null)
 
   # IAM role
-  iam_role_arn = join("", aws_iam_role.node_groups.*.arn)
+  iam_role_arn = join("", aws_iam_role.node_groups[*].arn)
 
   tags = merge(var.tags, try(each.value.tags, var.managed_node_group_defaults.tags, {}))
 }
