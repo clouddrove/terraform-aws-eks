@@ -30,10 +30,6 @@ badges:
 
 # Prerequesties to display
 prerequesties:
-  - name: "Kubectl"
-    url: "https://kubernetes.io/docs/tasks/tools/install-kubectl/"
-  - name: "AWS IAM Authenticator"
-    url: "https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html"
   - name: Terraform
     url: https://learn.hashicorp.com/terraform/getting-started/install.html
     version: ">= 1.5.4"
@@ -43,15 +39,9 @@ providers:
     url: https://aws.amazon.com/
     version: ">= 5.11.0"
 
-
-
 #  description of this project
 description: |-
   Terraform module will be created Autoscaling, Workers, EKS, Node Groups.
-
-# extra content
-include:
-  - "terraform.md"
 
 # How to use this project
 usage : |-
