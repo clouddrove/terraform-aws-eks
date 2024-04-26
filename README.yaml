@@ -18,9 +18,15 @@ badges:
   - name: "Terraform"
     image: "https://img.shields.io/badge/Terraform-v0.13-green"
     url: "https://www.terraform.io"
+  - name: "tfsec"
+    image: "https://github.com/clouddrove/terraform-aws-eks/actions/workflows/tfsec.yml/badge.svg"
+    url: "https://github.com/clouddrove/terraform-aws-eks/actions/workflows/tfsec.yml"
   - name: "Licence"
-    image: "https://img.shields.io/badge/License-MIT-blue.svg"
+    image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
+  - name: "Changelog"
+    image: "https://img.shields.io/badge/Changelog-blue"
+    url: "CHANGELOG.md"
 
 # Prerequesties to display
 prerequesties:
@@ -28,6 +34,15 @@ prerequesties:
     url: "https://kubernetes.io/docs/tasks/tools/install-kubectl/"
   - name: "AWS IAM Authenticator"
     url: "https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html"
+  - name: Terraform
+    url: https://learn.hashicorp.com/terraform/getting-started/install.html
+    version: ">= 1.5.4"
+
+providers:
+  - name: aws
+    url: https://aws.amazon.com/
+    version: ">= 5.11.0"
+
 
 
 #  description of this project
