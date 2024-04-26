@@ -8,12 +8,12 @@ jobs:
   tf-checks-aws-managed-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.9
     with:
-      working_directory: './_example/aws_managed/'
+      working_directory: './examples/aws_managed/'
   tf-checks-complete-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.9
     with:
-      working_directory: './_example/complete/'
+      working_directory: './examples/complete/'
   tf-checks-self-managed-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.9
     with:
-      working_directory: './_example/self_managed/'
+      working_directory: './examples/self_managed/'
