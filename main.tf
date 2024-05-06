@@ -77,7 +77,7 @@ resource "aws_eks_cluster" "default" {
     }
   }
 
-  tags                      = merge(
+  tags = merge(
     module.labels.tags,
     var.eks_tags
   )
