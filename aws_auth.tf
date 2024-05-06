@@ -38,7 +38,7 @@ locals {
   # Note that we don't need to do this for managed Node Groups since EKS adds their roles to the ConfigMap automatically
   map_worker_roles = [
     {
-      rolearn : join("", aws_iam_role.node_groups.*.arn)
+      rolearn : aws_iam_role.node_groups.0.arn
       username : "system:node:{{EC2PrivateDNSName}}"
       groups : [
         "system:bootstrappers",
@@ -53,7 +53,7 @@ data "template_file" "kubeconfig" {
   template = file("${path.module}/kubeconfig.tpl")
 
   vars = {
-    server                     = join("", aws_eks_cluster.default.*.endpoint)
+    server                     = aws_eks_cluster.default[0].endpoint
     certificate_authority_data = local.certificate_authority_data
     cluster_name               = module.labels.id
   }
@@ -88,9 +88,9 @@ data "aws_eks_cluster_auth" "eks" {
 }
 
 provider "kubernetes" {
-  token                  = join("", data.aws_eks_cluster_auth.eks.*.token)
-  host                   = join("", data.aws_eks_cluster.eks.*.endpoint)
-  cluster_ca_certificate = base64decode(join("", data.aws_eks_cluster.eks.*.certificate_authority.0.data))
+  token                  = data.aws_eks_cluster_auth.eks[0].token
+  host                   = data.aws_eks_cluster.eks[0].endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks[0].certificate_authority.0.data)
 }
 
 resource "kubernetes_config_map" "aws_auth_ignore_changes" {
