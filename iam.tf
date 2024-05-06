@@ -17,7 +17,7 @@ resource "aws_iam_role" "default" {
   count = var.enabled ? 1 : 0
 
   name                 = module.labels.id
-  assume_role_policy   = join("", data.aws_iam_policy_document.assume_role.*.json)
+  assume_role_policy   = data.aws_iam_policy_document.assume_role[0].json
   permissions_boundary = var.permissions_boundary
 
   tags = module.labels.tags
@@ -25,14 +25,14 @@ resource "aws_iam_role" "default" {
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
   count      = var.enabled ? 1 : 0
-  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSClusterPolicy", join("", data.aws_partition.current.*.partition))
-  role       = join("", aws_iam_role.default.*.name)
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSClusterPolicy", data.aws_partition.current.partition)
+  role       = aws_iam_role.default[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
   count      = var.enabled ? 1 : 0
-  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSServicePolicy", join("", data.aws_partition.current.*.partition))
-  role       = join("", aws_iam_role.default.*.name)
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSServicePolicy", data.aws_partition.current.partition)
+  role       = aws_iam_role.default[0].name
 }
 
 data "aws_iam_policy_document" "service_role" {
@@ -51,11 +51,10 @@ data "aws_iam_policy_document" "service_role" {
   }
 }
 
-
 resource "aws_iam_role_policy" "service_role" {
   count  = var.enabled ? 1 : 0
-  role   = join("", aws_iam_role.default.*.name)
-  policy = join("", data.aws_iam_policy_document.service_role.*.json)
+  role   = aws_iam_role.default[0].name
+  policy = data.aws_iam_policy_document.service_role[0].json
 
   name = module.labels.id
 
@@ -69,7 +68,7 @@ resource "aws_iam_role_policy" "service_role" {
 resource "aws_iam_role" "node_groups" {
   count              = var.enabled ? 1 : 0
   name               = "${module.labels.id}-node_group"
-  assume_role_policy = join("", data.aws_iam_policy_document.node_group.*.json)
+  assume_role_policy = data.aws_iam_policy_document.node_group[0].json
   tags               = module.labels.tags
 }
 
@@ -78,14 +77,14 @@ resource "aws_iam_role" "node_groups" {
 resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
   count      = var.enabled ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = join("", aws_iam_role.node_groups.*.name)
+  role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "additional" {
   for_each = { for k, v in var.iam_role_additional_policies : k => v if var.enabled }
 
   policy_arn = each.value
-  role       = join("", aws_iam_role.node_groups.*.name)
+  role       = aws_iam_role.node_groups[0].name
 }
 
 #Module      : IAM ROLE POLICY ATTACHMENT EC2 CONTAINER REGISTRY READ ONLY
@@ -93,38 +92,38 @@ resource "aws_iam_role_policy_attachment" "additional" {
 resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
   count      = var.enabled ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = join("", aws_iam_role.node_groups.*.name)
+  role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_policy" "amazon_eks_node_group_autoscaler_policy" {
   count  = var.enabled ? 1 : 0
   name   = format("%s-node-group-policy", module.labels.id)
-  policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
+  policy = data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_node_group_autoscaler_policy" {
   count      = var.enabled ? 1 : 0
-  policy_arn = join("", aws_iam_policy.amazon_eks_node_group_autoscaler_policy.*.arn)
-  role       = join("", aws_iam_role.node_groups.*.name)
+  policy_arn = aws_iam_policy.amazon_eks_node_group_autoscaler_policy[0].arn
+  role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_policy" "amazon_eks_worker_node_autoscaler_policy" {
   count  = var.enabled ? 1 : 0
   name   = "${module.labels.id}-autoscaler"
   path   = "/"
-  policy = join("", data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy.*.json)
+  policy = data.aws_iam_policy_document.amazon_eks_node_group_autoscaler_policy[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_autoscaler_policy" {
   count      = var.enabled ? 1 : 0
-  policy_arn = join("", aws_iam_policy.amazon_eks_worker_node_autoscaler_policy.*.arn)
-  role       = join("", aws_iam_role.node_groups.*.name)
+  policy_arn = aws_iam_policy.amazon_eks_worker_node_autoscaler_policy[0].arn
+  role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
   count      = var.enabled ? 1 : 0
   policy_arn = format("%s/%s", local.aws_policy_prefix, "AmazonEKSWorkerNodePolicy")
-  role       = join("", aws_iam_role.node_groups.*.name)
+  role       = aws_iam_role.node_groups[0].name
 }
 
 data "aws_iam_policy_document" "node_group" {
@@ -167,5 +166,5 @@ data "aws_iam_policy_document" "amazon_eks_node_group_autoscaler_policy" {
 resource "aws_iam_instance_profile" "default" {
   count = var.enabled ? 1 : 0
   name  = format("%s-instance-profile", module.labels.id)
-  role  = join("", aws_iam_role.node_groups.*.name)
+  role  = aws_iam_role.node_groups[0].name
 }

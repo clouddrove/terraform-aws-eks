@@ -17,7 +17,7 @@ module "self_managed_node_group" {
 
   enabled = try(each.value.enabled, true)
 
-  cluster_name = join("", aws_eks_cluster.default.*.name)
+  cluster_name = aws_eks_cluster.default[0].name
   security_group_ids = compact(
     concat(
       aws_security_group.node_group.*.id,
@@ -25,7 +25,7 @@ module "self_managed_node_group" {
     )
   )
 
-  iam_instance_profile_arn = join("", aws_iam_instance_profile.default.*.arn)
+  iam_instance_profile_arn = aws_iam_instance_profile.default[0].arn
 
   # Autoscaling Group
   name        = try(each.value.name, each.key)
