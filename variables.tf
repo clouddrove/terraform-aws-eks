@@ -42,6 +42,11 @@ variable "tags" {
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
+variable "eks_tags" {
+  type        = map(any)
+  default     = {}
+  description = "Additional tags for EKS Cluster only."
+}
 
 variable "enabled" {
   type        = bool
