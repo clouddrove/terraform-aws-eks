@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2024-05-07
+### :sparkles: New Features
+- [`965397c`](https://github.com/clouddrove/terraform-aws-eks/commit/965397c8d9fbe80d079dc4134b028b16c60da607) - update github-action version and added automerge file *(PR [#61](https://github.com/clouddrove/terraform-aws-eks/pull/61) by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`cfd2b41`](https://github.com/clouddrove/terraform-aws-eks/commit/cfd2b411629688901588c768c59c93be8447b773) - updated example path and readme paramters *(commit by [@Tanveer143s](https://github.com/Tanveer143s))*
+
+### :bug: Bug Fixes
+- [`5268f7c`](https://github.com/clouddrove/terraform-aws-eks/commit/5268f7ca95d02aa1639fa8a4a6f1af836ab95973) - Update kubernetes provider name and tag. *(PR [#64](https://github.com/clouddrove/terraform-aws-eks/pull/64) by [@nileshgadgi](https://github.com/nileshgadgi))*
+
+### :memo: Documentation Changes
+- [`9824ae1`](https://github.com/clouddrove/terraform-aws-eks/commit/9824ae1dff440241a1d975b866795d27b000e444) - update CHANGELOG.md for 1.4.0 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.4.0] - 2023-09-18
 ### :sparkles: New Features
 - [`416b3a6`](https://github.com/clouddrove/terraform-aws-eks/commit/416b3a69851bd662faa42ddda561331df3f12c11) - added default eks addons *(commit by [@h1manshu98](https://github.com/h1manshu98))*
@@ -108,3 +120,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.1]: https://github.com/clouddrove/terraform-aws-eks/releases/tag/1.0.1
 [0.15.2]: https://github.com/clouddrove/terraform-aws-eks/releases/tag/0.15.2
 [1.4.0]: https://github.com/clouddrove/terraform-aws-eks/compare/1.3.0...1.4.0
+[1.4.1]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.0...1.4.1
