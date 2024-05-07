@@ -109,7 +109,7 @@ variable "ebs_optimized" {
 
 variable "instance_type" {
   type        = string
-  default     = ""
+  default     = "t3.medium"
   description = "The type of the instance to launch"
 }
 

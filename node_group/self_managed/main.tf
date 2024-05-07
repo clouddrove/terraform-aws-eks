@@ -58,10 +58,10 @@ resource "aws_launch_template" "this" {
   name  = module.labels.id
 
   ebs_optimized                        = var.ebs_optimized
-  image_id                             = join("", data.aws_ami.eks_default.*.image_id)
+  image_id                             = data.aws_ami.eks_default[0].image_id
   instance_type                        = var.instance_type
   key_name                             = var.key_name
-  user_data                            = base64encode(join("", data.template_file.userdata.*.rendered))
+  user_data                            = base64encode(data.template_file.userdata[0].rendered)
   disable_api_termination              = var.disable_api_termination
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
   kernel_id                            = var.kernel_id
@@ -253,8 +253,8 @@ resource "aws_autoscaling_group" "this" {
     for_each = var.use_mixed_instances_policy ? [] : [1]
 
     content {
-      name    = join("", aws_launch_template.this.*.name)
-      version = join("", aws_launch_template.this.*.latest_version)
+      name    = aws_launch_template.this[0].name
+      version = aws_launch_template.this[0].latest_version
     }
   }
 
@@ -333,8 +333,8 @@ resource "aws_autoscaling_group" "this" {
 
       launch_template {
         launch_template_specification {
-          launch_template_name = join("", aws_launch_template.this.*.name)
-          version              = join("", aws_launch_template.this.*.latest_version)
+          launch_template_name = aws_launch_template.this[0].name
+          version              = aws_launch_template.this[0].latest_version
         }
 
         dynamic "override" {
@@ -392,7 +392,7 @@ resource "aws_autoscaling_schedule" "this" {
   for_each = var.enabled && var.create_schedule ? var.schedules : {}
 
   scheduled_action_name  = each.key
-  autoscaling_group_name = join("", aws_autoscaling_group.this.*.name)
+  autoscaling_group_name = aws_autoscaling_group.this[0].name
 
   min_size         = lookup(each.value, "min_size", null)
   max_size         = lookup(each.value, "max_size", null)
