@@ -74,7 +74,7 @@ resource "null_resource" "wait_for_cluster" {
 
 data "aws_eks_cluster" "eks" {
   count = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
-  name  = module.labels.id
+  name  = aws_eks_cluster.default[0].id
 }
 
 # Get an authentication token to communicate with the EKS cluster.
