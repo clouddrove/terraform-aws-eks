@@ -84,7 +84,7 @@ data "aws_eks_cluster" "eks" {
 # https://www.terraform.io/docs/providers/aws/d/eks_cluster_auth.html
 data "aws_eks_cluster_auth" "eks" {
   count = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
-  name  = module.labels.id
+  name  = aws_eks_cluster.default[0].id
 }
 
 provider "kubernetes" {
