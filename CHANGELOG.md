@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2024-09-04
+### :sparkles: New Features
+- [`fa4ad11`](https://github.com/clouddrove/terraform-aws-eks/commit/fa4ad11ba153ee8c652943908999a1f4ee4ea30a) - updated branch name in uses of workflow *(PR [#65](https://github.com/clouddrove/terraform-aws-eks/pull/65) by [@rakeshclouddevops](https://github.com/rakeshclouddevops))*
+
+### :bug: Bug Fixes
+- [`a48263e`](https://github.com/clouddrove/terraform-aws-eks/commit/a48263e285534befc17e6556bcf042688dccab00) - fix data block, data block was calling before eks cluster creation *(PR [#66](https://github.com/clouddrove/terraform-aws-eks/pull/66) by [@nileshgadgi](https://github.com/nileshgadgi))*
+
+### :memo: Documentation Changes
+- [`afab46b`](https://github.com/clouddrove/terraform-aws-eks/commit/afab46b2a83c4dd72d9a940881cc2cb5aa4a82bb) - update CHANGELOG.md for 1.4.1 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.4.1] - 2024-05-07
 ### :sparkles: New Features
 - [`965397c`](https://github.com/clouddrove/terraform-aws-eks/commit/965397c8d9fbe80d079dc4134b028b16c60da607) - update github-action version and added automerge file *(PR [#61](https://github.com/clouddrove/terraform-aws-eks/pull/61) by [@theprashantyadav](https://github.com/theprashantyadav))*
@@ -121,3 +132,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.15.2]: https://github.com/clouddrove/terraform-aws-eks/releases/tag/0.15.2
 [1.4.0]: https://github.com/clouddrove/terraform-aws-eks/compare/1.3.0...1.4.0
 [1.4.1]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.0...1.4.1
+[1.4.2]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.1...1.4.2
