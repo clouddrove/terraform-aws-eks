@@ -20,8 +20,8 @@ module "self_managed_node_group" {
   cluster_name = aws_eks_cluster.default[0].name
   security_group_ids = compact(
     concat(
-      aws_security_group.node_group.*.id,
-      aws_eks_cluster.default.*.vpc_config.0.cluster_security_group_id
+      aws_security_group.node_group.[*].id,
+      aws_eks_cluster.default.[*].vpc_config.0.cluster_security_group_id
     )
   )
 
