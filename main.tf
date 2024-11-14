@@ -91,15 +91,15 @@ resource "aws_eks_cluster" "default" {
 
 data "tls_certificate" "cluster" {
   count = var.enabled && var.oidc_provider_enabled ? 1 : 0
-  url   = aws_eks_cluster.default[0].identity.0.oidc.0.issuer
+  url   = aws_eks_cluster.default[0].identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "default" {
   count = var.enabled && var.oidc_provider_enabled ? 1 : 0
-  url   = aws_eks_cluster.default[0].identity.0.oidc.0.issuer
+  url   = aws_eks_cluster.default[0].identity[0].oidc[0].issuer
 
   client_id_list  = distinct(compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences)))
-  thumbprint_list = [data.tls_certificate.cluster[0].certificates.0.sha1_fingerprint]
+  thumbprint_list = [data.tls_certificate.cluster[0].certificates[0].sha1_fingerprint]
   tags            = module.labels.tags
 }
 
