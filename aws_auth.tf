@@ -29,7 +29,7 @@
 
 
 locals {
-  certificate_authority_data_list          = coalescelist([for cert in aws_eks_cluster.default : cert.certificate_authority], [{ data : "" }])`  certificate_authority_data_list_internal = local.certificate_authority_data_list[0]
+  certificate_authority_data_list          = coalescelist(aws_eks_cluster.default.[*].certificate_authority, [[{ data : "" }]])
   certificate_authority_data_map           = local.certificate_authority_data_list_internal[0]
   certificate_authority_data               = local.certificate_authority_data_map["data"]
 
@@ -37,7 +37,7 @@ locals {
   # Note that we don't need to do this for managed Node Groups since EKS adds their roles to the ConfigMap automatically
   map_worker_roles = [
     {
-      rolearn : aws_iam_role.node_groups.[0].arn
+      rolearn : aws_iam_role.node_groups[0].arn
       username : "system:node:{{EC2PrivateDNSName}}"
       groups : [
         "system:bootstrappers",
