@@ -2,7 +2,6 @@
 terraform {
   required_version = ">= 1.5.4"
   kubernetes = ">= 2.33.0"
-  }
 
   required_providers {
     aws = {
