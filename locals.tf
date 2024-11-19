@@ -11,5 +11,5 @@ locals {
     count    = var.enabled ? 1 : 0
     filename = "${path.module}/kubeconfig_generated"
     content  = data.template_file.kubeconfig[0].rendered
-}
+  }
 }
