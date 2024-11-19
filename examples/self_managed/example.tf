@@ -50,6 +50,7 @@ module "subnets" {
   extra_private_tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"                  = "1"
+  tags = local.tags
   }
 
   public_inbound_acl_rules = [
@@ -237,7 +238,7 @@ module "eks" {
   vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.subnets.private_subnet_id
   allowed_security_groups           = [module.ssh.security_group_id]
-  eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
+  eks_additional_security_group_ids = [module.ssh.security_group_id , module.http_https.security_group_id]
   allowed_cidr_blocks               = [local.vpc_cidr_block]
 
   # Self Managed Node Grou
