@@ -7,4 +7,8 @@ locals {
   aws_policy_prefix             = format("arn:%s:iam::aws:policy", data.aws_partition.current.partition)
   create_outposts_local_cluster = length(var.outpost_config) > 0
 
+  resource "local_file" "kubeconfig" {
+    count    = var.enabled ? 1 : 0
+    filename = "${path.module}/kubeconfig_generated"
+    content  = data.template_file.kubeconfig[0].rendered
 }

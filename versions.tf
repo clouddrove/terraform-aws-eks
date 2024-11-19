@@ -19,5 +19,9 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">= 2.33.0" # Update to the minimum required version
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = ">= 4.0.6" # Specify the appropriate version
+    }
   }
 }
