@@ -51,7 +51,6 @@ module "subnets" {
   extra_private_tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"                  = "1"
-
   tags = local.tags
   }
 
