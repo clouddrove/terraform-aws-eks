@@ -1,11 +1,13 @@
-provider "aws" {
-  region = local.region
-  kubernetes {
+terraform {
+  required_version = ">= 1.5.4"
+  kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.33.0" # Specify the appropriate version
     }
+  }
+provider "aws" {
+  region = local.region
 }
-
 locals {
   name                  = "clouddrove-eks"
   region                = "eu-west-1"
