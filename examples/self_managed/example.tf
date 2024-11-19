@@ -41,6 +41,7 @@ module "subnets" {
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   type                = "public-private"
   igw_id              = module.vpc.igw_id
+  label_order         = local.label_order
 
   extra_public_tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
@@ -51,6 +52,7 @@ module "subnets" {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"                  = "1"
   tags = local.tags
+
   }
 
   public_inbound_acl_rules = [
