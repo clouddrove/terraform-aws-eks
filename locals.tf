@@ -12,3 +12,4 @@ locals {
     filename = "${path.module}/kubeconfig_generated"
     content  = data.template_file.kubeconfig[0].rendered
 }
+}
