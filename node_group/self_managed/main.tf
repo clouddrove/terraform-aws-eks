@@ -1,7 +1,7 @@
 locals {
   self_managed_node_group_default_tags = {
-    "Name"                                      = "${module.labels.id}"
-    "Environment"                               = "${var.environment}"
+    "Name"                                      = [module.labels.id]
+    "Environment"                               = [var.environment]
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     "k8s.io/cluster/${var.cluster_name}"        = "owned"
   }
