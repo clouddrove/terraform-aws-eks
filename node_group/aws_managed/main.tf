@@ -40,7 +40,8 @@ resource "aws_launch_template" "this" {
   disable_api_termination = var.disable_api_termination
   kernel_id               = var.kernel_id
   ram_disk_id             = var.ram_disk_id
-  default_version = var.launch_template_default_version 
+  default_version = var.update_launch_template_default_version ? var.launch_template_default_version : null
+
 
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings
