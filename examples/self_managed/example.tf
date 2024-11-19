@@ -1,6 +1,11 @@
 provider "aws" {
   region = local.region
+  kubernetes {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.33.0" # Specify the appropriate version
+    }
 }
+
 locals {
   name                  = "clouddrove-eks"
   region                = "eu-west-1"
