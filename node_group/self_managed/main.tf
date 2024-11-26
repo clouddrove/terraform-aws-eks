@@ -35,8 +35,6 @@ data "template_file" "userdata" {
     post_bootstrap_user_data   = var.post_bootstrap_user_data
     delete_timeout             = var.delete_timeout
     propagate_tags             = var.propagate_tags
-
-
   }
 }
 #Module      : label
