@@ -51,7 +51,6 @@ module "subnets" {
   extra_private_tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"                  = "1"
-  tags = local.tags
   }
 
   public_inbound_acl_rules = [
@@ -269,6 +268,7 @@ module "eks" {
   name        = local.name
   environment = local.environment
   enabled     = true
+  tags = local.tags
 
   kubernetes_version      = "1.27"
   endpoint_private_access = true

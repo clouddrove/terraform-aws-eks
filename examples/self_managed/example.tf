@@ -1,9 +1,5 @@
 terraform {
   required_version = ">= 1.5.4"
-  kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.33.0" # Specify the appropriate version
-    }
   }
 provider "aws" {
   region = local.region
@@ -58,8 +54,6 @@ module "subnets" {
   extra_private_tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"                  = "1"
-  tags = local.tags
-
   }
 
   public_inbound_acl_rules = [
@@ -238,6 +232,9 @@ module "eks" {
 
   name        = local.name
   environment = "test"
+  tags = local.tags
+
+data "aws_caller_identity" "current" {}
 
   # EKS
   kubernetes_version      = "1.27"
@@ -262,8 +259,6 @@ module "eks" {
       {
         key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
         value               = "owned"
-        propagate_at_launch = true
-
       }
     ]
 

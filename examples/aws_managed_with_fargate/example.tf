@@ -54,7 +54,6 @@ module "subnets" {
   extra_private_tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
     "kubernetes.io/role/internal-elb"                  = "1"
-  tags = local.tags
   }
 
   public_inbound_acl_rules = [
@@ -273,6 +272,7 @@ module "eks" {
   name        = local.name
   environment = local.environment
   label_order = local.label_order
+  tags = local.tags
 
   # EKS
   kubernetes_version     = "1.27"

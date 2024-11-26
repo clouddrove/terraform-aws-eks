@@ -20,6 +20,7 @@ module "labels" {
   delimiter   = var.delimiter
   attributes  = compact(concat(var.attributes, ["fargate"]))
   label_order = var.label_order
+  tags        = var.tags
 }
 
 

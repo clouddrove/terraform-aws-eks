@@ -15,13 +15,9 @@ terraform {
       source  = "hashicorp/template"
       version = ">= 2.2.0"
     }
-    null = {
-      source  = "hashicorp/null"
-      version = ">= 3.0.0"
-    }
     tls = {
-      source = "hashicorp/tls"
-      version = "~> 4.0" # Or specify the version you want to use
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
     }
   }
 }

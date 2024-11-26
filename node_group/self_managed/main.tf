@@ -7,10 +7,6 @@ locals {
   }
 }
 
-data "aws_partition" "current" {}
-
-data "aws_caller_identity" "current" {}
-
 
 #AMI AMAZON LINUX
 data "aws_ami" "eks_default" {
@@ -34,6 +30,12 @@ data "template_file" "userdata" {
     certificate_authority_data = var.cluster_auth_base64
     cluster_name               = var.cluster_name
     bootstrap_extra_args       = var.bootstrap_extra_args
+    cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
+    pre_bootstrap_user_data    = var.pre_bootstrap_user_data
+    post_bootstrap_user_data   = var.post_bootstrap_user_data
+    delete_timeout             = var.delete_timeout
+    propagate_tags             = var.propagate_tags
+
 
   }
 }

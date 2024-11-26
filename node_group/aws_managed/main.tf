@@ -1,6 +1,3 @@
-data "aws_partition" "current" {}
-
-data "aws_caller_identity" "current" {}
 
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
@@ -36,11 +33,12 @@ resource "aws_launch_template" "this" {
   key_name               = var.key_name
   user_data              = var.before_cluster_joining_userdata
   vpc_security_group_ids = var.vpc_security_group_ids
-
+  instance_market_options = var.instance_market_options
   disable_api_termination = var.disable_api_termination
   kernel_id               = var.kernel_id
   ram_disk_id             = var.ram_disk_id
   default_version = var.update_launch_template_default_version ? var.launch_template_default_version : null
+  launch_template_tags = var.launch_template_tags
 
 
   dynamic "block_device_mappings" {
@@ -246,7 +244,7 @@ resource "aws_eks_node_group" "this" {
     for_each = var.taints
     content {
       key    = taint.value.key
-      value  = lookup(taint.value, "value")
+      value  = lookup(taint.value, "value", null)
       effect = taint.value.effect
     }
   }

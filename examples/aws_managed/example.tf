@@ -54,7 +54,6 @@ module "subnets" {
   extra_private_tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
     "kubernetes.io/role/internal-elb"                  = "1"
-  tags = local.tags
   }
 
   public_inbound_acl_rules = [
@@ -272,6 +271,7 @@ module "eks" {
   name        = local.name
   environment = local.environment
   label_order = local.label_order
+  tags = local.tags
 
   # EKS
   kubernetes_version     = "1.27"
@@ -291,7 +291,22 @@ module "eks" {
     tags = {
       "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
       "k8s.io/cluster/${module.eks.cluster_name}"        = "shared"
+    propagate_tags = [{
+      key                 = "aws-node-termination-handler/managed"
+      value               = true
+      propagate_at_launch = true
+      },
+      {
+        key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
+        value               = "owned"
+        propagate_at_launch = true
+      }]
     }
+    propagate_tags = [{
+      key                 = "aws-node-termination-handler/managed"
+      value               = true
+      propagate_at_launch = true
+      }]
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"

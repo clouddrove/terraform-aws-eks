@@ -90,3 +90,8 @@ output "tags" {
 output "cluster_name" {
   value = module.labels.id
 }
+
+output "kubeconfig" {
+  description = "kubectl config file contents for this EKS cluster."
+  value       = data.template_file.kubeconfig
+}

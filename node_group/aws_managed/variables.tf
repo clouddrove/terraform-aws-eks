@@ -96,7 +96,7 @@ variable "launch_template_default_version" {
 variable "update_launch_template_default_version" {
   description = "Whether to update the launch templates default version on each update. Conflicts with `launch_template_default_version`"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "disable_api_termination" {
@@ -162,7 +162,7 @@ variable "enclave_options" {
 variable "instance_market_options" {
   description = "The market (purchasing) option for the instance"
   type        = any
-  default     = null
+  default     = true
 }
 
 variable "license_specifications" {
