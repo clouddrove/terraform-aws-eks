@@ -234,8 +234,6 @@ module "eks" {
   environment = "test"
   tags        = local.tags
 
-  
-
   # EKS
   kubernetes_version      = "1.27"
   endpoint_private_access = true
