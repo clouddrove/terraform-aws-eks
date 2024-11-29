@@ -272,7 +272,7 @@ module "eks" {
   name        = local.name
   environment = local.environment
   label_order = local.label_order
-  tags = local.tags
+  tags        = local.tags
 
   # EKS
   kubernetes_version     = "1.27"

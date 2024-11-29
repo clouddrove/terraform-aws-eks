@@ -35,9 +35,9 @@ data "template_file" "userdata" {
     post_bootstrap_user_data   = var.post_bootstrap_user_data
     delete_timeout             = var.delete_timeout
     tags = flatten([for tag in var.propagate_tags : {
-    key   = tag["key"]
-    value = tag["value"]
-  }])
+      key   = tag["key"]
+      value = tag["value"]
+    }])
   }
 }
 #Module      : label

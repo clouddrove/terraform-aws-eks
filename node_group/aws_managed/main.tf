@@ -26,13 +26,13 @@ resource "aws_launch_template" "this" {
   name        = module.labels.id
   description = var.launch_template_description
 
-  ebs_optimized           = var.ebs_optimized
-  image_id                = var.ami_id
+  ebs_optimized = var.ebs_optimized
+  image_id      = var.ami_id
   # # Set on node group instead
   # instance_type = var.launch_template_instance_type
-  key_name               = var.key_name
-  user_data              = var.before_cluster_joining_userdata
-  vpc_security_group_ids = var.vpc_security_group_ids
+  key_name                = var.key_name
+  user_data               = var.before_cluster_joining_userdata
+  vpc_security_group_ids  = var.vpc_security_group_ids
   disable_api_termination = var.disable_api_termination
   kernel_id               = var.kernel_id
   ram_disk_id             = var.ram_disk_id
@@ -45,7 +45,7 @@ resource "aws_launch_template" "this" {
 
   instance_market_options {
     market_type = var.instance_market_options.market_type
-    
+
     spot_options {
       max_price = var.instance_market_options.spot_options.max_price
     }

@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 1.5.4"
-  }
+}
 provider "aws" {
   region = local.region
 }
@@ -232,9 +232,9 @@ module "eks" {
 
   name        = local.name
   environment = "test"
-  tags = local.tags
+  tags        = local.tags
 
-data "aws_caller_identity" "current" {}
+  data "aws_caller_identity" "current" {}
 
   # EKS
   kubernetes_version      = "1.27"
@@ -244,7 +244,7 @@ data "aws_caller_identity" "current" {}
   vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.subnets.private_subnet_id
   allowed_security_groups           = [module.ssh.security_group_id]
-  eks_additional_security_group_ids = [module.ssh.security_group_id , module.http_https.security_group_id]
+  eks_additional_security_group_ids = [module.ssh.security_group_id, module.http_https.security_group_id]
   allowed_cidr_blocks               = [local.vpc_cidr_block]
 
   # Self Managed Node Grou
@@ -257,8 +257,8 @@ data "aws_caller_identity" "current" {}
       propagate_at_launch = true
       },
       {
-        key                 = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
-        value               = "owned"
+        key   = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
+        value = "owned"
       }
     ]
 
