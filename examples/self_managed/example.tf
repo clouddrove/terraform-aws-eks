@@ -234,7 +234,7 @@ module "eks" {
   environment = "test"
   tags        = local.tags
 
-  data "aws_caller_identity" "current" {}
+  
 
   # EKS
   kubernetes_version      = "1.27"
