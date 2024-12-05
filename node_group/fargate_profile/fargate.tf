@@ -49,7 +49,7 @@ resource "aws_eks_fargate_profile" "default" {
   fargate_profile_name   = format("%s-%s", module.labels.id, each.value.addon_name)
   pod_execution_role_arn = aws_iam_role.fargate_role[0].arn
   subnet_ids             = var.subnet_ids
-  tags                   = module.labels.tags
+  tags = var.tags
 
   selector {
     namespace = lookup(each.value, "namespace", "default")

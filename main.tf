@@ -39,6 +39,7 @@ resource "aws_eks_cluster" "default" {
     endpoint_public_access  = var.endpoint_public_access
     public_access_cidrs     = var.public_access_cidrs
     security_group_ids      = var.eks_additional_security_group_ids
+    vpc_security_group_ids  = var.vpc_security_group_ids
   }
 
   dynamic "encryption_config" {

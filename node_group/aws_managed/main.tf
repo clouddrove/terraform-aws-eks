@@ -38,18 +38,25 @@ resource "aws_launch_template" "this" {
   ram_disk_id             = var.ram_disk_id
   default_version         = var.update_launch_template_default_version ? var.launch_template_default_version : null
 
-  tag_specifications {
-    resource_type = "instance"
-    tags          = var.launch_template_tags
-  }
 
-  instance_market_options {
-    market_type = var.instance_market_options.market_type
-
-    spot_options {
-      max_price = var.instance_market_options.spot_options.max_price
+  dynamic "tag_specifications" {
+    for_each = var.launch_template_tags != null ? [var.launch_template_tags] : []
+    content {
+      resource_type = "instance"
+      tags          = tag_specifications.value
     }
   }
+
+  # Dynamic block for instance_market_options
+  dynamic "instance_market_options" {
+    for_each = var.instance_market_options != null ? [var.instance_market_options] : []
+    content {}
+
+  dynamic "spot_options" {
+    for_each = instance_market_options.value.spot_options != null ? [instance_market_options.value.spot_options] : []
+    content {}
+      }
+    }
 
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings

@@ -229,11 +229,11 @@ variable "endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true."
 }
 
-#variable "vpc_security_group_ids" {
-#  type        = list(string)
-#  default     = []
-#  description = "A list of security group IDs to associate"
-#}
+variable "vpc_security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "A list of security group IDs to associate"
+}
 #-----------------------------------------------TimeOuts----------------------------------------------------------------
 
 variable "cluster_timeouts" {
@@ -319,12 +319,6 @@ variable "managed_node_group" {
 }
 
 #-----------------------------------------------ASG-Schedule----------------------------------------------------------------
-
-#variable "create_schedule" {
-#  description = "Determines whether to create autoscaling group schedule or not"
-#  type        = bool
-#  default     = true
-#}
 
 variable "schedules" {
   description = "Map of autoscaling group schedule to create"
