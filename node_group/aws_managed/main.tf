@@ -52,11 +52,13 @@ resource "aws_launch_template" "this" {
     for_each = var.instance_market_options != null ? [var.instance_market_options] : []
     content {}
 
-  dynamic "spot_options" {
-    for_each = instance_market_options.value.spot_options != null ? [instance_market_options.value.spot_options] : []
-    content {}
+      dynamic "spot_options" {
+        for_each = instance_market_options.value.spot_options != null ? [instance_market_options.value.spot_options] : []
+        content {
+          max_price = spot_options.value.max_price
+        }
       }
-    }
+  }
 
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings
