@@ -49,17 +49,20 @@ resource "aws_launch_template" "this" {
 
   # Dynamic block for instance_market_options
   dynamic "instance_market_options" {
-    for_each = var.instance_market_options != null ? [var.instance_market_options] : []
-    content {}
-
-      dynamic "spot_options" {
-        for_each = instance_market_options.value.spot_options != null ? [instance_market_options.value.spot_options] : []
-        content {
-          max_price = spot_options.value.max_price
-        }
-      }
+  for_each = var.instance_market_options != null ? [var.instance_market_options] : []
+  content {
+    market_type = instance_market_options.value.market_type
   }
 
+    # Dynamic block for spot_options within instance_market_options
+    dynamic "spot_options" {
+      for_each = instance_market_options.value.spot_options != null ? [instance_market_options.value.spot_options] : []
+      content {
+        max_price = spot_options.value.max_price
+      }
+    }
+  }
+  
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings
     content {
