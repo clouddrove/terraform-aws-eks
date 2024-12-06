@@ -140,16 +140,6 @@ variable "outpost_config" {
   default     = {}
 }
 
-variable "instance_market_options" {
-  type = object({
-    market_type = string
-    spot_options = optional(object({
-      max_price = string
-    }))
-  })
-  default = null
-}
-
 #-----------------------------------------------------------KMS---------------------------------------------------------
 variable "cluster_encryption_config_enabled" {
   type        = bool
