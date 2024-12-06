@@ -383,7 +383,7 @@ resource "aws_autoscaling_group" "this" {
     for_each = merge(local.self_managed_node_group_default_tags, var.tags)
     content {
       key                 = tag.key
-      value               = tag.value
+      value               = ""
       propagate_at_launch = true
     }
   }

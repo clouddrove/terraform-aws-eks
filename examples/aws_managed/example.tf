@@ -325,9 +325,9 @@ module "eks" {
     critical = {
       name           = "${module.eks.cluster_name}-critical"
       capacity_type  = "ON_DEMAND"
-      min_size       = 1
-      max_size       = 2
-      desired_size   = 2
+      min_size       = 0
+      max_size       = 1
+      desired_size   = 0
       instance_types = ["t3.medium"]
     }
 
