@@ -12,3 +12,6 @@ jobs:
       GITHUB: ${{ secrets.GITHUB }}
     with:
       assignees: 'clouddrove-ci'
+      reviewers: |
+            VishwajitNagulkar
+            rishitz
