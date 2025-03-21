@@ -269,7 +269,7 @@ module "eks" {
   environment = local.environment
   enabled     = true
 
-  kubernetes_version      = "1.27"
+  kubernetes_version      = "1.32"
   endpoint_private_access = true
   endpoint_public_access  = true
 
