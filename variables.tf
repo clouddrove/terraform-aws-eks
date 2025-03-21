@@ -95,8 +95,8 @@ variable "nodes_additional_security_group_ids" {
   description = "EKS additional node group ids"
 }
 variable "addons" {
-  type = any
-  default = []
+  type        = any
+  default     = []
   description = "Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources."
 }
 
