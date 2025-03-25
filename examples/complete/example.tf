@@ -382,6 +382,7 @@ module "eks" {
       max_size       = 2
       desired_size   = 1
       instance_types = ["t3.medium"]
+      ami_type       = "BOTTLEROCKET_x86_64"
     }
     application = {
       name          = "${module.eks.cluster_name}-application"
@@ -392,6 +393,7 @@ module "eks" {
       desired_size         = 1
       force_update_version = true
       instance_types       = ["t3.medium"]
+      ami_type             = "BOTTLEROCKET_x86_64"
     }
   }
   apply_config_map_aws_auth = true

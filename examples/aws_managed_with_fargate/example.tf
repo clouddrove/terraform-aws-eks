@@ -314,6 +314,7 @@ module "eks" {
       max_size       = 2
       desired_size   = 2
       instance_types = ["t3.medium"]
+      ami_type       = "BOTTLEROCKET_x86_64"
     }
 
     application = {
@@ -324,6 +325,7 @@ module "eks" {
       desired_size         = 1
       force_update_version = true
       instance_types       = ["t3.medium"]
+      ami_type             = "BOTTLEROCKET_x86_64"
     }
   }
   # -- Set this to `true` only when you have correct iam_user details.
