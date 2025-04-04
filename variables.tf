@@ -95,24 +95,8 @@ variable "nodes_additional_security_group_ids" {
   description = "EKS additional node group ids"
 }
 variable "addons" {
-  type = any
-  default = [
-    {
-      addon_name        = "coredns"
-      addon_version     = "v1.10.1-eksbuild.2"
-      resolve_conflicts = "OVERWRITE"
-    },
-    {
-      addon_name        = "kube-proxy"
-      addon_version     = "v1.27.3-eksbuild.2"
-      resolve_conflicts = "OVERWRITE"
-    },
-    {
-      addon_name        = "vpc-cni"
-      addon_version     = "v1.13.4-eksbuild.1"
-      resolve_conflicts = "OVERWRITE"
-    },
-  ]
+  type        = any
+  default     = []
   description = "Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources."
 }
 
