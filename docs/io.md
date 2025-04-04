@@ -2,7 +2,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| addons | Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources. | `any` | <pre>[<br>  {<br>    "addon_name": "coredns",<br>    "addon_version": "v1.10.1-eksbuild.2",<br>    "resolve_conflicts": "OVERWRITE"<br>  },<br>  {<br>    "addon_name": "kube-proxy",<br>    "addon_version": "v1.27.3-eksbuild.2",<br>    "resolve_conflicts": "OVERWRITE"<br>  },<br>  {<br>    "addon_name": "vpc-cni",<br>    "addon_version": "v1.13.4-eksbuild.1",<br>    "resolve_conflicts": "OVERWRITE"<br>  }<br>]</pre> | no |
+| addons | Manages [`aws_eks_addon`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) resources. | `any` | `[]` | no |
 | allowed\_cidr\_blocks | List of CIDR blocks to be allowed to connect to the EKS cluster. | `list(string)` | `[]` | no |
 | allowed\_security\_groups | List of Security Group IDs to be allowed to connect to the EKS cluster. | `list(string)` | `[]` | no |
 | apply\_config\_map\_aws\_auth | Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster. | `bool` | `true` | no |
