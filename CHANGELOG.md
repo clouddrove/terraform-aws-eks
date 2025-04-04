@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] - 2025-04-04
+### :sparkles: New Features
+- [`2e163bb`](https://github.com/clouddrove/terraform-aws-eks/commit/2e163bb2caf96ee03ddf8d9ec38c580844f0bf65) - custom NodeGroup names without environment prefix *(PR [#69](https://github.com/clouddrove/terraform-aws-eks/pull/69) by [@Arzianghanchi](https://github.com/Arzianghanchi))*
+- [`5dbcb0e`](https://github.com/clouddrove/terraform-aws-eks/commit/5dbcb0e2182ee9cd151d2208c1e9c2c535527ea7) - updated branch name in uses of workflow *(PR [#75](https://github.com/clouddrove/terraform-aws-eks/pull/75) by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+### :memo: Documentation Changes
+- [`a4d89bd`](https://github.com/clouddrove/terraform-aws-eks/commit/a4d89bd9d2fbb3fee77e8986eb4c40b701410790) - update CHANGELOG.md for 1.4.2 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.4.2] - 2024-09-04
 ### :sparkles: New Features
 - [`fa4ad11`](https://github.com/clouddrove/terraform-aws-eks/commit/fa4ad11ba153ee8c652943908999a1f4ee4ea30a) - updated branch name in uses of workflow *(PR [#65](https://github.com/clouddrove/terraform-aws-eks/pull/65) by [@rakeshclouddevops](https://github.com/rakeshclouddevops))*
@@ -133,3 +142,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.4.0]: https://github.com/clouddrove/terraform-aws-eks/compare/1.3.0...1.4.0
 [1.4.1]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.0...1.4.1
 [1.4.2]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.1...1.4.2
+[1.4.3]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.2...1.4.3
