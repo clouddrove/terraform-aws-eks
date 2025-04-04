@@ -88,9 +88,9 @@ data "aws_eks_cluster_auth" "eks" {
 }
 
 provider "kubernetes" {
-  token                  = data.aws_eks_cluster_auth.eks[0].token
-  host                   = data.aws_eks_cluster.eks[0].endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks[0].certificate_authority.0.data)
+  token                  = var.apply_config_map_aws_auth ? data.aws_eks_cluster_auth.eks[0].token : ""
+  host                   = var.apply_config_map_aws_auth ? data.aws_eks_cluster.eks[0].endpoint : ""
+  cluster_ca_certificate = var.apply_config_map_aws_auth ? base64decode(data.aws_eks_cluster.eks[0].certificate_authority[0].data) : ""
 }
 
 resource "kubernetes_config_map" "aws_auth_ignore_changes" {
