@@ -4,7 +4,10 @@ data "aws_iam_policy_document" "assume_role" {
 
   statement {
     effect  = "Allow"
-    actions = ["sts:AssumeRole"]
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession",
+    ]
 
     principals {
       type        = "Service"
@@ -32,6 +35,30 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
 resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
   count      = var.enabled ? 1 : 0
   policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSServicePolicy", data.aws_partition.current.partition)
+  role       = aws_iam_role.default[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_eks_block_storage_policy" {
+  count      = var.enabled ? 1 : 0
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSBlockStoragePolicy", data.aws_partition.current.partition)
+  role       = aws_iam_role.default[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_eks_compute_policy" {
+  count      = var.enabled ? 1 : 0
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSComputePolicy", data.aws_partition.current.partition)
+  role       = aws_iam_role.default[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_eks_load_balancing_policy" {
+  count      = var.enabled ? 1 : 0
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSLoadBalancingPolicy", data.aws_partition.current.partition)
+  role       = aws_iam_role.default[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_eks_networking_policy" {
+  count      = var.enabled ? 1 : 0
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSNetworkingPolicy", data.aws_partition.current.partition)
   role       = aws_iam_role.default[0].name
 }
 
@@ -131,7 +158,10 @@ data "aws_iam_policy_document" "node_group" {
 
   statement {
     effect  = "Allow"
-    actions = ["sts:AssumeRole"]
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession",
+    ]
 
     principals {
       type        = "Service"
@@ -167,4 +197,65 @@ resource "aws_iam_instance_profile" "default" {
   count = var.enabled ? 1 : 0
   name  = format("%s-instance-profile", module.labels.id)
   role  = aws_iam_role.node_groups[0].name
+}
+
+
+
+################################################################################
+# EKS Auto Node IAM Role
+################################################################################
+
+locals {
+  create_node_iam_role = var.enabled && var.create_node_iam_role && local.auto_mode_enabled
+  node_iam_role_name   = coalesce(var.node_iam_role_name, "${var.name}-eks-auto")
+}
+
+data "aws_iam_policy_document" "node_assume_role_policy" {
+  count = local.create_node_iam_role ? 1 : 0
+
+  statement {
+    sid = "EKSAutoNodeAssumeRole"
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "eks_auto" {
+  count = local.create_node_iam_role ? 1 : 0
+
+  name        = var.node_iam_role_use_name_prefix ? null : local.node_iam_role_name
+  name_prefix = var.node_iam_role_use_name_prefix ? "${local.node_iam_role_name}-" : null
+  path        = var.node_iam_role_path
+  description = var.node_iam_role_description
+
+  assume_role_policy    = data.aws_iam_policy_document.node_assume_role_policy[0].json
+  permissions_boundary  = var.node_iam_role_permissions_boundary
+  force_detach_policies = true
+
+  tags = merge(var.tags, var.node_iam_role_tags)
+}
+
+# Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
+resource "aws_iam_role_policy_attachment" "eks_auto" {
+  for_each = { for k, v in {
+    AmazonEKSWorkerNodeMinimalPolicy   = "${local.aws_policy_prefix}/AmazonEKSWorkerNodeMinimalPolicy",
+    AmazonEC2ContainerRegistryPullOnly = "${local.aws_policy_prefix}/AmazonEC2ContainerRegistryPullOnly",
+  } : k => v if local.create_node_iam_role }
+
+  policy_arn = each.value
+  role       = aws_iam_role.eks_auto[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "eks_auto_additional" {
+  for_each = { for k, v in var.node_iam_role_additional_policies : k => v if local.create_node_iam_role }
+
+  policy_arn = each.value
+  role       = aws_iam_role.eks_auto[0].name
 }

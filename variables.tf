@@ -329,3 +329,104 @@ variable "fargate_profiles" {
   default     = {}
   description = "The number of Fargate Profiles that would be created."
 }
+variable "bootstrap_self_managed_addons" {
+  description = "Indicates whether or not to bootstrap self-managed addons after the cluster has been created"
+  type        = bool
+  default     = null
+}
+variable "authentication_mode" {
+  description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
+  type        = string
+  default     = "API_AND_CONFIG_MAP"
+}
+variable "cluster_compute_config" {
+  description = "Configuration block for the cluster compute configuration"
+  type        = any
+  default     = {}
+}
+variable "cluster_remote_network_config" {
+  description = "Configuration block for the cluster remote network configuration"
+  type        = any
+  default     = {}
+}
+variable "cluster_upgrade_policy" {
+  description = "Configuration block for the cluster upgrade policy"
+  type        = any
+  default     = {}
+}
+variable "cluster_zonal_shift_config" {
+  description = "Configuration block for the cluster zonal shift"
+  type        = any
+  default     = {}
+}
+
+
+################################################################################
+# EKS Auto Node IAM Role
+################################################################################
+
+variable "access_entries" {
+  description = "Map of access entries to add to the cluster"
+  type        = any
+  default     = {}
+}
+
+variable "enable_cluster_creator_admin_permissions" {
+  description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
+  type        = bool
+  default     = false
+}
+
+variable "create" {
+  description = "Controls if resources should be created (affects nearly all resources)"
+  type        = bool
+  default     = true
+}
+
+variable "create_node_iam_role" {
+  description = "Determines whether an EKS Auto node IAM role is created"
+  type        = bool
+  default     = true
+}
+
+variable "node_iam_role_name" {
+  description = "Name to use on the EKS Auto node IAM role created"
+  type        = string
+  default     = null
+}
+
+variable "node_iam_role_use_name_prefix" {
+  description = "Determines whether the EKS Auto node IAM role name (`node_iam_role_name`) is used as a prefix"
+  type        = bool
+  default     = true
+}
+
+variable "node_iam_role_path" {
+  description = "The EKS Auto node IAM role path"
+  type        = string
+  default     = null
+}
+
+variable "node_iam_role_description" {
+  description = "Description of the EKS Auto node IAM role"
+  type        = string
+  default     = null
+}
+
+variable "node_iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the EKS Auto node IAM role"
+  type        = string
+  default     = null
+}
+
+variable "node_iam_role_additional_policies" {
+  description = "Additional policies to be added to the EKS Auto node IAM role"
+  type        = map(string)
+  default     = {}
+}
+
+variable "node_iam_role_tags" {
+  description = "A map of additional tags to add to the EKS Auto node IAM role created"
+  type        = map(string)
+  default     = {}
+}
