@@ -33,8 +33,8 @@ module "ssh" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
 
-  name        = "${local.name}-ssh"
-  vpc_id      = module.vpc.vpc_id
+  name   = "${local.name}-ssh"
+  vpc_id = module.vpc.vpc_id
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
     from_port   = 22
@@ -53,14 +53,14 @@ module "ssh" {
     to_port     = 22
     cidr_blocks = [local.vpc_cidr]
     description = "Allow ssh outbound traffic."
-    }]
+  }]
 }
 
 module "http_https" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
 
-  name        = "${local.name}-http-https"
+  name   = "${local.name}-http-https"
   vpc_id = module.vpc.vpc_id
   ## INGRESS Rules
   new_sg_ingress_rules_with_cidr_blocks = [{
@@ -116,11 +116,11 @@ module "eks" {
     node_pools = ["general-purpose"]
     # node_role_arn = aws_iam_role.eks_auto[0].arn
   }
-  
+
   enable_cluster_creator_admin_permissions = true
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id                            = module.vpc.vpc_id
+  subnet_ids                        = module.vpc.private_subnets
   allowed_security_groups           = [module.ssh.security_group_id]
   eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
 
