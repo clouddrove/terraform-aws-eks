@@ -127,18 +127,18 @@ module "eks" {
   apply_config_map_aws_auth = false
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::924144197303:role/AWSReservedSSO_AdministratorAccess_3b5b668e6e5741c8"
-      username = "AWSReservedSSO_AdministratorAccess_3b5b668e6e5741c8"
+      userarn  = "arn:aws:iam::XXXXXXXXXX:role/AWS_USERNAME"
+      username = "AWS_USERNAME"
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::924144197303:role/AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
-      username = "AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
+      userarn  = "arn:aws:iam::XXXXXXXXXX:role/AWS_USERNAME"
+      username = "AWS_USERNAME"
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
-      username = "automated-eks-cluster-assume-role"
+      userarn  = "arn:aws:iam::XXXXXXXXXX:role/AWS_USERNAME"
+      username = "AWS_USERNAME"
       groups   = ["system:masters"]
     }
   ]
@@ -151,8 +151,8 @@ module "eks" {
 ################################################################################
 
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  source  = "clouddrove/vpc/aws"
+  version = "2.0.0"
 
   name = local.name
   cidr = local.vpc_cidr

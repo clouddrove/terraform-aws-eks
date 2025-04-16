@@ -129,8 +129,6 @@ resource "aws_eks_cluster" "default" {
       access_config[0].bootstrap_cluster_creator_admin_permissions
     ]
   }
-  ## -------------------- A U T O - M O D E   C H A N G E S -------------------------
-
 }
 
 data "tls_certificate" "cluster" {
