@@ -6,11 +6,11 @@ locals {
   }
   aws_policy_prefix             = format("arn:%s:iam::aws:policy", data.aws_partition.current.partition)
   create_outposts_local_cluster = length(var.outpost_config) > 0
-  auto_mode_enabled = try(var.cluster_compute_config.enabled, false)
+  auto_mode_enabled             = try(var.cluster_compute_config.enabled, false)
 
-###########-------------EKS auto node group locals -------------------############
-###########-----------------------------------------------------------############
-  create_iam_role        = var.enabled
+  ###########-------------EKS auto node group locals -------------------############
+  ###########-----------------------------------------------------------############
+  create_iam_role = var.enabled
   # iam_role_name          = coalesce(var.iam_role_name, "${var.name}-cluster")
 
   # Standard EKS cluster

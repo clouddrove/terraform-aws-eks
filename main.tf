@@ -34,7 +34,7 @@ resource "aws_eks_cluster" "default" {
   enabled_cluster_log_types = var.enabled_cluster_log_types
 
   access_config {
-    authentication_mode = var.authentication_mode
+    authentication_mode                         = var.authentication_mode
     bootstrap_cluster_creator_admin_permissions = false
   }
   vpc_config {
@@ -82,17 +82,17 @@ resource "aws_eks_cluster" "default" {
     aws_cloudwatch_log_group.default,
   ]
 
-## -------------------- A U T O - M O D E   C H A N G E S -------------------------
+  ## -------------------- A U T O - M O D E   C H A N G E S -------------------------
   bootstrap_self_managed_addons = local.auto_mode_enabled ? coalesce(var.bootstrap_self_managed_addons, false) : var.bootstrap_self_managed_addons
 
   dynamic "compute_config" {
     for_each = length(var.cluster_compute_config) > 0 ? [var.cluster_compute_config] : []
 
     content {
-      enabled       = local.auto_mode_enabled
-      node_pools    = local.auto_mode_enabled ? try(compute_config.value.node_pools, []) : null
+      enabled    = local.auto_mode_enabled
+      node_pools = local.auto_mode_enabled ? try(compute_config.value.node_pools, []) : null
       # node_role_arn = local.auto_mode_enabled && length(try(compute_config.value.node_pools, [])) > 0 ? aws_iam_role.default[0].arn: null
-      node_role_arn = local.auto_mode_enabled && length(try(compute_config.value.node_pools, [])) > 0 ? aws_iam_role.eks_auto[0].arn: null
+      node_role_arn = local.auto_mode_enabled && length(try(compute_config.value.node_pools, [])) > 0 ? aws_iam_role.eks_auto[0].arn : null
     }
   }
 
@@ -125,11 +125,11 @@ resource "aws_eks_cluster" "default" {
     }
   }
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       access_config[0].bootstrap_cluster_creator_admin_permissions
-     ]
+    ]
   }
-## -------------------- A U T O - M O D E   C H A N G E S -------------------------
+  ## -------------------- A U T O - M O D E   C H A N G E S -------------------------
 
 }
 
