@@ -15,8 +15,9 @@ locals {
   cluster_version = "1.32"
   region          = "eu-west-1"
 
-  vpc_cidr = "10.0.0.0/16"
-  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
+  vpc_cidr              = "10.0.0.0/16"
+  environment           = "test"
+  azs                   = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     Test       = local.name
@@ -90,12 +91,13 @@ module "http_https" {
   ]
 
   ## EGRESS Rules
+  # tfsec:ignore:aws-vpc-no-public-egress-sgr
   new_sg_egress_rules_with_cidr_blocks = [{
     rule_count       = 1
     from_port        = 0
     protocol         = "-1"
     to_port          = 0
-    cidr_blocks      = ["0.0.0.0/0"]
+    cidr_blocks      = [local.vpc_cidr]
     ipv6_cidr_blocks = ["::/0"]
     description      = "Allow all traffic."
     }
@@ -155,23 +157,112 @@ module "vpc" {
   version = "2.0.0"
 
   name = local.name
-  cidr = local.vpc_cidr
+  cidr_block = local.vpc_cidr
 
-  azs             = local.azs
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
-  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
-  intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
+}
 
-  enable_nat_gateway = true
-  single_nat_gateway = true
 
-  public_subnet_tags = {
-    "kubernetes.io/role/elb" = 1
+################################################################################
+# Subnet Module
+################################################################################
+module "subnets" {
+  source  = "clouddrove/subnet/aws"
+  version = "2.0.0"
+
+  name        = "${local.name}-subnets"
+  environment = local.environment
+
+  nat_gateway_enabled = true
+  availability_zones  = ["${local.region}a", "${local.region}b"]
+  vpc_id              = module.vpc.vpc_id
+  cidr_block          = module.vpc.vpc_cidr_block
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
+  type                = "public-private"
+  igw_id              = module.vpc.igw_id
+
+  extra_public_tags = {
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                           = "1"
   }
 
-  private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = 1
+  extra_private_tags = {
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"                  = "1"
   }
 
-  tags = local.tags
+  public_inbound_acl_rules = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+    },
+    {
+      rule_number     = 101
+      rule_action     = "allow"
+      from_port       = 0
+      to_port         = 0
+      protocol        = "-1"
+      ipv6_cidr_block = "::/0"
+    },
+  ]
+
+  public_outbound_acl_rules = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+    },
+    {
+      rule_number     = 101
+      rule_action     = "allow"
+      from_port       = 0
+      to_port         = 0
+      protocol        = "-1"
+      ipv6_cidr_block = "::/0"
+    },
+  ]
+
+  private_inbound_acl_rules = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+    },
+    {
+      rule_number     = 101
+      rule_action     = "allow"
+      from_port       = 0
+      to_port         = 0
+      protocol        = "-1"
+      ipv6_cidr_block = "::/0"
+    },
+  ]
+
+  private_outbound_acl_rules = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+    },
+    {
+      rule_number     = 101
+      rule_action     = "allow"
+      from_port       = 0
+      to_port         = 0
+      protocol        = "-1"
+      ipv6_cidr_block = "::/0"
+    },
+  ]
 }
