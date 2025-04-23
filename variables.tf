@@ -367,7 +367,7 @@ variable "cluster_zonal_shift_config" {
 
 variable "access_entries" {
   description = "Map of access entries to add to the cluster"
-  type        = any
+  type        = map(any)
   default     = {}
 }
 

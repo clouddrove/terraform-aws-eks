@@ -82,7 +82,7 @@ resource "aws_eks_cluster" "default" {
     aws_cloudwatch_log_group.default,
   ]
 
-  ## -------------------- A U T O - M O D E   C H A N G E S -------------------------
+
   bootstrap_self_managed_addons = local.auto_mode_enabled ? coalesce(var.bootstrap_self_managed_addons, false) : var.bootstrap_self_managed_addons
 
   dynamic "compute_config" {
@@ -91,7 +91,6 @@ resource "aws_eks_cluster" "default" {
     content {
       enabled    = local.auto_mode_enabled
       node_pools = local.auto_mode_enabled ? try(compute_config.value.node_pools, []) : null
-      # node_role_arn = local.auto_mode_enabled && length(try(compute_config.value.node_pools, [])) > 0 ? aws_iam_role.default[0].arn: null
       node_role_arn = local.auto_mode_enabled && length(try(compute_config.value.node_pools, [])) > 0 ? aws_iam_role.eks_auto[0].arn : null
     }
   }
@@ -133,15 +132,15 @@ resource "aws_eks_cluster" "default" {
 
 data "tls_certificate" "cluster" {
   count = var.enabled && var.oidc_provider_enabled ? 1 : 0
-  url   = aws_eks_cluster.default[0].identity.0.oidc.0.issuer
+  url   = aws_eks_cluster.default[0].identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "default" {
   count = var.enabled && var.oidc_provider_enabled ? 1 : 0
-  url   = aws_eks_cluster.default[0].identity.0.oidc.0.issuer
+  url   = aws_eks_cluster.default[0].identity[0].oidc[0].issuer
 
   client_id_list  = distinct(compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences)))
-  thumbprint_list = [data.tls_certificate.cluster[0].certificates.0.sha1_fingerprint]
+  thumbprint_list = [data.tls_certificate.cluster[0].certificates[0].sha1_fingerprint]
   tags            = module.labels.tags
 }
 

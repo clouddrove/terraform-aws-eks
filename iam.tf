@@ -205,11 +205,6 @@ resource "aws_iam_instance_profile" "default" {
 # EKS Auto Node IAM Role
 ################################################################################
 
-locals {
-  create_node_iam_role = var.enabled && var.create_node_iam_role && local.auto_mode_enabled
-  node_iam_role_name   = coalesce(var.node_iam_role_name, "${var.name}-eks-auto")
-}
-
 data "aws_iam_policy_document" "node_assume_role_policy" {
   count = local.create_node_iam_role ? 1 : 0
 

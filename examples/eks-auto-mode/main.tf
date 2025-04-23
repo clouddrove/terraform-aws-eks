@@ -11,18 +11,17 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name            = "ex-${basename(path.cwd)}"
+  name            = "clouddrove-eks"
   cluster_version = "1.32"
   region          = "eu-west-1"
 
   vpc_cidr              = "10.0.0.0/16"
   environment           = "test"
+  label_order           = ["name", "environment"]
   azs                   = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
-    Test       = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
+    "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
   }
 }
 
@@ -35,6 +34,8 @@ module "ssh" {
   version = "2.0.0"
 
   name   = "${local.name}-ssh"
+  environment = local.environment
+  label_order = local.label_order
   vpc_id = module.vpc.vpc_id
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
@@ -62,6 +63,8 @@ module "http_https" {
   version = "2.0.0"
 
   name   = "${local.name}-http-https"
+  environment = local.environment
+  label_order = local.label_order
   vpc_id = module.vpc.vpc_id
   ## INGRESS Rules
   new_sg_ingress_rules_with_cidr_blocks = [{
@@ -91,7 +94,6 @@ module "http_https" {
   ]
 
   ## EGRESS Rules
-  # tfsec:ignore:aws-vpc-no-public-egress-sgr
   new_sg_egress_rules_with_cidr_blocks = [{
     rule_count       = 1
     from_port        = 0
@@ -112,38 +114,57 @@ module "eks" {
   source = "../.."
 
   name = "automode-auth"
+  environment = local.environment
+  label_order = local.label_order
 
   cluster_compute_config = {
     enabled    = true
     node_pools = ["general-purpose"]
-    # node_role_arn = aws_iam_role.eks_auto[0].arn
   }
 
   enable_cluster_creator_admin_permissions = true
 
   vpc_id                            = module.vpc.vpc_id
-  subnet_ids                        = module.vpc.private_subnets
+  subnet_ids                        = module.subnets.private_subnet_id
   allowed_security_groups           = [module.ssh.security_group_id]
   eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
 
   apply_config_map_aws_auth = false
-  map_additional_iam_users = [
-    {
-      userarn  = "arn:aws:iam::XXXXXXXXXX:role/AWS_USERNAME"
-      username = "AWS_USERNAME"
-      groups   = ["system:masters"]
+
+  
+
+######## Access entry for eks cluster with Admin access ##########
+  access_entries = {
+    "admin-role-access" = {
+      principal_arn = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
+      kubernetes_groups = []
+      type = "STANDARD"
+      policy_associations = {
+        "full-access" = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type       = "cluster"
+            namespaces = []
+          }
+        }
+      }
     },
-    {
-      userarn  = "arn:aws:iam::XXXXXXXXXX:role/AWS_USERNAME"
-      username = "AWS_USERNAME"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::XXXXXXXXXX:role/AWS_USERNAME"
-      username = "AWS_USERNAME"
-      groups   = ["system:masters"]
+####### Readonly access ########
+    "read-only-access" = {
+      principal_arn = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
+      kubernetes_groups = []
+      type = "STANDARD"
+      policy_associations = {
+        "view-access" = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            type       = "cluster"
+            namespaces = []
+          }
+        }
+      }      
     }
-  ]
+  }
 
   tags = local.tags
 }
@@ -157,6 +178,8 @@ module "vpc" {
   version = "2.0.0"
 
   name = local.name
+  environment = local.environment
+  label_order = local.label_order
   cidr_block = local.vpc_cidr
 
 }
@@ -171,6 +194,7 @@ module "subnets" {
 
   name        = "${local.name}-subnets"
   environment = local.environment
+  label_order = local.label_order
 
   nat_gateway_enabled = true
   availability_zones  = ["${local.region}a", "${local.region}b"]
