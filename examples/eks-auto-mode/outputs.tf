@@ -24,10 +24,10 @@ output "cluster_name" {
 
 output "cluster_iam_role" {
   description = "ARN of cluster IAM role"
-  value = module.eks.cluster_iam_role_name
+  value       = module.eks.cluster_iam_role_name
 }
 
 output "node_group_iam_role" {
   description = "ARN of node group IAM role"
-  value = module.eks.node_group_iam_role_name
+  value       = module.eks.node_group_iam_role_name
 }

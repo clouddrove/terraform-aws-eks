@@ -15,10 +15,10 @@ locals {
   cluster_version = "1.32"
   region          = "eu-west-1"
 
-  vpc_cidr              = "10.0.0.0/16"
-  environment           = "test"
-  label_order           = ["name", "environment"]
-  azs                   = slice(data.aws_availability_zones.available.names, 0, 3)
+  vpc_cidr    = "10.0.0.0/16"
+  environment = "test"
+  label_order = ["name", "environment"]
+  azs         = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
@@ -33,10 +33,10 @@ module "ssh" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
 
-  name   = "${local.name}-ssh"
+  name        = "${local.name}-ssh"
   environment = local.environment
   label_order = local.label_order
-  vpc_id = module.vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
     from_port   = 22
@@ -62,10 +62,10 @@ module "http_https" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
 
-  name   = "${local.name}-http-https"
+  name        = "${local.name}-http-https"
   environment = local.environment
   label_order = local.label_order
-  vpc_id = module.vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id
   ## INGRESS Rules
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
@@ -113,7 +113,7 @@ module "http_https" {
 module "eks" {
   source = "../.."
 
-  name = "automode-auth"
+  name        = "automode-auth"
   environment = local.environment
   label_order = local.label_order
 
@@ -131,14 +131,14 @@ module "eks" {
 
   apply_config_map_aws_auth = false
 
-  
 
-######## Access entry for eks cluster with Admin access ##########
+
+  ######## Access entry for eks cluster with Admin access ##########
   access_entries = {
     "admin-role-access" = {
-      principal_arn = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
+      principal_arn     = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
       kubernetes_groups = []
-      type = "STANDARD"
+      type              = "STANDARD"
       policy_associations = {
         "full-access" = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
@@ -149,11 +149,11 @@ module "eks" {
         }
       }
     },
-####### Readonly access ########
+    ####### Readonly access ########
     "read-only-access" = {
-      principal_arn = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
+      principal_arn     = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
       kubernetes_groups = []
-      type = "STANDARD"
+      type              = "STANDARD"
       policy_associations = {
         "view-access" = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
@@ -162,7 +162,7 @@ module "eks" {
             namespaces = []
           }
         }
-      }      
+      }
     }
   }
 
@@ -177,10 +177,10 @@ module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
 
-  name = local.name
+  name        = local.name
   environment = local.environment
   label_order = local.label_order
-  cidr_block = local.vpc_cidr
+  cidr_block  = local.vpc_cidr
 
 }
 
@@ -214,6 +214,7 @@ module "subnets" {
     "kubernetes.io/role/internal-elb"                  = "1"
   }
 
+  #tfsec:ignore:aws-ec2-no-public-ingress-acl ## reason: Public subnets need internet access for EKS load balancer
   public_inbound_acl_rules = [
     {
       rule_number = 100
@@ -252,6 +253,7 @@ module "subnets" {
     },
   ]
 
+  #tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
   private_inbound_acl_rules = [
     {
       rule_number = 100

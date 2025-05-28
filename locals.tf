@@ -9,7 +9,7 @@ locals {
   auto_mode_enabled             = try(var.cluster_compute_config.enabled, false)
 
   # EKS auto node group locals
-  create_iam_role = var.enabled
+  create_iam_role      = var.enabled
   create_node_iam_role = var.enabled && var.create_node_iam_role && local.auto_mode_enabled
   node_iam_role_name   = coalesce(var.node_iam_role_name, "${var.name}-eks-auto")
 
@@ -98,8 +98,8 @@ locals {
 
   # node_groups locals
   metadata_options = {
-  http_endpoint               = "enabled"
-  http_tokens                 = "required"
-  http_put_response_hop_limit = 2
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
   }
 }
