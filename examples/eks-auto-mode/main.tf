@@ -214,7 +214,7 @@ module "subnets" {
     "kubernetes.io/role/internal-elb"                  = "1"
   }
 
-  #tfsec:ignore:aws-ec2-no-public-ingress-acl ## reason: Public subnets need internet access for EKS load balancer
+  #tfsec:ignore:aws-ec2-no-ingress-acl-all-ports ## reason: Public subnets need internet access for EKS load balancer
   public_inbound_acl_rules = [
     {
       rule_number = 100
