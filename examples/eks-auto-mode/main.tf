@@ -58,7 +58,8 @@ module "ssh" {
   }]
 }
 
-
+#tfsec:ignore:aws-ec2-no-public-ingress-acl ## reason: Public subnets need internet access for EKS load balancer
+#tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
 module "http_https" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
