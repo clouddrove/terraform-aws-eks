@@ -58,6 +58,7 @@ module "ssh" {
   }]
 }
 
+
 module "http_https" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
@@ -188,6 +189,8 @@ module "vpc" {
 ################################################################################
 # Subnet Module
 ################################################################################
+#tfsec:ignore:aws-ec2-no-public-ingress-acl ## reason: Public subnets need internet access for EKS load balancer
+#tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
 module "subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.0"
@@ -214,7 +217,6 @@ module "subnets" {
     "kubernetes.io/role/internal-elb"                  = "1"
   }
 
-  #tfsec:ignore:aws-vpc-no-excessive-port-access ## reason: Public subnets need internet access for EKS load balancer
   public_inbound_acl_rules = [
     {
       rule_number = 100
@@ -253,7 +255,7 @@ module "subnets" {
     },
   ]
 
-  #tfsec:ignore:aws-vpc-no-public-ingress ## reason: Required for EKS public access
+#tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
   private_inbound_acl_rules = [
     {
       rule_number = 100
@@ -273,6 +275,7 @@ module "subnets" {
     },
   ]
 
+#tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
   private_outbound_acl_rules = [
     {
       rule_number = 100
