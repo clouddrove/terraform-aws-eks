@@ -255,7 +255,7 @@ module "subnets" {
     },
   ]
 
-#tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
+  #tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
   private_inbound_acl_rules = [
     {
       rule_number = 100
@@ -275,7 +275,7 @@ module "subnets" {
     },
   ]
 
-#tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
+  #tfsec:ignore:aws-ec2-no-excessive-port-access ## reason: Required for EKS public access
   private_outbound_acl_rules = [
     {
       rule_number = 100
