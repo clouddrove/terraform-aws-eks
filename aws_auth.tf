@@ -88,6 +88,6 @@ resource "kubernetes_config_map" "aws_auth_ignore_changes" {
   }
 
   lifecycle {
-    ignore_changes = [data["mapRoles"]]
+    ignore_changes = [data]
   }
 }

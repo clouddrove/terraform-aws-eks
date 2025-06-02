@@ -39,25 +39,25 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_service_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_block_storage_policy" {
-  count      = var.enabled ? 1 : 0
+  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
   policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSBlockStoragePolicy", data.aws_partition.current.partition)
   role       = aws_iam_role.default[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_compute_policy" {
-  count      = var.enabled ? 1 : 0
+  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
   policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSComputePolicy", data.aws_partition.current.partition)
   role       = aws_iam_role.default[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_load_balancing_policy" {
-  count      = var.enabled ? 1 : 0
+  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
   policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSLoadBalancingPolicy", data.aws_partition.current.partition)
   role       = aws_iam_role.default[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_networking_policy" {
-  count      = var.enabled ? 1 : 0
+  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
   policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSNetworkingPolicy", data.aws_partition.current.partition)
   role       = aws_iam_role.default[0].name
 }
@@ -206,7 +206,7 @@ resource "aws_iam_instance_profile" "default" {
 ################################################################################
 
 data "aws_iam_policy_document" "node_assume_role_policy" {
-  count = local.create_node_iam_role ? 1 : 0
+  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
 
   statement {
     sid = "EKSAutoNodeAssumeRole"
@@ -223,7 +223,7 @@ data "aws_iam_policy_document" "node_assume_role_policy" {
 }
 
 resource "aws_iam_role" "eks_auto" {
-  count = local.create_node_iam_role ? 1 : 0
+  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
 
   name        = var.node_iam_role_use_name_prefix ? null : local.node_iam_role_name
   name_prefix = var.node_iam_role_use_name_prefix ? "${local.node_iam_role_name}-" : null
@@ -239,18 +239,19 @@ resource "aws_iam_role" "eks_auto" {
 
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
 resource "aws_iam_role_policy_attachment" "eks_auto" {
-  for_each = { for k, v in {
+  for_each = var.enabled && length(var.cluster_compute_config) > 0 ? {
     AmazonEKSWorkerNodeMinimalPolicy   = "${local.aws_policy_prefix}/AmazonEKSWorkerNodeMinimalPolicy",
     AmazonEC2ContainerRegistryPullOnly = "${local.aws_policy_prefix}/AmazonEC2ContainerRegistryPullOnly",
-  } : k => v if local.create_node_iam_role }
+  } : {}
 
   policy_arn = each.value
   role       = aws_iam_role.eks_auto[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "eks_auto_additional" {
-  for_each = { for k, v in var.node_iam_role_additional_policies : k => v if local.create_node_iam_role }
+  for_each = var.enabled && length(var.cluster_compute_config) > 0 ? var.node_iam_role_additional_policies : {}
 
   policy_arn = each.value
   role       = aws_iam_role.eks_auto[0].name
 }
+
