@@ -206,7 +206,7 @@ resource "aws_iam_instance_profile" "default" {
 ################################################################################
 
 data "aws_iam_policy_document" "node_assume_role_policy" {
-  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
+  count = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
 
   statement {
     sid = "EKSAutoNodeAssumeRole"
@@ -223,7 +223,7 @@ data "aws_iam_policy_document" "node_assume_role_policy" {
 }
 
 resource "aws_iam_role" "eks_auto" {
-  count      = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
+  count = var.enabled && length(var.cluster_compute_config) > 0 ? 1 : 0
 
   name        = var.node_iam_role_use_name_prefix ? null : local.node_iam_role_name
   name_prefix = var.node_iam_role_use_name_prefix ? "${local.node_iam_role_name}-" : null
