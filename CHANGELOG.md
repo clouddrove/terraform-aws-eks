@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.4] - 2025-06-10
+### :sparkles: New Features
+- [`675b503`](https://github.com/clouddrove/terraform-aws-eks/commit/675b503a973bb99264a23161366e1233a14d0951) - Added EKS Automode Feature *(PR [#76](https://github.com/clouddrove/terraform-aws-eks/pull/76) by [@ruchit-sharma09](https://github.com/ruchit-sharma09))*
+
+### :memo: Documentation Changes
+- [`0245d6b`](https://github.com/clouddrove/terraform-aws-eks/commit/0245d6b7aaaa7c499a5aa5440d2d785f594c5f9c) - update CHANGELOG.md for 1.4.3 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.4.3] - 2025-04-04
 ### :sparkles: New Features
 - [`2e163bb`](https://github.com/clouddrove/terraform-aws-eks/commit/2e163bb2caf96ee03ddf8d9ec38c580844f0bf65) - custom NodeGroup names without environment prefix *(PR [#69](https://github.com/clouddrove/terraform-aws-eks/pull/69) by [@Arzianghanchi](https://github.com/Arzianghanchi))*
@@ -143,3 +151,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.4.1]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.0...1.4.1
 [1.4.2]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.1...1.4.2
 [1.4.3]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.2...1.4.3
+[1.4.4]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.3...1.4.4
