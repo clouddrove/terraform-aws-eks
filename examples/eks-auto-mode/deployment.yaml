@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inflate
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: inflate
+  template:
+    metadata:
+      labels:
+        app: inflate
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: inflate
+          image: nginx
+          resources:
+            requests:
+              cpu: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inflate
+spec:
+  selector:
+    app: inflate
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer

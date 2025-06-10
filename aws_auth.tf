@@ -27,27 +27,6 @@
 # https://docs.aws.amazon.com/cli/latest/userguide/install-bundle.html
 # https://docs.aws.amazon.com/cli/latest/userguide/install-cliv1.html
 
-
-locals {
-  certificate_authority_data_list          = coalescelist(aws_eks_cluster.default.*.certificate_authority, [[{ data : "" }]])
-  certificate_authority_data_list_internal = local.certificate_authority_data_list[0]
-  certificate_authority_data_map           = local.certificate_authority_data_list_internal[0]
-  certificate_authority_data               = local.certificate_authority_data_map["data"]
-
-  # Add worker nodes role ARNs (could be from many un-managed worker groups) to the ConfigMap
-  # Note that we don't need to do this for managed Node Groups since EKS adds their roles to the ConfigMap automatically
-  map_worker_roles = [
-    {
-      rolearn : aws_iam_role.node_groups.0.arn
-      username : "system:node:{{EC2PrivateDNSName}}"
-      groups : [
-        "system:bootstrappers",
-        "system:nodes"
-      ]
-    }
-  ]
-}
-
 data "template_file" "kubeconfig" {
   count    = var.enabled ? 1 : 0
   template = file("${path.module}/kubeconfig.tpl")
@@ -88,9 +67,9 @@ data "aws_eks_cluster_auth" "eks" {
 }
 
 provider "kubernetes" {
-  token                  = data.aws_eks_cluster_auth.eks[0].token
-  host                   = data.aws_eks_cluster.eks[0].endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks[0].certificate_authority.0.data)
+  token                  = var.apply_config_map_aws_auth ? data.aws_eks_cluster_auth.eks[0].token : ""
+  host                   = var.apply_config_map_aws_auth ? data.aws_eks_cluster.eks[0].endpoint : ""
+  cluster_ca_certificate = var.apply_config_map_aws_auth ? base64decode(data.aws_eks_cluster.eks[0].certificate_authority[0].data) : ""
 }
 
 resource "kubernetes_config_map" "aws_auth_ignore_changes" {
