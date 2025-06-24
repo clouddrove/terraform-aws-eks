@@ -335,8 +335,8 @@ module "eks" {
         min_size     = 2
         max_size     = 2 # Retains current max size
         desired_size = 2
-        start_time   = "2023-09-15T19:00:00Z"
-        end_time     = "2023-09-19T19:00:00Z"
+        start_time   = "2025-06-29T19:00:00Z"
+        end_time     = "2025-06-29T19:00:00Z"
         timezone     = "Europe/Amsterdam"
         recurrence   = "0 7 * * 1"
       },
@@ -344,8 +344,8 @@ module "eks" {
         min_size     = 0
         max_size     = 0 # Retains current max size
         desired_size = 0
-        start_time   = "2023-09-12T12:00:00Z"
-        end_time     = "2024-03-05T12:00:00Z"
+        start_time   = "2025-06-30T12:00:00Z"
+        end_time     = "2025-06-30T12:00:00Z"
         timezone     = "Europe/Amsterdam"
         recurrence   = "0 7 * * 5"
       }
@@ -397,21 +397,22 @@ module "eks" {
     }
   }
   apply_config_map_aws_auth = true
-  map_additional_iam_users = [
-    {
-      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
-      username = "hello@clouddrove.com"
-      groups   = ["system:masters"]
-    }
-  ]
+  enable_cluster_creator_admin_permissions = false
+    map_additional_iam_users = [
+      {
+        userarn  = "arn:aws:iam::924144197303:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
+        username = "AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
+        groups   = ["system:masters"]
+      }
+    ]
   # Schdule EKS Managed Auto Scaling node group
   schedules = {
     scale-up = {
       min_size     = 2
       max_size     = 2 # Retains current max size
       desired_size = 2
-      start_time   = "2023-09-15T19:00:00Z"
-      end_time     = "2023-09-19T19:00:00Z"
+      start_time   = "2025-06-29T19:00:00Z"
+      end_time     = "2025-06-29T19:00:00Z"
       timezone     = "Europe/Amsterdam"
       recurrence   = "0 7 * * 1"
     },
@@ -419,8 +420,8 @@ module "eks" {
       min_size     = 0
       max_size     = 0 # Retains current max size
       desired_size = 0
-      start_time   = "2023-09-12T12:00:00Z"
-      end_time     = "2024-03-05T12:00:00Z"
+      start_time   = "2025-06-30T12:00:00Z"
+      end_time     = "2025-06-30T12:00:00Z"
       timezone     = "Europe/Amsterdam"
       recurrence   = "0 7 * * 5"
     }
@@ -433,7 +434,7 @@ data "aws_eks_cluster" "this" {
 }
 
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_certificate_authority_data
+  name = module.eks.cluster_name
 }
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.this.endpoint
