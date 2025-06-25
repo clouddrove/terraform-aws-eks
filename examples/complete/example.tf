@@ -2,8 +2,8 @@ provider "aws" {
   region = local.region
 }
 locals {
-  name                  = "clouddrove-eks"
-  region                = "eu-west-1"
+  name                  = "r-eks"
+  region                = "eu-central-1"
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"
@@ -319,10 +319,10 @@ module "eks" {
       instance_type        = "t3.medium"
     }
     self_managed_application = {
-      name = "self_managed_application"
-      instance_market_options = {
-        market_type = "spot"
-      }
+      name = "aws_self_managed"
+      # instance_market_options = {
+      #   market_type = "ON_DEMAND"
+      # }
       min_size             = 1
       max_size             = 2
       desired_size         = 1
@@ -396,15 +396,26 @@ module "eks" {
       ami_type             = "BOTTLEROCKET_x86_64"
     }
   }
-  apply_config_map_aws_auth = true
-  enable_cluster_creator_admin_permissions = false
-    map_additional_iam_users = [
-      {
-        userarn  = "arn:aws:iam::924144197303:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
-        username = "AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
-        groups   = ["system:masters"]
+
+    access_entries = {
+    "restricted_admin" = {
+      principal_arn = "arn:aws:iam::924144197303:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
+      user_name     = "AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
+      kubernetes_groups = ["masters"]
+      type          = "STANDARD"
+      tags          = {
+        team = "clouddrove"
       }
-    ]
+
+      # Access policy association
+      access_policy = {
+        policy_arn                    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+        access_scope_type            = "cluster"
+        # access_scope_namespaces      = [] # optional, only needed for namespace scope
+      }
+    }
+  }
+
   # Schdule EKS Managed Auto Scaling node group
   schedules = {
     scale-up = {

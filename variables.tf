@@ -245,7 +245,7 @@ variable "self_node_group_defaults" {
 # AWS auth
 variable "apply_config_map_aws_auth" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster."
 }
 
