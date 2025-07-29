@@ -124,6 +124,12 @@ variable "outpost_config" {
   default     = {}
 }
 
+variable "eks_cluster_name" {
+  description = "Name of eks cluster"
+  type        = string
+  default     = ""
+}
+
 #-----------------------------------------------------------KMS---------------------------------------------------------
 variable "cluster_encryption_config_enabled" {
   type        = bool
