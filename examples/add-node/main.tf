@@ -1,65 +1,31 @@
 locals {
-  name                  = name
-  environment           = "test"
-  label_order           = ["name", "environment"]
-  vpc_cidr_block        = module.vpc.vpc_cidr_block
-  tags = {
-    "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
-  }
+  name   = "clouddrove-eks-test-arzian-01-test-cluster"
+  region = "us-east-1"
 }
 
+# If your base module is disabled
 module "eks" {
-  source  = "../.." # path to clouddrove/terraform-aws-eks
-  enabled = false # Set to false to avoid creating the EKS cluster
-  eks_cluster_name = local.name
-  name             = local.name
-  environment      = local.environment
-  label_order      = local.label_order
-  # Tell the module NOT to create the cluster itself
-
-  # Node group defaults
-  vpc_id                            = module.vpc.vpc_id
-  subnet_ids                        = module.subnets.private_subnet_id
-  allowed_security_groups           = [module.ssh.security_group_id]
-  eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
-  allowed_cidr_blocks               = [local.vpc_cidr_block]
-
-  # AWS Managed Node Group
-  # Node Groups Defaults Values It will Work all Node Groups
-  managed_node_group_defaults = {
-    subnet_ids                          = module.subnets.private_subnet_id
-    nodes_additional_security_group_ids = [module.ssh.security_group_id]
-    tags = {
-      "kubernetes.io/cluster/${module.eks.cluster_name}" = "shared"
-      "k8s.io/cluster/${module.eks.cluster_name}"        = "shared"
-    }
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size = 50
-          volume_type = "gp3"
-          iops        = 3000
-          throughput  = 150
-          encrypted   = true
-          kms_key_id  = module.kms.key_arn
-        }
-      }
-    }
-  }
+  source = "../../"
+  cluster_name = local.name
+  enabled          = true
+  external_cluster = true
+  region           = local.region
+  # subnet_ids       = data.aws_eks_cluster.eks_cluster.vpc_config[0].subnet_ids
   managed_node_group = {
-    critical = {
-      name           = "${module.eks.cluster_name}-critical"
-      capacity_type  = "ON_DEMAND"
-      min_size       = 1
-      max_size       = 2
-      desired_size   = 2
-      instance_types = ["t3.medium"]
-      ami_type       = "BOTTLEROCKET_x86_64"
-    }
 
+  application = {
+    name                 = "${module.eks.cluster_name}-application"
+    capacity_type        = "SPOT"
+    min_size             = 1
+    max_size             = 2
+    desired_size         = 1
+    force_update_version = true
+    instance_types       = ["t3.medium"]
+    ami_type             = "BOTTLEROCKET_x86_64"
+  }
+    managed_node_group-2 = {
     application = {
-      name                 = "${module.eks.cluster_name}-application"
+      name                 = "${local.name}-application"
       capacity_type        = "SPOT"
       min_size             = 1
       max_size             = 2
@@ -69,14 +35,27 @@ module "eks" {
       ami_type             = "BOTTLEROCKET_x86_64"
     }
   }
-
-  apply_config_map_aws_auth = true
-  map_additional_iam_users = [
-    {
-      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
-      username = "hello@clouddrove.com"
-      groups   = ["system:masters"]
-    }
-  ]
+}
 }
 
+provider "aws" {
+  region = local.region
+}
+
+# Fetch existing EKS cluster
+data "aws_eks_cluster" "this" {
+  name   = local.name
+  region = local.region
+}
+
+# Fetch authentication token for the EKS cluster
+data "aws_eks_cluster_auth" "this" {
+  name = data.aws_eks_cluster.this.name
+}
+
+# Kubernetes provider using the fetched cluster's details
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+}

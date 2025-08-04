@@ -17,7 +17,7 @@ module "labels" {
 
 #Cloudwatch: Logs for Eks cluster
 resource "aws_cloudwatch_log_group" "default" {
-  count             = var.enabled && length(var.enabled_cluster_log_types) > 0 ? 1 : 0
+  count             = var.enabled && var.external_cluster == false && length(var.enabled_cluster_log_types) > 0 ? 1 : 0
   name              = "/aws/eks/${module.labels.id}/cluster"
   retention_in_days = var.cluster_log_retention_period
   tags              = module.labels.tags
@@ -27,7 +27,7 @@ resource "aws_cloudwatch_log_group" "default" {
 #tfsec:ignore:aws-eks-no-public-cluster-access  ## To provide eks endpoint public access from local network
 #tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr ## To provide eks endpoint public access from local network 
 resource "aws_eks_cluster" "default" {
-  count                     = var.enabled ? 1 : 0
+  count                     = var.enabled && var.external_cluster == false ? 1 : 0
   name                      = module.labels.id
   role_arn                  = aws_iam_role.default[0].arn
   version                   = var.kubernetes_version
@@ -132,12 +132,17 @@ resource "aws_eks_cluster" "default" {
 
 data "tls_certificate" "cluster" {
   count = var.enabled && var.oidc_provider_enabled ? 1 : 0
-  url   = aws_eks_cluster.default[0].identity[0].oidc[0].issuer
+  url   = try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_issuer_url)
 }
 
 resource "aws_iam_openid_connect_provider" "default" {
   count = var.enabled && var.oidc_provider_enabled ? 1 : 0
-  url   = aws_eks_cluster.default[0].identity[0].oidc[0].issuer
+  # url   = try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_provider_arn)
+
+  # url = "https://${try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_provider_arn)}"
+  url = "${can(regex("^https://", try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_provider_arn))) ? try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_provider_arn) : "https://${try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_provider_arn)}"}"
+
+
 
   client_id_list  = distinct(compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences)))
   thumbprint_list = [data.tls_certificate.cluster[0].certificates[0].sha1_fingerprint]
@@ -145,7 +150,7 @@ resource "aws_iam_openid_connect_provider" "default" {
 }
 
 resource "aws_eks_addon" "cluster" {
-  for_each = var.enabled ? { for addon in var.addons : addon.addon_name => addon } : {}
+  for_each = var.enabled && var.external_cluster == false ? { for addon in var.addons : addon.addon_name => addon } : {}
 
   cluster_name                = aws_eks_cluster.default[0].name
   addon_name                  = each.key

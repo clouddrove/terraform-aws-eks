@@ -3,8 +3,8 @@ provider "aws" {
 }
 
 locals {
-  name                  = "clouddrove-eks"
-  region                = "eu-west-1"
+  name                  = "clouddrove-eks-test-arzian-01"
+  region                = "us-east-1"
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"
@@ -267,6 +267,7 @@ data "aws_caller_identity" "current" {}
 module "eks" {
   source  = "../.."
   enabled = true
+  cluster_name = local.name
 
   name        = local.name
   environment = local.environment
@@ -328,11 +329,11 @@ module "eks" {
     }
   }
 
-  apply_config_map_aws_auth = true
+  apply_config_map_aws_auth = false
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
-      username = "hello@clouddrove.com"
+      userarn  = "arn:aws:iam::924144197303:role/AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
+      username = "AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
       groups   = ["system:masters"]
     }
   ]

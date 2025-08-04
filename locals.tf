@@ -1,8 +1,14 @@
 locals {
+   aws_caller_identity_account_id = data.aws_caller_identity.current.account_id
+   aws_caller_identity_arn        = data.aws_caller_identity.current.arn
+   eks_oidc_provider_arn          = replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")
+   eks_oidc_issuer_url            = data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
+   eks_cluster_id                 = data.aws_eks_cluster.eks_cluster.id
+   aws_eks_cluster_endpoint       = data.aws_eks_cluster.eks_cluster.endpoint
   # Encryption
   cluster_encryption_config = {
     resources        = var.cluster_encryption_config_resources
-    provider_key_arn = var.enabled ? aws_kms_key.cluster[0].arn : null
+    provider_key_arn = var.enabled && var.external_cluster == false ? aws_kms_key.cluster[0].arn : null
   }
   aws_policy_prefix             = format("arn:%s:iam::aws:policy", data.aws_partition.current.partition)
   create_outposts_local_cluster = length(var.outpost_config) > 0

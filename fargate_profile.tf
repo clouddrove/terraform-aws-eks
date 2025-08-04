@@ -6,7 +6,7 @@ module "fargate" {
   label_order      = var.label_order
   enabled          = var.enabled
   fargate_enabled  = var.fargate_enabled
-  cluster_name     = aws_eks_cluster.default[0].name
+  cluster_name     =  try(aws_eks_cluster.default[0].name,data.aws_eks_cluster.eks_cluster.name)
   fargate_profiles = var.fargate_profiles
   subnet_ids       = var.subnet_ids
 

@@ -5,7 +5,7 @@ module "eks_managed_node_group" {
 
   enabled = try(each.value.enabled, true)
 
-  cluster_name    = aws_eks_cluster.default[0].name
+  cluster_name    = try(aws_eks_cluster.default[0].name, data.aws_eks_cluster.eks_cluster.name)
   cluster_version = var.kubernetes_version
   vpc_security_group_ids = compact(
     concat(
