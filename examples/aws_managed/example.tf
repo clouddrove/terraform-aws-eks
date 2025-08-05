@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name                  = "clouddrove-eks"
-  region                = "eu-west-1"
+  region                = "us-east-1"
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"

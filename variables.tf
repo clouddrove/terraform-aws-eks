@@ -124,6 +124,30 @@ variable "outpost_config" {
   default     = {}
 }
 
+variable "cluster_name" {
+  description = "Name of eks cluster"
+  type        = string
+  default     = ""
+}
+
+variable "region" {
+  description = "AWS region to create the EKS cluster in"
+  type        = string
+  default     = ""
+}
+
+variable "external_cluster" {
+  description = "Whether the EKS cluster is external or not"
+  type        = bool
+  default     = false
+}
+variable "node_role_arn" {
+  description = "ARN of the node role to use for the EKS cluster"
+  type        = string
+  default     = ""
+
+}
+
 #-----------------------------------------------------------KMS---------------------------------------------------------
 variable "cluster_encryption_config_enabled" {
   type        = bool

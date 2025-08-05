@@ -28,18 +28,18 @@
 # https://docs.aws.amazon.com/cli/latest/userguide/install-cliv1.html
 
 data "template_file" "kubeconfig" {
-  count    = var.enabled ? 1 : 0
+  count    = var.enabled && var.external_cluster == false ? 1 : 0
   template = file("${path.module}/kubeconfig.tpl")
 
   vars = {
-    server                     = aws_eks_cluster.default[0].endpoint
+    server                     = try(aws_eks_cluster.default[0].endpoint, local.aws_eks_cluster_endpoint)
     certificate_authority_data = local.certificate_authority_data
     cluster_name               = module.labels.id
   }
 }
 
 resource "null_resource" "wait_for_cluster" {
-  count      = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
+  count      = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
   depends_on = [aws_eks_cluster.default[0]]
 
   provisioner "local-exec" {
@@ -52,8 +52,8 @@ resource "null_resource" "wait_for_cluster" {
 }
 
 data "aws_eks_cluster" "eks" {
-  count = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
-  name  = aws_eks_cluster.default[0].id
+  count = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
+  name  = try(aws_eks_cluster.default[0].id, local.eks_cluster_id)
 }
 
 # Get an authentication token to communicate with the EKS cluster.
@@ -62,18 +62,18 @@ data "aws_eks_cluster" "eks" {
 # If the AWS provider assumes an IAM role, `aws_eks_cluster_auth` will use the same IAM role to get the auth token.
 # https://www.terraform.io/docs/providers/aws/d/eks_cluster_auth.html
 data "aws_eks_cluster_auth" "eks" {
-  count = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
-  name  = aws_eks_cluster.default[0].id
+  count = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
+  name  = try(aws_eks_cluster.default[0].id, local.eks_cluster_id)
 }
 
 provider "kubernetes" {
-  token                  = var.apply_config_map_aws_auth ? data.aws_eks_cluster_auth.eks[0].token : ""
-  host                   = var.apply_config_map_aws_auth ? data.aws_eks_cluster.eks[0].endpoint : ""
-  cluster_ca_certificate = var.apply_config_map_aws_auth ? base64decode(data.aws_eks_cluster.eks[0].certificate_authority[0].data) : ""
+  token                  = var.apply_config_map_aws_auth && var.external_cluster == false ? data.aws_eks_cluster_auth.eks[0].token : ""
+  host                   = var.apply_config_map_aws_auth && var.external_cluster == false ? data.aws_eks_cluster.eks[0].endpoint : ""
+  cluster_ca_certificate = var.apply_config_map_aws_auth && var.external_cluster == false ? base64decode(data.aws_eks_cluster.eks[0].certificate_authority[0].data) : ""
 }
 
 resource "kubernetes_config_map" "aws_auth_ignore_changes" {
-  count      = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
+  count      = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
   depends_on = [null_resource.wait_for_cluster[0]]
 
   metadata {
