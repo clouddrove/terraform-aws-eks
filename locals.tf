@@ -1,10 +1,10 @@
 locals {
-   aws_caller_identity_account_id = data.aws_caller_identity.current.account_id
-   aws_caller_identity_arn        = data.aws_caller_identity.current.arn
-   eks_oidc_provider_arn          = replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")
-   eks_oidc_issuer_url            = data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
-   eks_cluster_id                 = data.aws_eks_cluster.eks_cluster.id
-   aws_eks_cluster_endpoint       = data.aws_eks_cluster.eks_cluster.endpoint
+  aws_caller_identity_account_id = data.aws_caller_identity.current.account_id
+  aws_caller_identity_arn        = data.aws_caller_identity.current.arn
+  eks_oidc_provider_arn          = replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")
+  eks_oidc_issuer_url            = data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
+  eks_cluster_id                 = data.aws_eks_cluster.eks_cluster.id
+  aws_eks_cluster_endpoint       = data.aws_eks_cluster.eks_cluster.endpoint
   # Encryption
   cluster_encryption_config = {
     resources        = var.cluster_encryption_config_resources
@@ -48,7 +48,7 @@ locals {
   # Note that we don't need to do this for managed Node Groups since EKS adds their roles to the ConfigMap automatically
   map_worker_roles = [
     {
-      rolearn : try(aws_iam_role.node_groups.0.arn,var.node_role_arn)
+      rolearn : try(aws_iam_role.node_groups.0.arn, var.node_role_arn)
       username : "system:node:{{EC2PrivateDNSName}}"
       groups : [
         "system:bootstrappers",

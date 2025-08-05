@@ -145,7 +145,7 @@ variable "node_role_arn" {
   description = "ARN of the node role to use for the EKS cluster"
   type        = string
   default     = ""
-  
+
 }
 
 #-----------------------------------------------------------KMS---------------------------------------------------------

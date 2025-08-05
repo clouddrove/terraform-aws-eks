@@ -72,7 +72,7 @@ module "eks_managed_node_group" {
   placement                          = try(each.value.placement, var.managed_node_group_defaults.placement, null)
 
   # IAM role
-  iam_role_arn = try(aws_iam_role.node_groups[0].arn,var.node_role_arn)
+  iam_role_arn = try(aws_iam_role.node_groups[0].arn, var.node_role_arn)
 
   tags = merge(var.tags, try(each.value.tags, var.managed_node_group_defaults.tags, {}))
 }
