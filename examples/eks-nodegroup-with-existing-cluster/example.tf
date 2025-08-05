@@ -51,7 +51,7 @@ module "eks" {
 
   managed_node_group_defaults = {
     subnet_ids                          = data.aws_eks_cluster.this.vpc_config[0].subnet_ids
-    nodes_additional_security_group_ids = ["sg-05032c5f9d2c313be", "sg-098dde088819d13c1"]
+    nodes_additional_security_group_ids = [""] # Replace with your actual security group IDs if needed
     tags = {
       "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
       "k8s.io/cluster/${local.eks_cluster_name}"        = "shared"
