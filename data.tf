@@ -2,10 +2,9 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 data "aws_eks_cluster" "eks_cluster" {
-  name = try("${var.cluster_name}-${var.environment}", aws_eks_cluster.default[0].name)
+  name   = try(var.cluster_name, aws_eks_cluster.default[0].name)
   region = try(var.region, data.aws_region.current.region)
 }
-
 data "aws_subnets" "eks" {
   filter {
     name   = "tag:kubernetes.io/cluster/${var.cluster_name}"

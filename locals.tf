@@ -48,7 +48,7 @@ locals {
   # Note that we don't need to do this for managed Node Groups since EKS adds their roles to the ConfigMap automatically
   map_worker_roles = [
     {
-      rolearn : aws_iam_role.node_groups.0.arn
+      rolearn : try(aws_iam_role.node_groups.0.arn,var.node_role_arn)
       username : "system:node:{{EC2PrivateDNSName}}"
       groups : [
         "system:bootstrappers",

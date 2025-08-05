@@ -136,7 +136,7 @@ data "tls_certificate" "cluster" {
 }
 
 resource "aws_iam_openid_connect_provider" "default" {
-  count = var.enabled && var.oidc_provider_enabled ? 1 : 0
+  count = var.enabled && var.oidc_provider_enabled && var.external_cluster == false ? 1 : 0
   # url   = try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_provider_arn)
 
   # url = "https://${try(aws_eks_cluster.default[0].identity[0].oidc[0].issuer, local.eks_oidc_provider_arn)}"
