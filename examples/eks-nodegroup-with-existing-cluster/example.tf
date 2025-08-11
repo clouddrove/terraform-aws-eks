@@ -41,15 +41,15 @@ data "aws_eks_cluster_auth" "this" {
 
 # If your base module is disabled
 module "eks" {
-  source           = "../../"
-  cluster_name     = local.eks_cluster_name
-  enabled          = true
-  external_cluster = true
-  subnet_filter_name    = "tag:kubernetes.io/cluster/${local.eks_cluster_name}"
-  subnet_filter_values  = ["owned", "shared"]
-  region           = local.region
-  node_role_arn    = data.aws_eks_cluster.this.role_arn
-  subnet_ids       = data.aws_eks_cluster.this.vpc_config[0].subnet_ids
+  source               = "../../"
+  cluster_name         = local.eks_cluster_name
+  enabled              = true
+  external_cluster     = true
+  subnet_filter_name   = "tag:kubernetes.io/cluster/${local.eks_cluster_name}"
+  subnet_filter_values = ["owned", "shared"]
+  region               = local.region
+  node_role_arn        = data.aws_eks_cluster.this.role_arn
+  subnet_ids           = data.aws_eks_cluster.this.vpc_config[0].subnet_ids
 
   managed_node_group_defaults = {
     subnet_ids                          = data.aws_eks_cluster.this.vpc_config[0].subnet_ids
