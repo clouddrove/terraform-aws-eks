@@ -136,16 +136,16 @@ variable "region" {
   default     = ""
 }
 
-variable "external_cluster" {
-  description = "Whether the EKS cluster is external or not"
-  type        = bool
-  default     = false
-}
 variable "node_role_arn" {
-  description = "ARN of the node role to use for the EKS cluster"
+  description = "IAM Role ARN to be used by NodeGroup. Refer to https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html for more details."
   type        = string
   default     = ""
+}
 
+variable "external_cluster" {
+  type        = bool
+  default     = false
+  description = "Set to true to create an AWS-managed node group for an existing EKS cluster. Assumes the EKS cluster is already provisioned."
 }
 
 #-----------------------------------------------------------KMS---------------------------------------------------------
@@ -242,6 +242,19 @@ variable "vpc_security_group_ids" {
   default     = []
   description = "A list of security group IDs to associate"
 }
+
+variable "subnet_filter_name" {
+  default     = ""
+  description = "The name of the subnet filter (e.g., tag:kubernetes.io/cluster/CLUSTER_NAME)"
+  type        = string
+}
+
+variable "subnet_filter_values" {
+  default     = []
+  description = "List of values for the subnet filter (e.g., owned, shared)"
+  type        = list(string)
+}
+
 #-----------------------------------------------TimeOuts----------------------------------------------------------------
 
 variable "cluster_timeouts" {

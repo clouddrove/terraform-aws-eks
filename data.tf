@@ -7,8 +7,8 @@ data "aws_eks_cluster" "eks_cluster" {
 }
 data "aws_subnets" "eks" {
   filter {
-    name   = "tag:kubernetes.io/cluster/${var.cluster_name}"
-    values = ["owned", "shared"]
+    name   = var.subnet_filter_name
+    values = var.subnet_filter_values
   }
 
   filter {
