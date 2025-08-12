@@ -185,18 +185,6 @@ variable "credit_specification" {
   description = "Customize the credit specification of the instance"
 }
 
-variable "elastic_gpu_specifications" {
-  type        = map(string)
-  default     = null
-  description = "The elastic GPU to attach to the instance"
-}
-
-variable "elastic_inference_accelerator" {
-  type        = map(string)
-  default     = null
-  description = "Configuration block containing an Elastic Inference Accelerator to attach to the instance"
-}
-
 variable "enclave_options" {
   type        = map(string)
   default     = null
