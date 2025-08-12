@@ -37,6 +37,7 @@ data "template_file" "userdata" {
 
   }
 }
+
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
@@ -122,20 +123,6 @@ resource "aws_launch_template" "this" {
     for_each = var.credit_specification != null ? [var.credit_specification] : []
     content {
       cpu_credits = credit_specification.value.cpu_credits
-    }
-  }
-
-  dynamic "elastic_gpu_specifications" {
-    for_each = var.elastic_gpu_specifications != null ? [var.elastic_gpu_specifications] : []
-    content {
-      type = elastic_gpu_specifications.value.type
-    }
-  }
-
-  dynamic "elastic_inference_accelerator" {
-    for_each = var.elastic_inference_accelerator != null ? [var.elastic_inference_accelerator] : []
-    content {
-      type = elastic_inference_accelerator.value.type
     }
   }
 

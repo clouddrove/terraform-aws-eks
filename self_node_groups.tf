@@ -12,8 +12,8 @@ module "self_managed_node_group" {
   cluster_name = aws_eks_cluster.default[0].name
   security_group_ids = compact(
     concat(
-      aws_security_group.node_group.*.id,
-      aws_eks_cluster.default.*.vpc_config[0].cluster_security_group_id
+      aws_security_group.node_group[*].id,
+      aws_eks_cluster.default[*].vpc_config[0].cluster_security_group_id
     )
   )
 
@@ -89,8 +89,6 @@ module "self_managed_node_group" {
   capacity_reservation_specification = try(each.value.capacity_reservation_specification, var.self_node_group_defaults.capacity_reservation_specification, null)
   cpu_options                        = try(each.value.cpu_options, var.self_node_group_defaults.cpu_options, null)
   credit_specification               = try(each.value.credit_specification, var.self_node_group_defaults.credit_specification, null)
-  elastic_gpu_specifications         = try(each.value.elastic_gpu_specifications, var.self_node_group_defaults.elastic_gpu_specifications, null)
-  elastic_inference_accelerator      = try(each.value.elastic_inference_accelerator, var.self_node_group_defaults.elastic_inference_accelerator, null)
   enclave_options                    = try(each.value.enclave_options, var.self_node_group_defaults.enclave_options, null)
   hibernation_options                = try(each.value.hibernation_options, var.self_node_group_defaults.hibernation_options, null)
   instance_market_options            = try(each.value.instance_market_options, var.self_node_group_defaults.instance_market_options, null)
