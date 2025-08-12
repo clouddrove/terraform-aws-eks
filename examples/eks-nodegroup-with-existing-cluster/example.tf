@@ -3,7 +3,7 @@
 ##--------------------------------------------------------------------
 locals {
   eks_cluster_name = "clouddrove-eks"
-  region           = "us-east-2"
+  region           = "us-east-1"
   environment      = "test"
 }
 
