@@ -27,17 +27,6 @@
 # https://docs.aws.amazon.com/cli/latest/userguide/install-bundle.html
 # https://docs.aws.amazon.com/cli/latest/userguide/install-cliv1.html
 
-data "template_file" "kubeconfig" {
-  count    = var.enabled && var.external_cluster == false ? 1 : 0
-  template = file("${path.module}/kubeconfig.tpl")
-
-  vars = {
-    server                     = try(aws_eks_cluster.default[0].endpoint, local.aws_eks_cluster_endpoint)
-    certificate_authority_data = local.certificate_authority_data
-    cluster_name               = module.labels.id
-  }
-}
-
 resource "null_resource" "wait_for_cluster" {
   count      = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
   depends_on = [aws_eks_cluster.default[0]]
