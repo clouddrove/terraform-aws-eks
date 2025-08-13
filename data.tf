@@ -6,6 +6,7 @@ data "aws_eks_cluster" "eks_cluster" {
   region = try(var.region, data.aws_region.current.region)
 }
 data "aws_subnets" "eks" {
+  count = var.external_cluster ? 1 : 0
   filter {
     name   = var.subnet_filter_name
     values = var.subnet_filter_values

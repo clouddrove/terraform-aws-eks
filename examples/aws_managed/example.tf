@@ -328,7 +328,7 @@ module "eks" {
     }
   }
 
-  apply_config_map_aws_auth = true
+  apply_config_map_aws_auth = false
   map_additional_iam_users = [
     {
       userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"

@@ -42,7 +42,7 @@ resource "null_resource" "wait_for_cluster" {
 
 data "aws_eks_cluster" "eks" {
   count = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
-  name  = try(aws_eks_cluster.default[0].id, local.eks_cluster_id)
+  name  = aws_eks_cluster.default[0].id
 }
 
 # Get an authentication token to communicate with the EKS cluster.
@@ -52,7 +52,7 @@ data "aws_eks_cluster" "eks" {
 # https://www.terraform.io/docs/providers/aws/d/eks_cluster_auth.html
 data "aws_eks_cluster_auth" "eks" {
   count = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
-  name  = try(aws_eks_cluster.default[0].id, local.eks_cluster_id)
+  name  = aws_eks_cluster.default[0].id
 }
 
 provider "kubernetes" {
