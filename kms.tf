@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "cloudwatch" {
 }
 
 resource "aws_kms_key" "cluster" {
-  count                   = var.enabled && var.cluster_encryption_config_enabled ? 1 : 0
+  count                   = var.enabled && var.cluster_encryption_config_enabled && var.external_cluster == false ? 1 : 0
   description             = "EKS Cluster ${module.labels.id} Encryption Config KMS Key"
   enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
   deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days
@@ -51,7 +51,7 @@ resource "aws_kms_key" "cluster" {
 }
 
 resource "aws_kms_key" "cloudwatch_log" {
-  count                   = var.enabled && var.cluster_encryption_config_enabled ? 1 : 0
+  count                   = var.enabled && var.cluster_encryption_config_enabled && var.external_cluster == false ? 1 : 0
   description             = "CloudWatch log group ${module.labels.id} Encryption Config KMS Key"
   enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
   deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days

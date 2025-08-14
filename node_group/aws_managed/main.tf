@@ -100,7 +100,6 @@ resource "aws_launch_template" "this" {
     }
   }
 
-
   dynamic "license_specification" {
     for_each = var.license_specifications != null ? [var.license_specifications] : []
     content {

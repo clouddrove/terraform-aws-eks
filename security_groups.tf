@@ -2,7 +2,7 @@
 #Description : Provides a security group resource.
 
 resource "aws_security_group" "node_group" {
-  count       = var.enabled ? 1 : 0
+  count       = var.enabled && var.external_cluster == false ? 1 : 0
   name        = "${module.labels.id}-node-group"
   description = "Security Group for nodes Groups"
   vpc_id      = var.vpc_id
@@ -15,7 +15,7 @@ resource "aws_security_group" "node_group" {
 
 #tfsec:ignore:aws-ec2-no-public-egress-sgr ## To allow all outbound traffic from eks nodes.
 resource "aws_security_group_rule" "node_group" {
-  count             = var.enabled ? 1 : 0
+  count             = var.enabled && var.external_cluster == false ? 1 : 0
   description       = "Allow all egress traffic"
   from_port         = 0
   to_port           = 0
@@ -29,7 +29,7 @@ resource "aws_security_group_rule" "node_group" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_self" {
-  count                    = var.enabled ? 1 : 0
+  count                    = var.enabled && var.external_cluster == false ? 1 : 0
   description              = "Allow nodes to communicate with each other"
   from_port                = 0
   to_port                  = 65535
@@ -43,7 +43,7 @@ resource "aws_security_group_rule" "ingress_self" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_security_groups_node_group" {
-  count                    = var.enabled ? length(var.allowed_security_groups) : 0
+  count                    = var.enabled && var.external_cluster == false ? length(var.allowed_security_groups) : 0
   description              = "Allow inbound traffic from existing Security Groups"
   from_port                = 0
   to_port                  = 65535
@@ -57,7 +57,7 @@ resource "aws_security_group_rule" "ingress_security_groups_node_group" {
 #Description : Provides a security group rule resource. Represents a single ingress group rule,
 #              which can be added to external Security Groups.
 resource "aws_security_group_rule" "ingress_cidr_blocks_node_group" {
-  count             = var.enabled && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
+  count             = var.enabled && var.external_cluster == false && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
   description       = "Allow inbound traffic from CIDR blocks"
   from_port         = 0
   to_port           = 0
