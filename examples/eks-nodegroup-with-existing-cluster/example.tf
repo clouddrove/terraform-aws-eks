@@ -27,8 +27,7 @@ provider "kubernetes" {
 
 # Fetch existing EKS cluster
 data "aws_eks_cluster" "this" {
-  name   = local.eks_cluster_name
-  region = local.region
+  name = local.eks_cluster_name
 }
 
 # Fetch authentication token for the EKS cluster

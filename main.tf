@@ -35,7 +35,7 @@ resource "aws_eks_cluster" "default" {
 
   access_config {
     authentication_mode                         = var.authentication_mode
-    bootstrap_cluster_creator_admin_permissions = false
+    bootstrap_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
   }
   vpc_config {
     subnet_ids              = var.subnet_ids
