@@ -328,7 +328,7 @@ module "eks" {
     }
   }
 
-  apply_config_map_aws_auth = false
+  apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
       userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
@@ -345,7 +345,7 @@ data "aws_eks_cluster" "this" {
 
 data "aws_eks_cluster_auth" "this" {
   depends_on = [module.eks]
-  name       = module.eks.cluster_certificate_authority_data
+  name       = module.eks.cluster_id
 }
 
 provider "kubernetes" {

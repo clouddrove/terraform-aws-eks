@@ -374,7 +374,7 @@ variable "bootstrap_self_managed_addons" {
 variable "authentication_mode" {
   description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
   type        = string
-  default     = "API_AND_CONFIG_MAP"
+  default     = "CONFIG_MAP"
 }
 variable "cluster_compute_config" {
   description = "Configuration block for the cluster compute configuration"
@@ -411,13 +411,13 @@ variable "access_entries" {
 variable "enable_cluster_creator_admin_permissions" {
   description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "create" {
   description = "Controls if resources should be created (affects nearly all resources)"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_node_iam_role" {
