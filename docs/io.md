@@ -8,7 +8,7 @@
 | allowed\_security\_groups | List of Security Group IDs to be allowed to connect to the EKS cluster. | `list(string)` | `[]` | no |
 | apply\_config\_map\_aws\_auth | Whether to generate local files from `kubeconfig` and `config_map_aws_auth` and perform `kubectl apply` to apply the ConfigMap to allow the worker nodes to join the EKS cluster. | `bool` | `true` | no |
 | attributes | Additional attributes (e.g. `1`). | `list(any)` | `[]` | no |
-| authentication\_mode | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API_AND_CONFIG_MAP"` | no |
+| authentication\_mode | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"CONFIG_MAP"` | no |
 | bootstrap\_self\_managed\_addons | Indicates whether or not to bootstrap self-managed addons after the cluster has been created | `bool` | `null` | no |
 | cluster\_compute\_config | Configuration block for the cluster compute configuration | `any` | `{}` | no |
 | cluster\_encryption\_config\_enabled | Set to `true` to enable Cluster Encryption Configuration | `bool` | `true` | no |
@@ -25,12 +25,12 @@
 | cluster\_timeouts | Create, update, and delete timeout configurations for the cluster | `map(string)` | `{}` | no |
 | cluster\_upgrade\_policy | Configuration block for the cluster upgrade policy | `any` | `{}` | no |
 | cluster\_zonal\_shift\_config | Configuration block for the cluster zonal shift | `any` | `{}` | no |
-| create | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
+| create | Controls if resources should be created (affects nearly all resources) | `bool` | `false` | no |
 | create\_node\_iam\_role | Determines whether an EKS Auto node IAM role is created | `bool` | `true` | no |
 | create\_schedule | Determines whether to create autoscaling group schedule or not | `bool` | `true` | no |
 | eks\_additional\_security\_group\_ids | EKS additional security group id | `list(string)` | `[]` | no |
 | eks\_tags | Additional tags for EKS Cluster only. | `map(any)` | `{}` | no |
-| enable\_cluster\_creator\_admin\_permissions | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry | `bool` | `false` | no |
+| enable\_cluster\_creator\_admin\_permissions | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry | `bool` | `true` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | `bool` | `true` | no |
 | enabled\_cluster\_log\_types | A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]. | `list(string)` | <pre>[<br>  "api",<br>  "audit",<br>  "authenticator",<br>  "controllerManager",<br>  "scheduler"<br>]</pre> | no |
 | endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false. | `bool` | `true` | no |
