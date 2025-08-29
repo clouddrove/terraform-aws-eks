@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2025-08-29
+### :sparkles: New Features
+- [`a72df1b`](https://github.com/clouddrove/terraform-aws-eks/commit/a72df1bc0e5d2133f1d44c54a0ecb826e78d8ad2) - add example for attaching node group to existing EKS cluster *(PR [#77](https://github.com/clouddrove/terraform-aws-eks/pull/77) by [@Arzianghanchi](https://github.com/Arzianghanchi))*
+
+### :bug: Bug Fixes
+- [`b00656b`](https://github.com/clouddrove/terraform-aws-eks/commit/b00656be40908773e3d800b961abc64179feb7a8) - Deprecated arguments *(PR [#78](https://github.com/clouddrove/terraform-aws-eks/pull/78) by [@ruchit-sharma09](https://github.com/ruchit-sharma09))*
+- [`5eaa9d1`](https://github.com/clouddrove/terraform-aws-eks/commit/5eaa9d19cf5b2214e42318ee40ea904923119e53) - unauthorized error in aws_auth configmap for EKS *(PR [#79](https://github.com/clouddrove/terraform-aws-eks/pull/79) by [@Arzianghanchi](https://github.com/Arzianghanchi))*
+
+### :memo: Documentation Changes
+- [`1955c86`](https://github.com/clouddrove/terraform-aws-eks/commit/1955c865a6d7d25f2bba52f593b9a42fccecbd42) - update CHANGELOG.md for 1.4.4 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.4.4] - 2025-06-10
 ### :sparkles: New Features
 - [`675b503`](https://github.com/clouddrove/terraform-aws-eks/commit/675b503a973bb99264a23161366e1233a14d0951) - Added EKS Automode Feature *(PR [#76](https://github.com/clouddrove/terraform-aws-eks/pull/76) by [@ruchit-sharma09](https://github.com/ruchit-sharma09))*
@@ -152,3 +164,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.4.2]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.1...1.4.2
 [1.4.3]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.2...1.4.3
 [1.4.4]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.3...1.4.4
+[1.4.5]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.4...1.4.5
