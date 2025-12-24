@@ -55,7 +55,7 @@ resource "aws_launch_template" "this" {
   image_id                             = data.aws_ami.eks_default[0].image_id
   instance_type                        = var.instance_type
   key_name                             = var.key_name
-  user_data                            = base64decode(local.userdata)
+  user_data                            = base64encode(local.userdata)
   disable_api_termination              = var.disable_api_termination
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
   kernel_id                            = var.kernel_id
