@@ -17,8 +17,9 @@ module "eks_managed_node_group" {
   )
   # EKS Managed Node Group
   name        = try(each.value.name, each.key)
-  environment = try(each.value.name != "" ? "" : var.environment, var.environment)
+  environment = (try(var.environment, "") != "") ? var.environment : try(each.value.name, "")
   repository  = var.repository
+  managedby   = var.managedby
   subnet_ids  = try(each.value.subnet_ids, var.managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
   min_size     = try(each.value.min_size, var.managed_node_group_defaults.min_size, 1)
