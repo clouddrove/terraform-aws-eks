@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.6] - 2026-01-15
+### :memo: Documentation Changes
+- [`d5d9c98`](https://github.com/clouddrove/terraform-aws-eks/commit/d5d9c9851695b55d543fafdd3290a57d68ece0c8) - update CHANGELOG.md for 1.4.5 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.4.5] - 2025-08-29
 ### :sparkles: New Features
 - [`a72df1b`](https://github.com/clouddrove/terraform-aws-eks/commit/a72df1bc0e5d2133f1d44c54a0ecb826e78d8ad2) - add example for attaching node group to existing EKS cluster *(PR [#77](https://github.com/clouddrove/terraform-aws-eks/pull/77) by [@Arzianghanchi](https://github.com/Arzianghanchi))*
@@ -165,3 +170,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.4.3]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.2...1.4.3
 [1.4.4]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.3...1.4.4
 [1.4.5]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.4...1.4.5
+[1.4.6]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.5...1.4.6
