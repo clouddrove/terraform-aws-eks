@@ -62,12 +62,11 @@ resource "aws_eks_cluster" "default" {
   }
 
 
-  dynamic "outpost_config" {
-    for_each = local.create_outposts_local_cluster ? [var.outpost_config] : []
+  dynamic "zonal_shift_config" {
+    for_each = length(var.cluster_zonal_shift_config) > 0 ? [var.cluster_zonal_shift_config] : []
 
     content {
-      control_plane_instance_type = outpost_config.value.control_plane_instance_type
-      outpost_arns                = outpost_config.value.outpost_arns
+      enabled = try(zonal_shift_config.value.enabled, false)
     }
   }
 
@@ -144,6 +143,40 @@ resource "aws_iam_openid_connect_provider" "default" {
   client_id_list  = distinct(compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences)))
   thumbprint_list = [data.tls_certificate.cluster[0].certificates[0].sha1_fingerprint]
   tags            = module.labels.tags
+}
+
+resource "aws_eks_access_entry" "default" {
+  for_each = var.enabled && length(var.access_entries) > 0 ? var.access_entries : {}
+
+  cluster_name  = aws_eks_cluster.default[0].name
+  principal_arn = each.value.principal_arn
+  user_name     = try(each.value.user_name, null)
+  type          = try(each.value.type, "STANDARD")
+
+  tags = module.labels.tags
+}
+
+resource "aws_eks_access_policy_association" "default" {
+  for_each = var.enabled && length(var.access_entries) > 0 ? {
+    for pair in flatten([
+      for entry_key, entry_val in var.access_entries : [
+        for policy_arn in try(entry_val.policy_arns, []) : {
+          key        = "${entry_key}-${policy_arn}"
+          entry_key  = entry_key
+          policy_arn = policy_arn
+        }
+      ]
+    ]) : pair.key => pair
+  } : {}
+
+  cluster_name  = aws_eks_cluster.default[0].name
+  principal_arn = var.access_entries[each.value.entry_key].principal_arn
+  policy_arn    = each.value.policy_arn
+
+  access_scope {
+    type       = try(var.access_entries[each.value.entry_key].access_scope.type, "cluster")
+    namespaces = try(var.access_entries[each.value.entry_key].access_scope.namespaces, null)
+  }
 }
 
 resource "aws_eks_addon" "cluster" {
