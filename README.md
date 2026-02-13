@@ -72,6 +72,13 @@ This table contains both Prerequisites and Providers:
 
 📌 For additional usage examples, check the complete list under [`examples/`](./examples) directory.
 
+### Opinionated Security Examples
+
+- [`examples/secure-cluster-baseline`](./examples/secure-cluster-baseline) — secure defaults with restricted public API access.
+- [`examples/private-endpoint-baseline`](./examples/private-endpoint-baseline) — private-only API endpoint baseline.
+- Security guidance: [`docs/security-baselines.md`](./docs/security-baselines.md)
+
+
 
 
 ## Inputs and Outputs

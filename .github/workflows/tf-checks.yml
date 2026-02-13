@@ -17,3 +17,13 @@ jobs:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/self_managed/'
+
+  tf-checks-secure-cluster-baseline-example:
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    with:
+      working_directory: './examples/secure-cluster-baseline/'
+
+  tf-checks-private-endpoint-baseline-example:
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    with:
+      working_directory: './examples/private-endpoint-baseline/'
