@@ -11,8 +11,8 @@ module "labels" {
   environment = var.environment
   managedby   = var.managedby
   attributes  = compact(concat(var.attributes, ["cluster"]))
-  extra_tags  = var.tags
   label_order = var.label_order
+  extra_tags  = var.extra_tags
 }
 
 #Cloudwatch: Logs for Eks cluster
