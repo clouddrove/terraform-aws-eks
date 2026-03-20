@@ -25,7 +25,7 @@ resource "aws_cloudwatch_log_group" "default" {
 }
 
 #tfsec:ignore:aws-eks-no-public-cluster-access  ## To provide eks endpoint public access from local network
-#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr ## To provide eks endpoint public access from local network 
+#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr ## To provide eks endpoint public access from local network
 resource "aws_eks_cluster" "default" {
   count                     = var.enabled && var.external_cluster == false ? 1 : 0
   name                      = module.labels.id

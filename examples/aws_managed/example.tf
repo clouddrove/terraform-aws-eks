@@ -262,7 +262,7 @@ data "aws_iam_policy_document" "kms" {
 data "aws_caller_identity" "current" {}
 
 ################################################################################
-# EKS Module call 
+# EKS Module call
 ################################################################################
 module "eks" {
   source  = "../.."
