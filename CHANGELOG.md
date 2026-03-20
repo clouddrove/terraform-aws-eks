@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.4.7] - 2026-03-20
+### :sparkles: New Features
+- [`66d9734`](https://github.com/clouddrove/terraform-aws-eks/commit/66d973424e2f4cb7b9606145726bd522b1439df3) - Add extra tags variable and PR check workflow *(PR [#83](https://github.com/clouddrove/terraform-aws-eks/pull/83) by [@sunnymor-cd](https://github.com/sunnymor-cd))*
+- [`6344209`](https://github.com/clouddrove/terraform-aws-eks/commit/6344209a6abe29a112a8ba7934b9af9b48e71911) - add wrapper module for multi-instance Terragrunt support *(commit by [@anmolnagpal](https://github.com/anmolnagpal))*
+
+### :memo: Documentation Changes
+- [`92da37d`](https://github.com/clouddrove/terraform-aws-eks/commit/92da37df2855eca7d677e15d1d23829b94b6d547) - update CHANGELOG.md for 1.4.6 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+### :wrench: Chores
+- [`083c8e6`](https://github.com/clouddrove/terraform-aws-eks/commit/083c8e690b63386bcc9380d7af4a01a10978d0e0) - upgrade AWS provider to >= 5.80.0 and Terraform to >= 1.10.0 *(PR [#86](https://github.com/clouddrove/terraform-aws-eks/pull/86) by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+- [`a7f9060`](https://github.com/clouddrove/terraform-aws-eks/commit/a7f9060903bf165d412594fdcba0f082a6c9254f) - standardize repo with security policy, pre-commit, release automation, and editor config *(PR [#87](https://github.com/clouddrove/terraform-aws-eks/pull/87) by [@anmolnagpal](https://github.com/anmolnagpal))*
+
+
 ## [1.4.6] - 2026-01-15
 ### :memo: Documentation Changes
 - [`d5d9c98`](https://github.com/clouddrove/terraform-aws-eks/commit/d5d9c9851695b55d543fafdd3290a57d68ece0c8) - update CHANGELOG.md for 1.4.5 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
@@ -171,3 +184,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.4.4]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.3...1.4.4
 [1.4.5]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.4...1.4.5
 [1.4.6]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.5...1.4.6
+[v1.4.7]: https://github.com/clouddrove/terraform-aws-eks/compare/1.4.6...v1.4.7
