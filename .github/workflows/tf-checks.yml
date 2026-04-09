@@ -2,23 +2,37 @@
 name: tf-checks
 on:
   pull_request:
-  workflow_dispatch:
+    paths:
+      - '**/*.tf'
+      - '*.tf'
 jobs:
   tf-checks-aws-managed-example:
+    if: github.actor != 'dependabot[bot]'
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/aws_managed/'
-      provider: "aws"
+      provider: 'aws'
+      enable_plan: 'true'
+      show_plan: false
+    secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-complete-example:
+    if: github.actor != 'dependabot[bot]'
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/complete/'
-      provider: "aws"
+      provider: 'aws'
+      enable_plan: 'true'
+      show_plan: false
+    secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-self-managed-example:
+    if: github.actor != 'dependabot[bot]'
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/self_managed/'
-      provider: "aws"
+      provider: 'aws'
+      enable_plan: 'true'
+      show_plan: false
+    secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
