@@ -331,7 +331,7 @@ module "eks" {
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
-      userarn: "arn:aws:iam::123456789:role/AWSReservedSSO_RestrictedAdmin_xxxxxxxxxxx"
+      userarn: "arn:aws:iam::123456789:user/hello@clouddrove.com"
       username = "hello@clouddrove.com"
       groups   = ["system:masters"]
     }
