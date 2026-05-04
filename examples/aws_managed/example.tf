@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 locals {
-  name                  = "clouddrove-eks"
+  name                  = "cd-eks-testing"
   region                = "us-east-1"
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
@@ -331,12 +331,27 @@ module "eks" {
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
-      username = "hello@clouddrove.com"
+      userarn: "arn:aws:iam::924144197303:role/AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
+      username = "pranay.deokar@clouddrove.com"
       groups   = ["system:masters"]
     }
   ]
+
+  map_additional_iam_roles = [
+    {
+      rolearn  = "arn:aws:iam::924144197303:role/AWSReservedSSO_ReadOnlyAccess_e5aa35a0cd28fa16"
+      username = "readonly"
+      groups   = ["view"]
+    }
+  ]
 }
+
+locals {
+  kubectl_yaml_files = [
+    "${path.module}/yamls/ClusterRoleBinding-View.yaml",
+  ]
+}
+
 ## Kubernetes provider configuration
 data "aws_eks_cluster" "this" {
   depends_on = [module.eks]
@@ -352,4 +367,21 @@ provider "kubernetes" {
   host                   = data.aws_eks_cluster.this.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.this.token
+}
+
+provider "kubectl" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+  load_config_file       = false
+}
+
+resource "kubectl_manifest" "apply" {
+  for_each = toset(local.kubectl_yaml_files)
+  yaml_body = file(each.value)
+  depends_on = [
+    module.eks,
+    data.aws_eks_cluster.this,
+    data.aws_eks_cluster_auth.this,
+  ]
 }
