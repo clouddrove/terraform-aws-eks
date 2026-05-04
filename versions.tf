@@ -12,5 +12,5 @@ terraform {
   provider_meta "aws" {
     module_name = "clouddrove/terraform-aws-eks"
   }
- }
+}
 

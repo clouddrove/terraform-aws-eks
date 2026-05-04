@@ -9,7 +9,7 @@ terraform {
     }
     cloudinit = {
       source  = "hashicorp/cloudinit"
-      version = ">= 2.0"
+      version = ">= 5.80.0"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
