@@ -331,15 +331,15 @@ module "eks" {
   apply_config_map_aws_auth = true
   map_additional_iam_users = [
     {
-      userarn: "arn:aws:iam::924144197303:role/AWSReservedSSO_RestrictedAdmin_58b12189d22677ff"
-      username = "pranay.deokar@clouddrove.com"
+      userarn: "arn:aws:iam::123456789:role/AWSReservedSSO_RestrictedAdmin_xxxxxxxxxxx"
+      username = "hello@clouddrove.com"
       groups   = ["system:masters"]
     }
   ]
 
   map_additional_iam_roles = [
     {
-      rolearn  = "arn:aws:iam::924144197303:role/AWSReservedSSO_ReadOnlyAccess_e5aa35a0cd28fa16"
+      rolearn  = "arn:aws:iam::123456789:role/AWSReservedSSO_ReadOnlyAccess_xxxxxxxx"
       username = "readonly"
       groups   = ["view"]
     }
