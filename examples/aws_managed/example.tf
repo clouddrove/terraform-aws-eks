@@ -1,7 +1,39 @@
+##--------------------------------------------------------------------------------
+## PROVIDERS
+##--------------------------------------------------------------------------------
 provider "aws" {
   region = local.region
 }
 
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+}
+
+provider "kubectl" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+  load_config_file       = false
+}
+
+##--------------------------------------------------------------------------------
+## DATA SOURCES
+##--------------------------------------------------------------------------------
+data "aws_eks_cluster" "this" {
+  depends_on = [module.eks]
+  name       = module.eks.cluster_id
+}
+
+data "aws_eks_cluster_auth" "this" {
+  depends_on = [module.eks]
+  name       = module.eks.cluster_id
+}
+
+##--------------------------------------------------------------------------------
+## LOCALS
+##--------------------------------------------------------------------------------
 locals {
   name                  = "clouddrove-eks"
   region                = "us-east-1"
@@ -12,11 +44,18 @@ locals {
   tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
   }
+  kubectl_cluster_role_yaml_files = [
+    "${path.module}/yamls/ClusterRole-ReadWrite.yaml",
+    "${path.module}/yamls/ClusterRoleBinding-View.yaml",
+    "${path.module}/yamls/RoleBinding-View-Namespace.yaml",
+    "${path.module}/yamls/ClusterRoleBinding-ReadWrite.yaml",
+    "${path.module}/yamls/RoleBinding-ReadWrite-Namespace.yaml",
+  ]
 }
 
-################################################################################
-# VPC module call
-################################################################################
+##--------------------------------------------------------------------------------
+## VPC module call
+##--------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
@@ -26,9 +65,9 @@ module "vpc" {
   cidr_block  = "10.10.0.0/16"
 }
 
-# ################################################################################
-# # Subnets moudle call
-# ################################################################################
+##--------------------------------------------------------------------------------
+## Subnets moudle call
+##--------------------------------------------------------------------------------
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
@@ -133,9 +172,9 @@ module "subnets" {
   ]
 }
 
-# ################################################################################
-# Security Groups module call
-################################################################################
+##--------------------------------------------------------------------------------
+## Security Groups module call
+##--------------------------------------------------------------------------------
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
@@ -229,9 +268,9 @@ module "http_https" {
   ]
 }
 
-################################################################################
-# KMS Module call
-################################################################################
+##--------------------------------------------------------------------------------
+## KMS Module call
+##--------------------------------------------------------------------------------
 module "kms" {
   source  = "clouddrove/kms/aws"
   version = "1.3.0"
@@ -261,9 +300,9 @@ data "aws_iam_policy_document" "kms" {
 
 data "aws_caller_identity" "current" {}
 
-################################################################################
-# EKS Module call
-################################################################################
+##--------------------------------------------------------------------------------
+## EKS Module call
+##--------------------------------------------------------------------------------
 module "eks" {
   source  = "../.."
   enabled = true
@@ -336,20 +375,24 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
-}
-## Kubernetes provider configuration
-data "aws_eks_cluster" "this" {
-  depends_on = [module.eks]
-  name       = module.eks.cluster_id
+
+  # -- This mapping requires yamls/ClusterRoleBinding-View.yaml to be applied on EKS Cluster
+  map_additional_iam_roles = [
+    {
+      rolearn  = "arn:aws:iam::123456789:role/AWSReservedSSO_ReadOnlyAccess_xxxxxxxx"
+      username = "readonly"
+      groups   = ["view"]
+    }
+  ]
 }
 
-data "aws_eks_cluster_auth" "this" {
-  depends_on = [module.eks]
-  name       = module.eks.cluster_id
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.this.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.this.token
+# -- Applying yamls/*.yaml to the EKS Cluster
+resource "kubectl_manifest" "cluster_roles" {
+  for_each  = toset(local.kubectl_cluster_role_yaml_files)
+  yaml_body = file(each.value)
+  depends_on = [
+    module.eks,
+    data.aws_eks_cluster.this,
+    data.aws_eks_cluster_auth.this,
+  ]
 }
