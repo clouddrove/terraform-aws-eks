@@ -2,8 +2,21 @@ provider "aws" {
   region = local.region
 }
 
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+}
+
+provider "kubectl" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+  load_config_file       = false
+}
+
 locals {
-  name                  = "clouddrove-eks"
+  name                  = "clouddrove-eks-testing"
   region                = "us-east-1"
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
@@ -12,6 +25,13 @@ locals {
   tags = {
     "kubernetes.io/cluster/${module.eks.cluster_name}" = "owned"
   }
+  kubectl_cluster_role_yaml_files = [
+    "${path.module}/yamls/ClusterRole-ReadWrite.yaml",
+    "${path.module}/yamls/ClusterRoleBinding-View.yaml",
+    "${path.module}/yamls/RoleBinding-View-Namespace.yaml",
+    "${path.module}/yamls/ClusterRoleBinding-ReadWrite.yaml",
+    "${path.module}/yamls/RoleBinding-ReadWrite-Namespace.yaml",
+  ]
 }
 
 ################################################################################
@@ -346,12 +366,6 @@ module "eks" {
   ]
 }
 
-locals {
-  kubectl_yaml_files = [
-    "${path.module}/yamls/ClusterRoleBinding-View.yaml",
-  ]
-}
-
 ## Kubernetes provider configuration
 data "aws_eks_cluster" "this" {
   depends_on = [module.eks]
@@ -363,21 +377,8 @@ data "aws_eks_cluster_auth" "this" {
   name       = module.eks.cluster_id
 }
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.this.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.this.token
-}
-
-provider "kubectl" {
-  host                   = data.aws_eks_cluster.this.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.this.token
-  load_config_file       = false
-}
-
-resource "kubectl_manifest" "apply" {
-  for_each = toset(local.kubectl_yaml_files)
+resource "kubectl_manifest" "cluster_roles" {
+  for_each = toset(local.kubectl_cluster_role_yaml_files)
   yaml_body = file(each.value)
   depends_on = [
     module.eks,
