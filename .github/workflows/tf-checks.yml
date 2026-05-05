@@ -11,7 +11,7 @@ on:
 jobs:
   tf-checks-aws-managed-example:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/aws_managed/'
       provider: 'aws'
@@ -21,7 +21,7 @@ jobs:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-complete-example:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/complete/'
       provider: 'aws'
@@ -31,7 +31,7 @@ jobs:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-self-managed-example:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/self_managed/'
       provider: 'aws'
