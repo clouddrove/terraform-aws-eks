@@ -1,10 +1,8 @@
-# AWS Managed EKS Example
+# EKS RBAC Examples
 
-This example shows how to:
+This directory contains multiple examples demonstrating different ways to provision and manage EKS clusters using Terraform (e.g., managed node groups, self-managed nodes, Fargate, etc.).
 
-* Create an **EKS cluster** using Terraform
-* Use **AWS managed node groups**
-* Grant **read-only and read-write access** using Kubernetes RBAC
+Some of these examples also demonstrate how to configure Kubernetes RBAC using Terraform and YAML manifests.
 
 ---
 
@@ -20,7 +18,7 @@ This example shows how to:
 
 ### 1. YAML Files (RBAC Rules)
 
-RBAC configurations are stored in the [`yamls/`](./yamls) directory.
+RBAC configurations are stored in the [`aws_managed/yamls/`](./aws_managed/yamls) directory.
 
 These files:
 
@@ -97,17 +95,18 @@ map_additional_iam_roles = [
 
 | File | Purpose |
 |------|---------|
-| [`ClusterRoleBinding-View.yaml`](./yamls/ClusterRoleBinding-View.yaml) | Read-only access across the cluster |
-| [`RoleBinding-View-Namespace.yaml`](./yamls/RoleBinding-View-Namespace.yaml) | Read-only access in a namespace |
-| [`ClusterRole-ReadWrite.yaml`](./yamls/ClusterRole-ReadWrite.yaml) | Custom read-write role |
-| [`ClusterRoleBinding-ReadWrite.yaml`](./yamls/ClusterRoleBinding-ReadWrite.yaml) | Read-write access across the cluster |
-| [`RoleBinding-ReadWrite-Namespace.yaml`](./yamls/RoleBinding-ReadWrite-Namespace.yaml) | Read-write access in a namespace |
+| [`ClusterRoleBinding-View.yaml`](./aws_managed/yamls/ClusterRoleBinding-View.yaml) | Read-only access across the cluster |
+| [`RoleBinding-View-Namespace.yaml`](./aws_managed/yamls/RoleBinding-View-Namespace.yaml) | Read-only access in a namespace |
+| [`ClusterRole-ReadWrite.yaml`](./aws_managed/yamls/ClusterRole-ReadWrite.yaml) | Custom read-write role |
+| [`ClusterRoleBinding-ReadWrite.yaml`](./aws_managed/yamls/ClusterRoleBinding-ReadWrite.yaml) | Read-write access across the cluster |
+| [`RoleBinding-ReadWrite-Namespace.yaml`](./aws_managed/yamls/RoleBinding-ReadWrite-Namespace.yaml) | Read-write access in a namespace |
 
 ---
 
 ## ▶️ Usage
 
 ```bash
+cd aws_managed
 terraform init
 terraform plan
 terraform apply
