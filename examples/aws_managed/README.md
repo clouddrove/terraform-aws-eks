@@ -1,10 +1,33 @@
 # AWS Managed EKS Example
 
-This example creates an EKS cluster with AWS managed node groups. It also shows how to create and assign read-only access to EKS by using Kubernetes RBAC YAML files and `map_additional_iam_roles`.
+This example shows how to:
 
-## Read-only EKS access with YAML RBAC
+* Create an **EKS cluster** using Terraform
+* Use **AWS managed node groups**
+* Grant **read-only and read-write access** using Kubernetes RBAC
 
-The Kubernetes RBAC manifests are stored in the [`yamls`](./yamls) directory and are applied by the `kubectl_manifest.cluster_roles` resource in [`example.tf`](./example.tf).
+---
+
+## 🔑 Key Concepts
+
+* **ClusterRole** → defines permissions (read, write, etc.)
+* **ClusterRoleBinding** → assigns those permissions to a group
+* **IAM mapping** → connects AWS IAM roles/users to those groups
+
+---
+
+## 📁 How This Example Works
+
+### 1. YAML Files (RBAC Rules)
+
+RBAC configurations are stored in the [`yamls/`](./yamls) directory.
+
+These files:
+
+* Define roles (permissions)
+* Assign roles to groups
+
+Terraform applies them using:
 
 ```hcl
 locals {
@@ -29,35 +52,60 @@ resource "kubectl_manifest" "cluster_roles" {
 }
 ```
 
-To give an IAM role read-only access to the EKS cluster, map the IAM role to the Kubernetes `view` group in `map_additional_iam_roles`. The [`yamls/ClusterRoleBinding-View.yaml`](./yamls/ClusterRoleBinding-View.yaml) manifest binds the `view` group to Kubernetes' built-in `view` ClusterRole.
+---
+
+### 2. Grant Read-Only Access
 
 ```hcl
 apply_config_map_aws_auth = true
 
 map_additional_iam_roles = [
   {
-    rolearn  = "arn:aws:iam::123456789:role/AWSReservedSSO_ReadOnlyAccess_xxxxxxxx"
+    rolearn  = "arn:aws:iam::123456789:role/YourIAMRoleName"
     username = "readonly"
     groups   = ["view"]
   }
 ]
 ```
 
-Use the same `groups = ["view"]` mapping with `map_additional_iam_users` when granting read-only access to an IAM user instead of an IAM role.
+✅ Result:
 
-## Available YAML files
+* IAM role → `view` group
+* `view` group → read-only access
+
+---
+
+### 3. Grant Read-Write Access
+
+```hcl
+apply_config_map_aws_auth = true
+
+map_additional_iam_roles = [
+  {
+    rolearn  = "arn:aws:iam::123456789:role/YourIAMRoleName"
+    username = "read-write"
+    groups   = ["read-write"]
+  }
+]
+```
+
+➡️ This group is linked to a custom role with write permissions.
+
+---
+
+## 📄 Available YAML Files
 
 | File | Purpose |
 |------|---------|
-| [`ClusterRoleBinding-View.yaml`](./yamls/ClusterRoleBinding-View.yaml) | Binds the `view` group to the built-in read-only `view` ClusterRole for cluster-wide read-only access. |
-| [`RoleBinding-View-Namespace.yaml`](./yamls/RoleBinding-View-Namespace.yaml) | Binds the `namespace-view` group to the built-in `view` ClusterRole in the `default` namespace. |
-| [`ClusterRole-ReadWrite.yaml`](./yamls/ClusterRole-ReadWrite.yaml) | Creates a custom `read-write` ClusterRole. |
-| [`ClusterRoleBinding-ReadWrite.yaml`](./yamls/ClusterRoleBinding-ReadWrite.yaml) | Binds the `read-write` group to the custom `read-write` ClusterRole for cluster-wide read-write access. |
-| [`RoleBinding-ReadWrite-Namespace.yaml`](./yamls/RoleBinding-ReadWrite-Namespace.yaml) | Binds the `namespace-read-write` group to the custom `read-write` ClusterRole in the `default` namespace. |
+| [`ClusterRoleBinding-View.yaml`](./yamls/ClusterRoleBinding-View.yaml) | Read-only access across the cluster |
+| [`RoleBinding-View-Namespace.yaml`](./yamls/RoleBinding-View-Namespace.yaml) | Read-only access in a namespace |
+| [`ClusterRole-ReadWrite.yaml`](./yamls/ClusterRole-ReadWrite.yaml) | Custom read-write role |
+| [`ClusterRoleBinding-ReadWrite.yaml`](./yamls/ClusterRoleBinding-ReadWrite.yaml) | Read-write access across the cluster |
+| [`RoleBinding-ReadWrite-Namespace.yaml`](./yamls/RoleBinding-ReadWrite-Namespace.yaml) | Read-write access in a namespace |
 
-## Usage
+---
 
-Run Terraform from this example directory:
+## ▶️ Usage
 
 ```bash
 terraform init
@@ -65,4 +113,13 @@ terraform plan
 terraform apply
 ```
 
-After apply, Terraform updates the `aws-auth` ConfigMap with the roles from `map_additional_iam_roles` and applies the YAML RBAC manifests to the EKS cluster.
+---
+
+## 🔄 What Happens After Apply
+
+Terraform will:
+
+1. Create the EKS cluster
+2. Update the `aws-auth` ConfigMap
+3. Map IAM roles to Kubernetes groups
+4. Apply RBAC YAML files
