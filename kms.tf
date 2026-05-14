@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "cloudwatch" {
       identifiers = [
         format(
           "logs.%s.amazonaws.com",
-          data.aws_region.current.name
+          data.aws_region.current.region
         )
       ]
     }

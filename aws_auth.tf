@@ -61,7 +61,7 @@ provider "kubernetes" {
   cluster_ca_certificate = var.apply_config_map_aws_auth && var.external_cluster == false ? base64decode(data.aws_eks_cluster.eks[0].certificate_authority[0].data) : ""
 }
 
-resource "kubernetes_config_map" "aws_auth_ignore_changes" {
+resource "kubernetes_config_map_v1" "aws_auth_ignore_changes" {
   count      = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
   depends_on = [null_resource.wait_for_cluster[0]]
 
