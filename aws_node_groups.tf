@@ -51,7 +51,7 @@ module "eks_managed_node_group" {
 
   ebs_optimized = try(each.value.ebs_optimized, var.managed_node_group_defaults.ebs_optimized, null)
   key_name      = try(each.value.key_name, var.managed_node_group_defaults.key_name, null)
-  kms_key_id    = try(each.value.kms_key_id, var.managed_node_group_defaults.ebs_optimized, null)
+  kms_key_id    = try(each.value.kms_key_id, var.managed_node_group_defaults.kms_key_id, null)
 
   launch_template_default_version        = try(each.value.launch_template_default_version, var.managed_node_group_defaults.launch_template_default_version, null)
   update_launch_template_default_version = try(each.value.update_launch_template_default_version, var.managed_node_group_defaults.update_launch_template_default_version, true)

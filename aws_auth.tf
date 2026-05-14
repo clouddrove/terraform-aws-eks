@@ -62,6 +62,11 @@ provider "kubernetes" {
 }
 
 resource "kubernetes_config_map" "aws_auth_ignore_changes" {
+  # NOTE: kubernetes_config_map is deprecated in favour of kubernetes_config_map_v1.
+  # Migration is intentionally deferred: renaming the resource type causes Terraform to
+  # destroy + recreate kube-system/aws-auth, which briefly removes cluster RBAC access.
+  # Callers must run `terraform state mv` before upgrading to the new type.
+  # Tracked: https://github.com/clouddrove/terraform-aws-eks/issues
   count      = var.enabled && var.external_cluster == false && var.apply_config_map_aws_auth ? 1 : 0
   depends_on = [null_resource.wait_for_cluster[0]]
 
