@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-05-15
+### :sparkles: New Features
+- Updated module to add missing AWS provider v5/v6 arguments
+- Added new optional variables with safe defaults (backward-compatible)
+- Updated docs/io.md and examples/complete-function/example.tf
+
 ## [v1.4.7] - 2026-03-20
 ### :sparkles: New Features
 - [`66d9734`](https://github.com/clouddrove/terraform-aws-eks/commit/66d973424e2f4cb7b9606145726bd522b1439df3) - Add extra tags variable and PR check workflow *(PR [#83](https://github.com/clouddrove/terraform-aws-eks/pull/83) by [@sunnymor-cd](https://github.com/sunnymor-cd))*

@@ -42,12 +42,14 @@ data "aws_iam_policy_document" "cloudwatch" {
 }
 
 resource "aws_kms_key" "cluster" {
-  count                   = var.enabled && var.cluster_encryption_config_enabled && var.external_cluster == false ? 1 : 0
-  description             = "EKS Cluster ${module.labels.id} Encryption Config KMS Key"
-  enable_key_rotation     = var.cluster_encryption_config_kms_key_enable_key_rotation
-  deletion_window_in_days = var.cluster_encryption_config_kms_key_deletion_window_in_days
-  policy                  = var.cluster_encryption_config_kms_key_policy
-  tags                    = module.labels.tags
+  count                              = var.enabled && var.cluster_encryption_config_enabled && var.external_cluster == false ? 1 : 0
+  description                        = "EKS Cluster ${module.labels.id} Encryption Config KMS Key"
+  enable_key_rotation                = var.cluster_encryption_config_kms_key_enable_key_rotation
+  deletion_window_in_days            = var.cluster_encryption_config_kms_key_deletion_window_in_days
+  policy                             = var.cluster_encryption_config_kms_key_policy
+  tags                               = module.labels.tags
+  rotation_period_in_days            = var.rotation_period_in_days
+  bypass_policy_lockout_safety_check = var.bypass_policy_lockout_safety_check
 }
 
 resource "aws_kms_key" "cloudwatch_log" {

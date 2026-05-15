@@ -17,11 +17,14 @@ module "labels" {
 
 #Cloudwatch: Logs for Eks cluster
 resource "aws_cloudwatch_log_group" "default" {
-  count             = var.enabled && var.external_cluster == false && length(var.enabled_cluster_log_types) > 0 ? 1 : 0
-  name              = "/aws/eks/${module.labels.id}/cluster"
-  retention_in_days = var.cluster_log_retention_period
-  tags              = module.labels.tags
-  kms_key_id        = aws_kms_key.cloudwatch_log[0].arn
+  count                       = var.enabled && var.external_cluster == false && length(var.enabled_cluster_log_types) > 0 ? 1 : 0
+  name                        = "/aws/eks/${module.labels.id}/cluster"
+  retention_in_days           = var.cluster_log_retention_period
+  tags                        = module.labels.tags
+  kms_key_id                  = aws_kms_key.cloudwatch_log[0].arn
+  skip_destroy                = var.skip_destroy
+  log_group_class             = var.log_group_class
+  deletion_protection_enabled = var.deletion_protection_enabled
 }
 
 #tfsec:ignore:aws-eks-no-public-cluster-access  ## To provide eks endpoint public access from local network

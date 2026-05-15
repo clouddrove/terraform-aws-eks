@@ -136,12 +136,6 @@ variable "cluster_name" {
   default     = ""
 }
 
-variable "region" {
-  description = "AWS region to create the EKS cluster in"
-  type        = string
-  default     = ""
-}
-
 variable "node_role_arn" {
   description = "IAM Role ARN to be used by NodeGroup. Refer to https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html for more details."
   type        = string
@@ -243,12 +237,6 @@ variable "endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true."
 }
 
-variable "vpc_security_group_ids" {
-  type        = list(string)
-  default     = []
-  description = "A list of security group IDs to associate"
-}
-
 variable "subnet_filter_name" {
   default     = ""
   description = "The name of the subnet filter (e.g., tag:kubernetes.io/cluster/CLUSTER_NAME)"
@@ -347,12 +335,6 @@ variable "managed_node_group" {
 
 #-----------------------------------------------ASG-Schedule----------------------------------------------------------------
 
-variable "create_schedule" {
-  description = "Determines whether to create autoscaling group schedule or not"
-  type        = bool
-  default     = true
-}
-
 variable "schedules" {
   description = "Map of autoscaling group schedule to create"
   type        = map(any)
@@ -384,16 +366,6 @@ variable "authentication_mode" {
 }
 variable "cluster_compute_config" {
   description = "Configuration block for the cluster compute configuration"
-  type        = any
-  default     = {}
-}
-variable "cluster_remote_network_config" {
-  description = "Configuration block for the cluster remote network configuration"
-  type        = any
-  default     = {}
-}
-variable "cluster_upgrade_policy" {
-  description = "Configuration block for the cluster upgrade policy"
   type        = any
   default     = {}
 }
@@ -472,4 +444,40 @@ variable "node_iam_role_tags" {
   description = "A map of additional tags to add to the EKS Auto node IAM role created"
   type        = map(string)
   default     = {}
+}
+
+variable "description" {
+  type        = string
+  default     = null
+  description = "Description for IAM role, provider v6+"
+}
+
+variable "deletion_protection_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable deletion protection for CloudWatch log group, provider v6+"
+}
+
+variable "rotation_period_in_days" {
+  type        = number
+  default     = 365
+  description = "Rotation period in days for KMS key, provider v6+"
+}
+
+variable "log_group_class" {
+  type        = string
+  default     = "STANDARD"
+  description = "Log group class for CloudWatch, provider v6+"
+}
+
+variable "bypass_policy_lockout_safety_check" {
+  type        = bool
+  default     = false
+  description = "Bypass policy lockout safety check for KMS key, provider v6+"
+}
+
+variable "skip_destroy" {
+  type        = bool
+  default     = false
+  description = "Skip destroy for CloudWatch log group, provider v6+"
 }
