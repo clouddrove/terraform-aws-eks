@@ -122,6 +122,17 @@ resource "aws_eks_cluster" "default" {
       service_ipv6_cidr = var.cluster_service_ipv6_cidr
     }
   }
+  upgrade_policy {
+    support_type = var.cluster_support_type
+  }
+
+  dynamic "zonal_shift_config" {
+    for_each = var.enable_zonal_shift ? [1] : []
+    content {
+      enabled = true
+    }
+  }
+
   lifecycle {
     ignore_changes = [
       access_config[0].bootstrap_cluster_creator_admin_permissions

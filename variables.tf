@@ -473,3 +473,19 @@ variable "node_iam_role_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "cluster_support_type" {
+  description = "EKS support type: STANDARD or EXTENDED. EXTENDED provides longer support lifecycle."
+  type        = string
+  default     = "STANDARD"
+  validation {
+    condition     = contains(["STANDARD", "EXTENDED"], var.cluster_support_type)
+    error_message = "cluster_support_type must be STANDARD or EXTENDED."
+  }
+}
+
+variable "enable_zonal_shift" {
+  description = "Enable zonal shift for automatic AZ failover on the EKS cluster."
+  type        = bool
+  default     = false
+}
