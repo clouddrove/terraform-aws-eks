@@ -130,7 +130,7 @@ module "eks" {
   vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.subnets.private_subnet_id
   allowed_security_groups           = [module.ssh.security_group_id]
-  eks_additional_security_group_ids = ["${module.ssh.security_group_id}", "${module.http_https.security_group_id}"]
+  eks_additional_security_group_ids = [module.ssh.security_group_id, module.http_https.security_group_id]
 
   apply_config_map_aws_auth = false
 

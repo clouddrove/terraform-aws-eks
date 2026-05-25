@@ -16,6 +16,9 @@ data "aws_iam_policy_document" "cloudwatch" {
         )
       ]
     }
+    # checkov:skip=CKV_AWS_111,CKV_AWS_356,CKV_AWS_109: resources="*" is required and correct
+    # for KMS key policies — in this context "*" refers to the key itself, per AWS docs:
+    # https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html
     resources = ["*"]
   }
   statement {
@@ -33,10 +36,11 @@ data "aws_iam_policy_document" "cloudwatch" {
       identifiers = [
         format(
           "logs.%s.amazonaws.com",
-          data.aws_region.current.name
+          data.aws_region.current.region
         )
       ]
     }
+    # checkov:skip=CKV_AWS_111,CKV_AWS_356,CKV_AWS_109: same as above — KMS key policy context
     resources = ["*"]
   }
 }
