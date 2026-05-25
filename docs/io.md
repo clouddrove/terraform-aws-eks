@@ -19,24 +19,24 @@
 | cluster\_ip\_family | The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created | `string` | `null` | no |
 | cluster\_log\_retention\_period | Number of days to retain cluster logs. Requires `enabled_cluster_log_types` to be set. See https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. | `number` | `30` | no |
 | cluster\_name | Name of eks cluster | `string` | `""` | no |
-| cluster\_remote\_network\_config | Configuration block for the cluster remote network configuration | `any` | `{}` | no |
 | cluster\_service\_ipv4\_cidr | The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks | `string` | `null` | no |
 | cluster\_service\_ipv6\_cidr | The CIDR block to assign Kubernetes pod and service IP addresses from if `ipv6` was specified when the cluster was created. Kubernetes assigns service addresses from the unique local address range (fc00::/7) because you can't specify a custom IPv6 CIDR block when you create the cluster | `string` | `null` | no |
+| cluster\_support\_type | EKS support type: STANDARD or EXTENDED. EXTENDED provides longer support lifecycle. | `string` | `"STANDARD"` | no |
 | cluster\_timeouts | Create, update, and delete timeout configurations for the cluster | `map(string)` | `{}` | no |
-| cluster\_upgrade\_policy | Configuration block for the cluster upgrade policy | `any` | `{}` | no |
 | cluster\_zonal\_shift\_config | Configuration block for the cluster zonal shift | `any` | `{}` | no |
 | create | Controls if resources should be created (affects nearly all resources) | `bool` | `false` | no |
 | create\_node\_iam\_role | Determines whether an EKS Auto node IAM role is created | `bool` | `true` | no |
-| create\_schedule | Determines whether to create autoscaling group schedule or not | `bool` | `true` | no |
 | eks\_additional\_security\_group\_ids | EKS additional security group id | `list(string)` | `[]` | no |
 | eks\_tags | Additional tags for EKS Cluster only. | `map(any)` | `{}` | no |
 | enable\_cluster\_creator\_admin\_permissions | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry | `bool` | `true` | no |
+| enable\_zonal\_shift | Enable zonal shift for automatic AZ failover on the EKS cluster. | `bool` | `false` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | `bool` | `true` | no |
 | enabled\_cluster\_log\_types | A list of the desired control plane logging to enable. For more information, see https://docs.aws.amazon.com/en_us/eks/latest/userguide/control-plane-logs.html. Possible values [`api`, `audit`, `authenticator`, `controllerManager`, `scheduler`]. | `list(string)` | <pre>[<br>  "api",<br>  "audit",<br>  "authenticator",<br>  "controllerManager",<br>  "scheduler"<br>]</pre> | no |
 | endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. Default to AWS EKS resource and it is false. | `bool` | `true` | no |
 | endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true. | `bool` | `true` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `""` | no |
 | external\_cluster | Set to true to create an AWS-managed node group for an existing EKS cluster. Assumes the EKS cluster is already provisioned. | `bool` | `false` | no |
+| extra\_tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(string)` | `{}` | no |
 | fargate\_enabled | Whether fargate profile is enabled or not | `bool` | `false` | no |
 | fargate\_profiles | The number of Fargate Profiles that would be created. | `map(any)` | `{}` | no |
 | iam\_role\_additional\_policies | Additional policies to be added to the IAM role | `map(string)` | `{}` | no |
@@ -64,7 +64,6 @@
 | outpost\_config | Configuration for the AWS Outpost to provision the cluster on | `any` | `{}` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
 | public\_access\_cidrs | Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. EKS defaults this to a list with 0.0.0.0/0. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| region | AWS region to create the EKS cluster in | `string` | `""` | no |
 | repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-eks"` | no |
 | schedules | Map of autoscaling group schedule to create | `map(any)` | `{}` | no |
 | self\_node\_group\_defaults | Map of self-managed node group default configurations | `any` | `{}` | no |
@@ -74,7 +73,6 @@
 | subnet\_ids | A list of subnet IDs to launch the cluster in. | `list(string)` | `[]` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
 | vpc\_id | VPC ID for the EKS cluster. | `string` | `""` | no |
-| vpc\_security\_group\_ids | A list of security group IDs to associate | `list(string)` | `[]` | no |
 | wait\_for\_cluster\_command | `local-exec` command to execute to determine if the EKS cluster is healthy. Cluster endpoint are available as environment variable `ENDPOINT` | `string` | `"curl --silent --fail --retry 60 --retry-delay 5 --retry-connrefused --insecure --output /dev/null $ENDPOINT/healthz"` | no |
 
 ## Outputs
