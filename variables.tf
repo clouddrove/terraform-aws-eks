@@ -14,7 +14,7 @@ variable "extra_tags" {
 
 variable "repository" {
   type        = string
-  default     = "https://github.com/clouddrove/terraform-aws-eks"
+  default     = ""
   description = "Terraform current module repo"
 }
 
@@ -32,7 +32,7 @@ variable "label_order" {
 
 variable "managedby" {
   type        = string
-  default     = "hello@clouddrove.com"
+  default     = ""
   description = "ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'."
 }
 
@@ -369,6 +369,7 @@ variable "cluster_compute_config" {
   type        = any
   default     = {}
 }
+
 variable "cluster_zonal_shift_config" {
   description = "Configuration block for the cluster zonal shift"
   type        = any
