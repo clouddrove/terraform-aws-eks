@@ -45,7 +45,7 @@
 | local\_exec\_interpreter | shell to use for local\_exec | `list(string)` | <pre>[<br>  "/bin/sh",<br>  "-c"<br>]</pre> | no |
 | managed\_node\_group | Map of eks-managed node group definitions to create | `any` | `{}` | no |
 | managed\_node\_group\_defaults | Map of eks-managed node group definitions to create | `any` | `{}` | no |
-| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `"hello@clouddrove.com"` | no |
+| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `""` | no |
 | map\_additional\_aws\_accounts | Additional AWS account numbers to add to `config-map-aws-auth` ConfigMap | `list(string)` | `[]` | no |
 | map\_additional\_iam\_roles | Additional IAM roles to add to `config-map-aws-auth` ConfigMap | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | map\_additional\_iam\_users | Additional IAM users to add to `config-map-aws-auth` ConfigMap | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
@@ -64,7 +64,7 @@
 | outpost\_config | Configuration for the AWS Outpost to provision the cluster on | `any` | `{}` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
 | public\_access\_cidrs | Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. EKS defaults this to a list with 0.0.0.0/0. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-eks"` | no |
+| repository | Terraform current module repo | `string` | `""` | no |
 | schedules | Map of autoscaling group schedule to create | `map(any)` | `{}` | no |
 | self\_node\_group\_defaults | Map of self-managed node group default configurations | `any` | `{}` | no |
 | self\_node\_groups | Map of self-managed node group definitions to create | `any` | `{}` | no |
