@@ -136,12 +136,6 @@ variable "cluster_name" {
   default     = ""
 }
 
-variable "region" {
-  description = "AWS region to create the EKS cluster in"
-  type        = string
-  default     = ""
-}
-
 variable "node_role_arn" {
   description = "IAM Role ARN to be used by NodeGroup. Refer to https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html for more details."
   type        = string
@@ -241,12 +235,6 @@ variable "endpoint_public_access" {
   type        = bool
   default     = true
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. Default to AWS EKS resource and it is true."
-}
-
-variable "vpc_security_group_ids" {
-  type        = list(string)
-  default     = []
-  description = "A list of security group IDs to associate"
 }
 
 variable "subnet_filter_name" {
@@ -387,16 +375,7 @@ variable "cluster_compute_config" {
   type        = any
   default     = {}
 }
-variable "cluster_remote_network_config" {
-  description = "Configuration block for the cluster remote network configuration"
-  type        = any
-  default     = {}
-}
-variable "cluster_upgrade_policy" {
-  description = "Configuration block for the cluster upgrade policy"
-  type        = any
-  default     = {}
-}
+
 variable "cluster_zonal_shift_config" {
   description = "Configuration block for the cluster zonal shift"
   type        = any
