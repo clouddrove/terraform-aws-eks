@@ -273,12 +273,12 @@ module "eks" {
   label_order = local.label_order
 
   # EKS
-  kubernetes_version     = "1.32"
+  kubernetes_version      = "1.32"
   endpoint_public_access  = false
   endpoint_private_access = true
   public_access_cidrs     = []
 
-  enabled_cluster_log_types  = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  enabled_cluster_log_types    = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   cluster_log_retention_period = 90
   # Networking
   vpc_id                            = module.vpc.vpc_id
