@@ -335,12 +335,6 @@ variable "managed_node_group" {
 
 #-----------------------------------------------ASG-Schedule----------------------------------------------------------------
 
-variable "create_schedule" {
-  description = "Determines whether to create autoscaling group schedule or not"
-  type        = bool
-  default     = true
-}
-
 variable "schedules" {
   description = "Map of autoscaling group schedule to create"
   type        = map(any)
@@ -451,4 +445,20 @@ variable "node_iam_role_tags" {
   description = "A map of additional tags to add to the EKS Auto node IAM role created"
   type        = map(string)
   default     = {}
+}
+
+variable "cluster_support_type" {
+  description = "EKS support type: STANDARD or EXTENDED. EXTENDED provides longer support lifecycle."
+  type        = string
+  default     = "STANDARD"
+  validation {
+    condition     = contains(["STANDARD", "EXTENDED"], var.cluster_support_type)
+    error_message = "cluster_support_type must be STANDARD or EXTENDED."
+  }
+}
+
+variable "enable_zonal_shift" {
+  description = "Enable zonal shift for automatic AZ failover on the EKS cluster."
+  type        = bool
+  default     = false
 }
