@@ -62,7 +62,7 @@ usage : |-
   label_order = ["environment", "name"]
   enabled     = true
 
-  kubernetes_version        = "1.25"
+  kubernetes_version        = "1.35"
   endpoint_private_access   = true
   endpoint_public_access    = true
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
