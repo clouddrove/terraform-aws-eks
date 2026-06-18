@@ -14,8 +14,8 @@ jobs:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/aws_managed/'
-      provider: 'aws'
-      enable_plan: 'true'
+      provider: aws
+      enable_plan: true
       show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
@@ -24,8 +24,8 @@ jobs:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/complete/'
-      provider: 'aws'
-      enable_plan: 'true'
+      provider: aws
+      enable_plan: true
       show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
@@ -34,8 +34,8 @@ jobs:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/self_managed/'
-      provider: 'aws'
-      enable_plan: 'true'
+      provider: aws
+      enable_plan: true
       show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
