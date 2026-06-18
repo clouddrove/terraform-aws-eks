@@ -101,7 +101,6 @@ module "eks" {
   external_cluster     = true
   subnet_filter_name   = "tag:kubernetes.io/cluster/${local.eks_cluster_name}"
   subnet_filter_values = ["owned", "shared"]
-  #region               = local.region
   node_role_arn        = module.node-group-role.arn
   subnet_ids           = data.aws_eks_cluster.this.vpc_config[0].subnet_ids
 
