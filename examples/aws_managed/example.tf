@@ -312,7 +312,7 @@ module "eks" {
   label_order = local.label_order
 
   # EKS
-  kubernetes_version     = "1.32"
+  kubernetes_version     = "1.35"
   endpoint_public_access = true
   # Networking
   vpc_id                            = module.vpc.vpc_id

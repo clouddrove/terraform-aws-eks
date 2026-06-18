@@ -17,14 +17,13 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
-
 #AMI AMAZON LINUX
 data "aws_ami" "eks_default" {
   count = var.enabled ? 1 : 0
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${var.kubernetes_version}-v*"]
+    values = ["amazon-eks-node-al2023-x86_64-standard-${var.kubernetes_version}-v*"]
   }
 
   most_recent = true
