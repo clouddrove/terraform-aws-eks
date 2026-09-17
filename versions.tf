@@ -4,8 +4,9 @@ terraform {
 
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.0"
+      source = "hashicorp/aws"
+      # >= 6.25.0 is required for the aws_eks_capability resource (EKS Capabilities: ACK, ArgoCD, KRO)
+      version = ">= 6.25.0, < 7.0.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
