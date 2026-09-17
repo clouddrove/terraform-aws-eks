@@ -157,7 +157,7 @@ resource "aws_iam_openid_connect_provider" "default" {
 }
 
 resource "aws_eks_access_entry" "default" {
-  for_each = var.enabled && length(var.access_entries) > 0 ? var.access_entries : {}
+  for_each = var.enabled && var.enable_access_entries && length(var.access_entries) > 0 ? var.access_entries : {}
 
   cluster_name  = aws_eks_cluster.default[0].name
   principal_arn = each.value.principal_arn
@@ -168,7 +168,7 @@ resource "aws_eks_access_entry" "default" {
 }
 
 resource "aws_eks_access_policy_association" "default" {
-  for_each = var.enabled && length(var.access_entries) > 0 ? {
+  for_each = var.enabled && var.enable_access_entries && length(var.access_entries) > 0 ? {
     for pair in flatten([
       for entry_key, entry_val in var.access_entries : [
         for policy_arn in try(entry_val.policy_arns, []) : {

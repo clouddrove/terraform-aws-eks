@@ -90,3 +90,17 @@ output "tags" {
 output "cluster_name" {
   value = module.labels.id
 }
+
+################################################################################
+# EKS Capabilities
+################################################################################
+
+output "capabilities" {
+  value       = aws_eks_capability.this
+  description = "Map of attribute maps for all EKS Capabilities created"
+}
+
+output "capabilities_iam_role_arns" {
+  value       = { for k, v in aws_eks_capability.this : k => v.role_arn }
+  description = "Map of IAM role ARNs used by each EKS Capability, keyed by capability key"
+}
