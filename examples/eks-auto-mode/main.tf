@@ -141,10 +141,10 @@ module "eks" {
     }
   }
 
-  apply_config_map_aws_auth = false
-  ######## Access entry for eks cluster with Admin access ##########
+  apply_config_map_aws_auth = true
+
   access_entries = {
-    "automated-role-access" = {
+    "admin-role-access" = {
       principal_arn     = "arn:aws:iam::123456789:role/automated-eks-cluster-assume-role"
       kubernetes_groups = []
       type              = "STANDARD"
