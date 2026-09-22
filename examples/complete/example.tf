@@ -400,7 +400,7 @@ module "eks" {
   enable_access_entries     = true
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/hello@clouddrove.com"
       username = "hello@clouddrove.com"
       groups   = ["system:masters"]
     }

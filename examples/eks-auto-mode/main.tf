@@ -145,7 +145,7 @@ module "eks" {
 
   access_entries = {
     "admin-role-access" = {
-      principal_arn     = "arn:aws:iam::123456789:role/automated-eks-cluster-assume-role"
+      principal_arn     = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/automated-eks-cluster-assume-role"
       kubernetes_groups = []
       type              = "STANDARD"
       policy_associations = {
