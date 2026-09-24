@@ -115,7 +115,7 @@ module "http_https" {
 module "eks" {
   source = "../.."
 
-  name        = "automode-auth"
+  name        = local.name
   environment = local.environment
   label_order = local.label_order
 
@@ -123,55 +123,44 @@ module "eks" {
     enabled    = true
     node_pools = ["general-purpose"]
   }
-  create                                   = true
-  enable_cluster_creator_admin_permissions = true
-  authentication_mode                      = "API_AND_CONFIG_MAP"
+  create              = true
+  authentication_mode = "API_AND_CONFIG_MAP"
 
   vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.subnets.private_subnet_id
   allowed_security_groups           = [module.ssh.security_group_id]
   eks_additional_security_group_ids = [module.ssh.security_group_id, module.http_https.security_group_id]
 
+  capabilities = {
+    ack = {
+      type                      = "ACK"
+      delete_propagation_policy = "RETAIN"
+      iam_role_policy_arns = [
+        "arn:aws:iam::aws:policy/AmazonS3FullAccess" # grants the capability role S3 permissions
+      ]
+    }
+  }
+
   apply_config_map_aws_auth = false
 
-
-
-  ######## Access entry for eks cluster with Admin access ##########
   access_entries = {
     "admin-role-access" = {
-      principal_arn     = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
+      principal_arn     = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/automated-eks-cluster-assume-role"
       kubernetes_groups = []
       type              = "STANDARD"
       policy_associations = {
         "full-access" = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type       = "cluster"
-            namespaces = []
-          }
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = { type = "cluster", namespaces = [] }
         }
-      }
-    },
-    ####### Readonly access ########
-    "read-only-access" = {
-      principal_arn     = "arn:aws:iam::924144197303:role/automated-eks-cluster-assume-role"
-      kubernetes_groups = []
-      type              = "STANDARD"
-      policy_associations = {
         "view-access" = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-          access_scope = {
-            type       = "cluster"
-            namespaces = []
-          }
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = { type = "cluster", namespaces = [] }
         }
       }
     }
   }
-
-  tags = local.tags
 }
-
 ################################################################################
 # Supporting Resources
 ################################################################################
