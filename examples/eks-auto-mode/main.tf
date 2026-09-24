@@ -115,7 +115,7 @@ module "http_https" {
 module "eks" {
   source = "../.."
 
-  name        = "automode-auth"
+  name        = local.name
   environment = local.environment
   label_order = local.label_order
 
@@ -141,7 +141,7 @@ module "eks" {
     }
   }
 
-  apply_config_map_aws_auth = true
+  apply_config_map_aws_auth = false
 
   access_entries = {
     "admin-role-access" = {
