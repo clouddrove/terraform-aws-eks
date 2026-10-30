@@ -156,38 +156,55 @@ resource "aws_iam_openid_connect_provider" "default" {
   tags            = module.labels.tags
 }
 
+################################################################################
+# Access Entries
+################################################################################
+
+data "aws_iam_session_context" "current" {
+  # This data source provides information on the IAM source role of an STS assumed role
+  # For non-role ARNs, this data source simply passes the ARN through issuer ARN
+  arn = try(data.aws_caller_identity.current.arn, "")
+}
+
+# Access entries are only created when `enable_access_entries = true`
 resource "aws_eks_access_entry" "default" {
-  for_each = var.enabled && length(var.access_entries) > 0 ? var.access_entries : {}
+  for_each = { for k, v in local.merged_access_entries : k => v if var.enabled && var.enable_access_entries }
 
-  cluster_name  = aws_eks_cluster.default[0].name
-  principal_arn = each.value.principal_arn
-  user_name     = try(each.value.user_name, null)
-  type          = try(each.value.type, "STANDARD")
+  cluster_name      = aws_eks_cluster.default[0].id
+  kubernetes_groups = try(each.value.kubernetes_groups, null)
+  principal_arn     = each.value.principal_arn
+  type              = try(each.value.type, "STANDARD")
+  user_name         = try(each.value.user_name, null)
 
-  tags = module.labels.tags
+  tags = merge(module.labels.tags, try(each.value.tags, {}))
 }
 
 resource "aws_eks_access_policy_association" "default" {
-  for_each = var.enabled && length(var.access_entries) > 0 ? {
-    for pair in flatten([
-      for entry_key, entry_val in var.access_entries : [
-        for policy_arn in try(entry_val.policy_arns, []) : {
-          key        = "${entry_key}-${policy_arn}"
-          entry_key  = entry_key
-          policy_arn = policy_arn
-        }
-      ]
-    ]) : pair.key => pair
-  } : {}
+  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}_${v.pol_key}" => v if var.enabled && var.enable_access_entries }
 
-  cluster_name  = aws_eks_cluster.default[0].name
-  principal_arn = var.access_entries[each.value.entry_key].principal_arn
-  policy_arn    = each.value.policy_arn
+  cluster_name  = aws_eks_cluster.default[0].id
+  policy_arn    = each.value.association_policy_arn
+  principal_arn = each.value.principal_arn
 
   access_scope {
-    type       = try(var.access_entries[each.value.entry_key].access_scope.type, "cluster")
-    namespaces = try(var.access_entries[each.value.entry_key].access_scope.namespaces, null)
+    namespaces = try(each.value.association_access_scope_namespaces, [])
+    type       = each.value.association_access_scope_type
   }
+
+  depends_on = [
+    aws_eks_access_entry.default,
+  ]
+}
+
+# Keep existing state working for users who had the resources under the old name
+moved {
+  from = aws_eks_access_entry.this
+  to   = aws_eks_access_entry.default
+}
+
+moved {
+  from = aws_eks_access_policy_association.this
+  to   = aws_eks_access_policy_association.default
 }
 
 resource "aws_eks_addon" "cluster" {
