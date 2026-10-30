@@ -10,6 +10,8 @@ data "aws_availability_zones" "available" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 locals {
   name            = "clouddrove-eks"
   cluster_version = "1.35"
@@ -123,7 +125,6 @@ module "eks" {
     enabled    = true
     node_pools = ["general-purpose"]
   }
-  create              = true
   authentication_mode = "API_AND_CONFIG_MAP"
 
   vpc_id                            = module.vpc.vpc_id
@@ -142,6 +143,7 @@ module "eks" {
   }
 
   apply_config_map_aws_auth = false
+  enable_access_entries     = false
 
   access_entries = {
     "admin-role-access" = {

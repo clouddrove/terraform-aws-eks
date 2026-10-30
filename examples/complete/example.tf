@@ -396,6 +396,7 @@ module "eks" {
       ami_type             = "BOTTLEROCKET_x86_64"
     }
   }
+
   apply_config_map_aws_auth = true
   enable_access_entries     = true
   map_additional_iam_users = [

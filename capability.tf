@@ -1,6 +1,6 @@
 locals {
   # Only manage capabilities when the module (and cluster) is enabled
-  capabilities = var.enabled ? var.capabilities : {}
+  capabilities = { for k, v in var.capabilities : k => v if var.enabled }
 
   # Capabilities for which we need to create an IAM role (i.e. the caller
   # did not bring their own `iam_role_arn`)

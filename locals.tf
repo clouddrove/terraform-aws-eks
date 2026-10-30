@@ -77,16 +77,23 @@ locals {
   }
 
   # Merge the bootstrap behavior with the entries that users provide
-  merged_access_entries = merge(
-    { for k, v in local.bootstrap_cluster_creator_admin_permissions : k => v if var.enable_cluster_creator_admin_permissions },
-    var.access_entries,
-  )
+  # Nothing is created unless `enable_access_entries = true`
+  merged_access_entries = {
+    for k, v in merge(
+      { for k, v in local.bootstrap_cluster_creator_admin_permissions : k => v if var.enable_cluster_creator_admin_permissions },
+      var.access_entries,
+    ) : k => v if var.enable_access_entries
+  }
 
   # Flatten out entries and policy associations so users can specify the policy
   # associations within a single entry
   flattened_access_entries = flatten([
     for entry_key, entry_val in local.merged_access_entries : [
-      for pol_key, pol_val in lookup(entry_val, "policy_associations", {}) :
+      for pol_key, pol_val in merge(
+        lookup(entry_val, "policy_associations", {}),
+        # backward compatibility with the legacy `policy_arns = [...]` schema
+        { for arn in lookup(entry_val, "policy_arns", []) : arn => { policy_arn = arn, access_scope = { type = "cluster" } } }
+      ) :
       merge(
         {
           principal_arn = entry_val.principal_arn
