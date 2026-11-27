@@ -15,7 +15,7 @@ data "aws_caller_identity" "current" {}
 locals {
   name            = "clouddrove-eks"
   cluster_version = "1.35"
-  region          = "eu-west-1"
+  region          = "ca-central-1"
 
   vpc_cidr    = "10.0.0.0/16"
   environment = "test"
