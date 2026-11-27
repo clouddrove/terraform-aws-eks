@@ -3,7 +3,7 @@ provider "aws" {
 }
 locals {
   name                  = "clouddrove-eks"
-  region                = "eu-west-1"
+  region                = "ca-central-1"
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"
@@ -396,10 +396,12 @@ module "eks" {
       ami_type             = "BOTTLEROCKET_x86_64"
     }
   }
+
   apply_config_map_aws_auth = true
+  enable_access_entries     = true
   map_additional_iam_users = [
     {
-      userarn  = "arn:aws:iam::123456789:user/hello@clouddrove.com"
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/hello@clouddrove.com"
       username = "hello@clouddrove.com"
       groups   = ["system:masters"]
     }

@@ -390,7 +390,7 @@ variable "access_entries" {
 variable "enable_cluster_creator_admin_permissions" {
   description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create" {
@@ -459,6 +459,39 @@ variable "cluster_support_type" {
 
 variable "enable_zonal_shift" {
   description = "Enable zonal shift for automatic AZ failover on the EKS cluster."
+  type        = bool
+  default     = false
+}
+
+################################################################################
+# EKS Capabilities (ACK, ArgoCD, KRO)
+################################################################################
+
+variable "capabilities" {
+  description = <<-EOT
+    Map of EKS Capabilities to create on the cluster (AWS Controllers for Kubernetes,
+    Argo CD, Kube Resource Orchestrator).
+    Each key is a unique, arbitrary name for the capability and each value supports:
+      - `type`                          (Required) One of `ACK`, `KRO`, `ARGOCD`.
+      - `capability_name`               (Optional) Name of the capability. Defaults to the map key.
+      - `delete_propagation_policy`     (Optional) Valid value is `RETAIN`. Defaults to `RETAIN`.
+      - `configuration`                 (Optional) Capability configuration, e.g. `{ argo_cd = { namespace = "argocd", aws_idc = { idc_instance_arn = "..." } } }`.
+      - `create_iam_role`               (Optional) Whether to create an IAM role for the capability. Defaults to `true`.
+      - `iam_role_arn`                  (Optional) Existing IAM role ARN to use instead of creating one.
+      - `iam_role_name`                 (Optional) Name for the created IAM role.
+      - `iam_role_path`                 (Optional) Path for the created IAM role.
+      - `iam_role_description`          (Optional) Description for the created IAM role.
+      - `iam_role_permissions_boundary` (Optional) Permissions boundary ARN for the created IAM role.
+      - `iam_role_policy_arns`          (Optional) List of managed policy ARNs to attach to the created IAM role.
+      - `iam_role_policy`               (Optional) Inline IAM policy JSON document to attach to the created IAM role.
+      - `tags`                          (Optional) Additional tags for the capability and its IAM role.
+  EOT
+  type        = any
+  default     = {}
+}
+
+variable "enable_access_entries" {
+  description = "Whether to create EKS access entries and access policy associations"
   type        = bool
   default     = false
 }
